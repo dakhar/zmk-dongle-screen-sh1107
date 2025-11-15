@@ -41,7 +41,7 @@ lv_obj_t *zmk_display_status_screen()
     lv_obj_t *screen;
 
     screen = lv_obj_create(NULL);
-    lv_obj_set_style_bg_color(screen, lv_palette_main(LV_PALETTE_RED), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(screen, lv_color_hex(0x000000), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(screen, 255, LV_PART_MAIN);
 
     lv_style_init(&global_style);
