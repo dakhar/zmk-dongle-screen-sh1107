@@ -58,17 +58,6 @@ endchoice
 config LV_FONT_MONTSERRAT_40
     default y
 
-config DONGLE_SCREEN_HORIZONTAL
-    bool "Screen orientation"
-    default y
-    help
-      Orientation of the screen. In default it is horizontal (laying on the side)
-
-config DONGLE_SCREEN_FLIPPED
-    bool "Screen flip option"
-    default n
-    help
-      Should the screen orientation should be flipped in horizontal or vertical orientation?
 
 config DONGLE_SCREEN_IDLE_TIMEOUT_S
     int "Screen idle timeout in seconds (0 = never off)"
