@@ -43,7 +43,7 @@ static lv_color_t battery_image_buffer[ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOUR
 
 // Peripheral reconnection tracking
 // ZMK sends battery events with level < 1 when peripherals disconnect
-static int8_t last_battery_levels[ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET];
+static int8_t [ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET];
 
 static void init_peripheral_tracking(void) {
     for (int i = 0; i < (ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET); i++) {

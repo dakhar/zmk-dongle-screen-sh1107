@@ -38,18 +38,19 @@ lv_style_t global_style;
 
 lv_obj_t *zmk_display_status_screen()
 {
+    lv_style_init(&global_style);
+    
     lv_obj_t *screen;
-
     screen = lv_obj_create(NULL);
     lv_obj_set_style_bg_color(screen, lv_color_hex(0x000000), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(screen, 255, LV_PART_MAIN);
 
-    //lv_style_init(&global_style);
+    
     // lv_style_set_text_font(&global_style, &lv_font_unscii_8); // ToDo: Font is not recognized
-    //lv_style_set_text_color(&global_style, lv_color_white());
-    //lv_style_set_text_letter_space(&global_style, 1);
-    //lv_style_set_text_line_space(&global_style, 1);
-    //lv_obj_add_style(screen, &global_style, LV_PART_MAIN);
+    lv_style_set_text_color(&global_style, lv_color_white());
+    lv_style_set_text_letter_space(&global_style, 1);
+    lv_style_set_text_line_space(&global_style, 1);
+    lv_obj_add_style(screen, &global_style, LV_PART_MAIN);
 
 #if CONFIG_DONGLE_SCREEN_OUTPUT_ACTIVE
     zmk_widget_output_status_init(&output_status_widget, screen);
