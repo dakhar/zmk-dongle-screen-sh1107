@@ -27,7 +27,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #endif
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
-#define bat_count = ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET;
+#define BAT_COUNT (ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET);
 #define BAT_HEIGHT 5
 struct battery_state {
     uint8_t source;
@@ -38,22 +38,22 @@ struct battery_state {
 struct battery_object {
     lv_obj_t *symbol;
     lv_obj_t *label;
-} battery_objects[bat_count];
+} battery_objects[BAT_COUNT];
     
-static uint8_t battery_image_buffer[bat_count][128 * BAT_HEIGHT * 4];
+static uint8_t battery_image_buffer[BAT_COUNT][128 * BAT_HEIGHT * 4];
 
 // Peripheral reconnection tracking
 // ZMK sends battery events with level < 1 when peripherals disconnect
-static int8_t last_battery_levels[bat_count];
+static int8_t last_battery_levels[BAT_COUNT];
 
 static void init_peripheral_tracking(void) {
-    for (int i = 0; i < bat_count; i++) {
+    for (int i = 0; i < BAT_COUNT; i++) {
         last_battery_levels[i] = -1; // -1 indicates never seen before
     }
 }
 
 static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
-    if (source >= bat_count) {
+    if (source >= BAT_COUNT) {
         return false;
     }
     
@@ -107,7 +107,7 @@ static void draw_battery(lv_obj_t *canvas, uint8_t level, bool usb_present) {
 }
 
 static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
-    if (state.source >= bat_count) {
+    if (state.source >= BAT_COUNT) {
         return;
     }
     
@@ -221,8 +221,8 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     lv_coord_t parent_height = lv_obj_get_height(parent);
 
     lv_obj_set_size(widget->obj, parent_width, 40);
-    int bat_width = parent_width / bat_count;
-    for (int i = 0; i < bat_count; i++) {
+    int bat_width = parent_width / BAT_COUNT;
+    for (int i = 0; i < BAT_COUNT; i++) {
         lv_obj_t *image_canvas = lv_canvas_create(widget->obj);
         lv_obj_t *battery_label = lv_label_create(widget->obj);
 
