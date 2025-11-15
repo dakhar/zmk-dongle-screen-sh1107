@@ -6,6 +6,10 @@
 
 #include "custom_status_screen.h"
 
+#define DISPLAY_NODE DT_CHOSEN(zephyr_display)
+#define DISPLAY_WIDTH  DT_PROP(DISPLAY_NODE, width)
+#define DISPLAY_HEIGHT DT_PROP(DISPLAY_NODE, height)
+
 #if CONFIG_DONGLE_SCREEN_OUTPUT_ACTIVE
 #include "widgets/output_status.h"
 static struct zmk_widget_output_status output_status_widget;
@@ -42,6 +46,7 @@ lv_obj_t *zmk_display_status_screen()
     
     lv_obj_t *screen;
     screen = lv_obj_create(NULL);
+    lv_obj_set_size(screen, DISPLAY_WIDTH, DISPLAY_HEIGHT);
     lv_obj_set_style_bg_color(screen, lv_color_hex(0x000000), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(screen, 255, LV_PART_MAIN);
 

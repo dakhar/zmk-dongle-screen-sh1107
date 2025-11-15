@@ -27,7 +27,8 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #endif
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
-
+#define bat_count = ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET;
+#define BAT_HEIGHT 5
 struct battery_state {
     uint8_t source;
     uint8_t level;
@@ -37,22 +38,22 @@ struct battery_state {
 struct battery_object {
     lv_obj_t *symbol;
     lv_obj_t *label;
-} battery_objects[ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET];
+} battery_objects[bat_count];
     
-static lv_color_t battery_image_buffer[ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET][42 * 5];
+static uint8_t battery_image_buffer[bat_count][128 * BAT_HEIGHT * 4];
 
 // Peripheral reconnection tracking
 // ZMK sends battery events with level < 1 when peripherals disconnect
-static int8_t last_battery_levels[ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET];
+static int8_t last_battery_levels[bat_count];
 
 static void init_peripheral_tracking(void) {
-    for (int i = 0; i < (ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET); i++) {
+    for (int i = 0; i < bat_count; i++) {
         last_battery_levels[i] = -1; // -1 indicates never seen before
     }
 }
 
 static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
-    if (source >= (ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET)) {
+    if (source >= bat_count) {
         return false;
     }
     
@@ -106,7 +107,7 @@ static void draw_battery(lv_obj_t *canvas, uint8_t level, bool usb_present) {
 }
 
 static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
-    if (state.source >= ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET) {
+    if (state.source >= bat_count) {
         return;
     }
     
@@ -213,17 +214,19 @@ ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_usb_conn_state_changed);
 
 int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_status *widget, lv_obj_t *parent) {
     widget->obj = lv_obj_create(parent);
-
-    lv_obj_set_size(widget->obj, 128, 40);
+    lv_obj_set_flex_flow(widget->obj, LV_FLEX_FLOW_ROW);
+    lv_obj_set_flex_align(widget->obj, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     
-    for (int i = 0; i < ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET; i++) {
+    lv_coord_t parent_width = lv_obj_get_width(parent);
+    lv_coord_t parent_height = lv_obj_get_height(parent);
+
+    lv_obj_set_size(widget->obj, parent_width, 40);
+    int bat_width = parent_width / bat_count;
+    for (int i = 0; i < bat_count; i++) {
         lv_obj_t *image_canvas = lv_canvas_create(widget->obj);
         lv_obj_t *battery_label = lv_label_create(widget->obj);
 
-        lv_canvas_set_buffer(image_canvas, battery_image_buffer[i], 42, 5, LV_IMG_CF_TRUE_COLOR);
-
-        lv_obj_align(image_canvas, LV_ALIGN_BOTTOM_MID, -21 +(i * 42), -8);
-        lv_obj_align(battery_label, LV_ALIGN_TOP_MID, -21 +(i * 42), 0);
+        lv_canvas_set_buffer(image_canvas, battery_image_buffer[i], bat_width, BAT_HEIGHT, LV_COLOR_FORMAT_I4);
 
         lv_obj_add_flag(image_canvas, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(battery_label, LV_OBJ_FLAG_HIDDEN);
