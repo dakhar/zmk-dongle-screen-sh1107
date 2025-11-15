@@ -1,4 +1,5 @@
-/ disp_i2c: &pro_micro_i2c {
+
+disp_i2c: &pro_micro_i2c {
     status = "okay";
     sh1106: sh1106@3c {
         compatible = "sinowealth,sh1106";
