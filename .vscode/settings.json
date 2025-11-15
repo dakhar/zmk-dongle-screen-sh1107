@@ -3,6 +3,7 @@
         "custom_status_screen.h": "c",
         "layer_status.h": "c",
         "battery_status.h": "c",
-        "locale": "c"
+        "locale": "c",
+        "mod_status.h": "c"
     }
 }
