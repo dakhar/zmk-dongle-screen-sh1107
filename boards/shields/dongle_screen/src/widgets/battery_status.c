@@ -19,7 +19,6 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/usb.h>
 
 #include "battery_status.h"
-#include "../brightness.h"
 
 #if IS_ENABLED(CONFIG_ZMK_DONGLE_DISPLAY_DONGLE_BATTERY)
     #define SOURCE_OFFSET 1
@@ -123,7 +122,6 @@ static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
 #if CONFIG_DONGLE_SCREEN_IDLE_TIMEOUT_S > 0    
         LOG_INF("Peripheral %d reconnected (battery: %d%%), requesting screen wake", 
                 state.source, state.level);
-        brightness_wake_screen_on_reconnect();
 #else 
         LOG_INF("Peripheral %d reconnected (battery: %d%%)", 
                 state.source, state.level);
