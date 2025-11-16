@@ -35,6 +35,16 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 static lv_obj_t *battery_shell = NULL;  // Буфер для хранения изображения
 static bool battery_shell_initialized = false;  // Флаг инициализации
 
+
+const int PALETTE_SIZE = 5;
+const lv_color_t palette[PALETTE_SIZE] = {
+    LVGL_BACKGROUND,    // индекс 0
+    LVGL_FOREGROUND,    // индекс 1
+    lv_color_green(),     // индекс 2
+    lv_color_yellow(),   // индекс 3
+    lv_color_red()     // индекс 4
+};
+
 struct battery_state {
     uint8_t source;
     uint8_t level;
@@ -42,7 +52,8 @@ struct battery_state {
 };
 
 struct battery_object {
-    uint8_t buffer[(NRG_METER_W + 3) * (NRG_METER_H + 2) * 4];
+    bool initialized;
+    uint8_t *buffer;
     lv_obj_t *symbol;
     lv_obj_t *label;
 } battery_objects[BAT_COUNT];
@@ -81,19 +92,18 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
 }
 
 static void draw_battery_shell_to_buffer(void) {
-    // Очищаем буфер
-    lv_canvas_fill_bg(battery_shell, LVGL_BACKGROUND, LV_OPA_COVER);
     
     lv_draw_rect_dsc_t rect_fill_dsc;
     lv_draw_rect_dsc_init(&rect_fill_dsc);
-    rect_fill_dsc.bg_color = LVGL_BACKGROUND;
+    rect_fill_dsc.bg_color = 0;
+    rect_fill_dsc.border_color = 1;
     
     // Рисуем рамку
     lv_canvas_draw_rect(battery_shell, 1, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_fill_dsc);
     
     // Рисуем вертикальные линии слева
     for (int i = 1; i < (NRG_METER_H + 2); i++) {
-        lv_canvas_set_px_color(battery_shell, 0, i, LVGL_FOREGROUND);
+        lv_canvas_set_px_color(battery_shell, 0, i, 1);
     }
 }
 
@@ -105,41 +115,88 @@ static void init_battery_shell(void) {
     // Создаём off-screen canvas нужного размера
     battery_shell = lv_canvas_create(lv_scr_act());
     lv_obj_set_size(battery_shell, NRG_METER_W + 3, NRG_METER_H + 2);
-    
     // Выделяем память для буфера изображения
-    lv_color_t *buf = lv_mem_alloc((NRG_METER_W + 3) * (NRG_METER_H + 2) * 4);
-    lv_canvas_set_buffer(battery_shell, buf, NRG_METER_W + 3, NRG_METER_H + 2, LV_IMG_CF_TRUE_COLOR);
-
+    const int buf_size = ((NRG_METER_W + 3) * (NRG_METER_H + 2) + 1) / 2;  // bytes
+    uint8_t *indexed_buf = lv_mem_alloc(buf_size); 
+    if (!indexed_buf) {
+        LV_LOG_ERROR("battery shell buffer allocation failed!");
+        return -1;
+    }
+    lv_canvas_set_buffer(battery_shell, indexed_buf, 
+                            NRG_METER_W + 3, NRG_METER_H + 2, 
+                            LV_IMG_CF_INDEXED_4BIT);
+    for (int c = 0; c < PALETTE_SIZE; c++) {
+        lv_img_buf_set_palette(lv_canvas_get_img(battery_shell), c, palette[c]);
+    }
     // Отрисовываем батарею в буфер (один раз)
     draw_battery_shell_to_buffer();
     
     battery_shell_initialized = true;
 }
 
-static void draw_battery(struct battery_state state, struct battery_object battery) { 
-    // Инициализируем буфер при первом вызове
-    init_battery_shell();
+static void draw_battery(struct battery_state state, struct battery_object battery) {
+    if (!battery || !battery->symbol) return;
+    if (state.level < 0 || state.level > 100) return;
     
-    // Задаём цвет фона в зависимости от уровня заряда
-    // if (state.level < 1) {
-    //     lv_canvas_fill_bg(battery.symbol, lv_palette_main(LV_PALETTE_RED), LV_OPA_COVER);
-    // } else if (state.level <= 10) {
-    //     lv_canvas_fill_bg(battery.symbol, lv_palette_main(LV_PALETTE_YELLOW), LV_OPA_COVER);
-    // } else {
-    //     lv_canvas_fill_bg(battery.symbol, LVGL_BACKGROUND, LV_OPA_COVER);
-    // }
+    const int width = NRG_METER_W;
+    const int height = NRG_METER_H;
+    const int x_offset = 2;  // Сдвиг по X (как в оригинале)
+    const int y_offset = 1;  // Сдвиг по Y
+
+    int filled_width = (width * state.level + 50) / 100;  // Округление
+    filled_width = LV_MAX(0, LV_MIN(filled_width, width));  // Ограничение
     
-    // Копируем готовое изображение батареи из буфера
-    // lv_canvas_copy_buf(battery.symbol, battery_shell, 0, 0,(NRG_METER_W + 3), (NRG_METER_H + 2));
-    // Рисуем вертикальные линии слева
-    for (int i = 1; i < (NRG_METER_H + 2); i++) {
-        lv_canvas_set_px_color(battery.symbol, 0, i, LVGL_FOREGROUND);
-    }
-    for (int i = 2; i < (NRG_METER_W + 3); i++) {
-        for (int y = 0; y < (NRG_METER_H + 2); y++) {
-            lv_canvas_set_px_color(battery.symbol, i, y, LVGL_FOREGROUND);
+    lv_draw_rect_dsc_t rect_dsc;
+    lv_draw_rect_dsc_init(&rect_dsc);
+    rect_dsc.bg_color = 0;
+    rect_dsc.border_color = 1;
+    rect_dsc.radius = 2;
+        
+    if (!battery.initialized) {
+        // Рисуем рамку
+        lv_canvas_draw_rect(battery->symbol, 1, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_fill_dsc);
+    
+        // Рисуем вертикальные линии слева
+        for (int i = 1; i < (NRG_METER_H + 2); i++) {
+            lv_canvas_set_px_color(battery->symbol, 0, i, 1);
         }
+        battery.initialized = true;
     }
+    lv_area_t area;
+    area.x1 = x_offset;
+    area.y1 = y_offset;
+    area.x2 = x_offset + width - 1;
+    area.y2 = y_offset + height - 1;
+    lv_canvas_fill_rect(battery->symbol, &area, &rect_dsc);
+
+    uint8_t color_idx;
+    if (state.level < 10) {
+        color_idx = 4;  // Red
+    } else if (state.level <= 30) {
+        color_idx = 3;  // Yellow
+    } else {
+        color_idx = 2;  // Green
+    }
+
+    // Инициализируем буфер при первом вызове
+    if (filled_width > 0) {
+        lv_area_t fill_area;
+        fill_area.x1 = x_offset;
+        fill_area.y1 = y_offset;
+        fill_area.x2 = x_offset + (width - filled_width) - 1;
+        fill_area.y2 = y_offset + height - 1;
+
+        lv_draw_rect_dsc_t fill_dsc;
+        lv_draw_rect_dsc_init(&fill_dsc);
+        fill_dsc.bg_color = color_idx;
+        fill_dsc.radius = 2;
+
+        lv_canvas_fill_rect(battery->symbol, &fill_area, &fill_dsc);
+    }
+    
+    // 7. Обновляем только изменённую область
+    lv_obj_invalidate(battery->symbol);
+    
 }
 
 static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
@@ -275,10 +332,21 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
                             LV_GRID_ALIGN_END, 0, 1);
         lv_obj_add_flag(battery->label, LV_OBJ_FLAG_HIDDEN);
 
+        const int buf_size = ((NRG_METER_W + 3) * (NRG_METER_H + 2) + 1) / 2;  // bytes
+        battery->buffer = lv_mem_alloc(buf_size); 
+        if (!battery->buffer) {
+            LV_LOG_ERROR("Canvas buffer allocation failed!");
+            return -1;
+        }
         battery->symbol = lv_canvas_create(widget->obj);
+        lv_canvas_set_buffer(battery->symbol, battery->buffer, 
+                                (NRG_METER_W + 3), (NRG_METER_H + 2), 
+                                LV_IMG_CF_INDEXED_4BIT); // 2-bit index
+        for (int c = 0; c < PALETTE_SIZE; c++) {
+            lv_img_buf_set_palette(lv_canvas_get_img(battery->symbol), c, palette[c]);
+        }
         lv_obj_set_grid_cell(battery->symbol, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_CENTER, 1, 1);
-        lv_canvas_set_buffer(battery->symbol, battery->buffer, (NRG_METER_W + 3), (NRG_METER_H + 2), LV_IMG_CF_TRUE_COLOR);
         lv_obj_add_flag(battery->symbol, LV_OBJ_FLAG_HIDDEN);
 
     }
