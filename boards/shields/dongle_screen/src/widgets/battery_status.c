@@ -42,7 +42,7 @@ struct battery_state {
 };
 
 struct battery_object {
-    static uint8_t buffer[(NRG_METER_W + 3) * (NRG_METER_H + 2) * 4];
+    uint8_t buffer[(NRG_METER_W + 3) * (NRG_METER_H + 2) * 4];
     lv_obj_t *symbol;
     lv_obj_t *label;
 } battery_objects[BAT_COUNT];
