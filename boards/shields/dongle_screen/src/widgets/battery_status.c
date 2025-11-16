@@ -29,13 +29,14 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define BAT_COUNT (ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET)
+#define LABEL_HEIGHT 20
 #define NRG_METER_W 25
 #define NRG_METER_H 4
 #define BORDER_SZ   1
 #define X_OFFSET    2
 #define BAT_WIDTH   X_OFFSET + BORDER_SZ + NRG_METER_W + BORDER_SZ
 #define BAT_HEIGHT BORDER_SZ + NRG_METER_H + BORDER_SZ
-
+#define BITS_PER_PIXEL 4
 /*
   *******************
 ***                 *
@@ -106,11 +107,11 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
 }
 
 static void draw_battery(struct battery_state state, struct battery_object *battery) {
-    if (!battery || !battery->symbol) return;
-    if (state.level < 1 || state.level > 100) return;
+    // if (!battery || !battery->symbol) return;
+    // if (state.level < 1 || state.level > 100) return;
 
-    int filled_width = (NRG_METER_W * state.level + 50) / 100;  // Округление
-    filled_width = LV_CLAMP(0, filled_width, NRG_METER_W);
+    // int filled_width = (NRG_METER_W * state.level + 50) / 100;  // Округление
+    // filled_width = LV_CLAMP(0, filled_width, NRG_METER_W);
     
     lv_color_t bg_color;
     lv_color_t fg_color;
@@ -129,7 +130,7 @@ static void draw_battery(struct battery_state state, struct battery_object *batt
     lv_draw_rect_dsc_t rect_dsc;
     lv_draw_rect_dsc_init(&rect_dsc);
     rect_dsc.bg_color = fg_color;
-    rect_dsc.border_color = fg_color;
+    // rect_dsc.border_color = fg_color;
     // rect_dsc.border_width = BORDER_SZ;
     // rect_dsc.radius = 2;
     
@@ -168,7 +169,7 @@ static void draw_battery(struct battery_state state, struct battery_object *batt
     // }
     lv_canvas_draw_rect(battery->symbol, 0, 0, BAT_WIDTH, BAT_HEIGHT, &rect_dsc);
     // 7. Обновляем только изменённую область
-    lv_obj_invalidate(battery->symbol);
+    // lv_obj_invalidate(battery->symbol);
 }
 
 static void draw_label(struct battery_state state, struct battery_object *battery) {
@@ -273,9 +274,9 @@ ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_usb_conn_state_changed);
 int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_status *widget, lv_obj_t *parent) {
     init_palette();
     lv_coord_t parent_width = lv_obj_get_width(parent);
-    
-    static lv_coord_t row_dsc[] = {20, BAT_HEIGHT, LV_GRID_TEMPLATE_LAST};
-    
+    // Set table rows height
+    static lv_coord_t row_dsc[] = {LABEL_HEIGHT, BAT_HEIGHT, LV_GRID_TEMPLATE_LAST};
+    // Set table rows width
     lv_coord_t *col_dsc = lv_mem_alloc((BAT_COUNT + 1) * sizeof(lv_coord_t));
     if (!col_dsc) {
         LV_LOG_ERROR("Memory allocation failed!");
@@ -284,23 +285,27 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     for (uint8_t i = 0; i < BAT_COUNT; i++) {
         col_dsc[i] = parent_width / BAT_COUNT; 
     }
-    col_dsc[BAT_COUNT] = LV_GRID_TEMPLATE_LAST;  // Терминатор
+    col_dsc[BAT_COUNT] = LV_GRID_TEMPLATE_LAST;
     
+// Create table
     widget->obj = lv_obj_create(parent);
     lv_obj_set_style_grid_column_dsc_array(widget->obj, col_dsc, 0);
     lv_obj_set_style_grid_row_dsc_array(widget->obj, row_dsc, 0);
-    lv_obj_set_size(widget->obj, parent_width, 20 + BAT_HEIGHT);
+    lv_obj_set_size(widget->obj, parent_width, LABEL_HEIGHT + BAT_HEIGHT);
     lv_obj_center(widget->obj);
     lv_obj_set_layout(widget->obj, LV_LAYOUT_GRID);
-
+    
+    // Add batteries into table
     for (int i = 0; i < BAT_COUNT; i++) {
         struct battery_object *battery = &battery_objects[i];
+        // Add lable to first row
         battery->label = lv_label_create(widget->obj);
         lv_obj_set_grid_cell(battery->label, LV_GRID_ALIGN_CENTER, i, 1,
-                            LV_GRID_ALIGN_END, 0, 1);
+                            LV_GRID_ALIGN_CENTER, 0, 1);
         lv_obj_add_flag(battery->label, LV_OBJ_FLAG_HIDDEN);
-
-        const int buf_size = (BAT_WIDTH * BAT_HEIGHT + 1) / 2;  // bytes
+        
+        // Add canvas to second row
+        const int buf_size = (BAT_WIDTH * BAT_HEIGHT * BITS_PER_PIXEL) / 8 + 1;  // bytes
         battery->buffer = lv_mem_alloc(buf_size); 
         if (!battery->buffer) {
             LV_LOG_ERROR("Canvas buffer allocation failed!");
@@ -309,7 +314,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
         battery->symbol = lv_canvas_create(widget->obj);
         lv_canvas_set_buffer(battery->symbol, battery->buffer, 
                                 BAT_WIDTH, BAT_HEIGHT, 
-                                LV_IMG_CF_INDEXED_4BIT); // 2-bit index
+                                LV_IMG_CF_INDEXED_4BIT); // 4-bit index
         for (int c = 0; c < PALETTE_SIZE; c++) {
             lv_img_buf_set_palette(lv_canvas_get_img(battery->symbol), c, palette[c]);
         }
