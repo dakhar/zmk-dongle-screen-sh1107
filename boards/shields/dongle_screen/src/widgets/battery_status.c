@@ -54,8 +54,8 @@ struct battery_state {
     bool usb_present;
 };
 
-struct battery_object {uint8_t buffer[(NRG_METER_W + 3) * (NRG_METER_H + 2) * 4];
-        // uint8_t buffer[(BAT_WIDTH * BAT_HEIGHT * BITS_PER_PIXEL)];
+struct battery_object {uint8_t buffer[BAT_WIDTH * BAT_HEIGHT * 4];
+        // uint8_t buffer[( *  * BITS_PER_PIXEL)];
     lv_obj_t *symbol;
     lv_obj_t *label;
 } battery_objects[BAT_COUNT];
