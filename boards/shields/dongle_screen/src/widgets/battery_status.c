@@ -287,23 +287,20 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     lv_obj_center(widget->obj);
     lv_obj_set_layout(widget->obj, LV_LAYOUT_GRID);
 
-    int bat_width = (NRG_METER_W + 3);
-    int bat_height = (NRG_METER_H + 2);
     for (int i = 0; i < BAT_COUNT; i++) {
-        lv_obj_t *battery_label = lv_label_create(widget->obj);
-        lv_obj_set_grid_cell(battery_label, LV_GRID_ALIGN_CENTER, i, 1,
+        battery_object *battery = battery_objects[i];
+        battery.label = lv_label_create(widget->obj);
+        lv_obj_set_grid_cell(battery.label, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_END, 0, 1);
-        battery_objects[i].label = battery_label;
+        lv_obj_add_flag(battery.label, LV_OLAG_HIDDEN);
 
-        lv_obj_t *image_canvas = lv_canvas_create(widget->obj);
-        lv_obj_set_grid_cell(image_canvas, LV_GRID_ALIGN_CENTER, i, 1,
+        battery.symbol = lv_canvas_create(widget->obj);
+        lv_obj_set_grid_cell(battery.symbol, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_CENTER, 1, 1);
+        lv_canvas_set_buffer(battery.symbol, battery.buffer, (NRG_METER_W + 3), (NRG_METER_H + 2), LV_IMG_CF_TRUE_COLOR);
+        battery_objects[i].symbol = battery.symbol;
+        lv_obj_add_flag(battery.symbol, LV_OBJ_FLAG_HIDDEN);
 
-        lv_canvas_set_buffer(image_canvas, battery_objects[i].buffer, bat_width, bat_height, LV_IMG_CF_TRUE_COLOR);
-        battery_objects[i].symbol = image_canvas;
-
-        lv_obj_add_flag(battery_label, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_add_flag(image_canvas, LV_OBJ_FLAG_HIDDEN);
     }
 
     sys_slist_append(&widgets, &widget->node);
