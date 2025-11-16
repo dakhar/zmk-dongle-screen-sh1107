@@ -90,7 +90,7 @@ static void init_battery_shell(void) {
     lv_obj_set_size(battery_shell, NRG_METER_W + 3, NRG_METER_H + 2);
     
     // Выделяем память для буфера изображения
-    lv_color_t *buf lv_mem_alloc((NRG_METER_W + 3) * (NRG_METER_H + 2) * 4);
+    lv_color_t *buf = lv_mem_alloc((NRG_METER_W + 3) * (NRG_METER_H + 2) * 4);
     lv_canvas_set_buffer(battery_shell, buf, NRG_METER_W + 3, NRG_METER_H + 2, LV_IMG_CF_TRUE_COLOR);
 
     // Отрисовываем батарею в буфер (один раз)
