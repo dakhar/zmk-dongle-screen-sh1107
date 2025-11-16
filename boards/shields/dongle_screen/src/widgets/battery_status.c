@@ -164,19 +164,14 @@ static void draw_battery(struct battery_state state, struct battery_object batte
 }
 
 static void draw_label(struct battery_state state, struct battery_object battery) {
-    if (state.level > 0) {
-        lv_obj_set_style_text_color(battery->label, LVGL_FOREGROUND, 0);
-        lv_label_set_text_fmt(battery.label, "%4u", state.level);
-    } else {
-        lv_obj_set_style_text_color(battery.label, lv_palette_main(LV_PALETTE_RED), 0);
-        lv_label_set_text(battery.label, "X");
-    }
-
-    if (state.level < 1)
+    if (state.level <= 0)
     {
         lv_obj_set_style_text_color(battery.label, lv_palette_main(LV_PALETTE_RED), 0);
         lv_label_set_text(battery.label, "X");
-    } else if (state.level <= 10) {
+    } else if (state.level < 10) {
+        lv_obj_set_style_text_color(battery.label, lv_palette_main(LV_PALETTE_RED), 0);
+        lv_label_set_text_fmt(battery.label, "%4u", state.level);
+    } else if (state.level < 30) {
         lv_obj_set_style_text_color(battery.label, lv_palette_main(LV_PALETTE_YELLOW), 0);
         lv_label_set_text_fmt(battery.label, "%4u", state.level);
     } else {
