@@ -135,18 +135,11 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     for (int i = 1; i < (NRG_METER_H + 2); i++) {
         lv_canvas_set_px_color(battery.symbol, 0, i, lv_color_black());
     }
-    lv_canvas_set_px_color(battery.symbol, 1, 0, lv_color_black());
-    lv_canvas_set_px_color(battery.symbol, 1, 1, lv_color_black());
-    lv_canvas_set_px_color(battery.symbol, 1, 2, lv_color_black());
-    lv_canvas_set_px_color(battery.symbol, 1, 3, lv_color_black());
-    lv_canvas_set_px_color(battery.symbol, 1, 4, lv_color_black());
-    lv_canvas_set_px_color(battery.symbol, 1, 5, lv_color_black());
-    lv_canvas_set_px_color(battery.symbol, 2, 0, lv_color_black());
-    lv_canvas_set_px_color(battery.symbol, 2, 1, lv_color_black());
-    lv_canvas_set_px_color(battery.symbol, 2, 2, lv_color_black());
-    lv_canvas_set_px_color(battery.symbol, 2, 3, lv_color_black());
-    lv_canvas_set_px_color(battery.symbol, 2, 4, lv_color_black());
-    lv_canvas_set_px_color(battery.symbol, 2, 5, lv_color_black());
+    for (int i = 2; i < (NRG_METER_W + 3); i++) {
+        for (int y = 0; y < (NRG_METER_H + 2); y++) {
+            lv_canvas_set_px_color(battery.symbol, i, y, lv_color_black());
+        }
+    }
 }
 
 static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
