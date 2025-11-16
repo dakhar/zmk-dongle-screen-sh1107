@@ -5,7 +5,7 @@
 #include "mod_status.h"
 #include <fonts.h> // <-- Wichtig für LV_FONT_DECLARE
 
-#include "util.h"
+#include <util.h>
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 

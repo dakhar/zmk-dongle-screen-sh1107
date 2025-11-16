@@ -15,7 +15,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include "wpm_status.h"
 #include <fonts.h>
-#include "util.h"
+#include <util.h>
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 struct wpm_status_state

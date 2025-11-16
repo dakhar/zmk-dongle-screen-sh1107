@@ -5,6 +5,7 @@
  */
 
 #include "custom_status_screen.h"
+#include <util.h>
 
 #define DISPLAY_NODE DT_CHOSEN(zephyr_display)
 #define DISPLAY_WIDTH  DT_PROP(DISPLAY_NODE, width)
