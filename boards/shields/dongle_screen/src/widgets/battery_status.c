@@ -116,34 +116,6 @@ static void init_battery_shell(void) {
     battery_shell_initialized = true;
 }
 
-
-// static void draw_battery(lv_obj_t *canvas, struct battery_state state) {
-//     int32_t energy_width = lv_obj_get_width(canvas);
-//     int32_t width = lv_obj_get_width(canvas);
-//     if (level < 1)
-//     {
-//         lv_canvas_fill_bg(canvas, lv_palette_main(LV_PALETTE_RED), LV_OPA_COVER);
-//     } else if (level <= 10) {
-//         lv_canvas_fill_bg(canvas, lv_palette_main(LV_PALETTE_YELLOW), LV_OPA_COVER);
-//     } else {
-//         lv_canvas_fill_bg(canvas, lv_color_white(), LV_OPA_COVER);
-//     }
-
-    
-//     lv_draw_rect_dsc_t rect_fill_dsc;
-//     lv_draw_rect_dsc_init(&rect_fill_dsc);
-//     rect_fill_dsc.bg_color = lv_color_black();
-
-//     if (level <= 99 && level > 0)
-//     {
-//         for (int i = 1; i < (NRG_METER_H + 2) ; i++) {
-//             lv_canvas_set_px_color(canvas, 0, i, lv_color_black());
-//         }
-//         lv_canvas_draw_rect(canvas, 1, 0, (NRG_METER_W + 2), (NRG_METER_H + 2), &rect_fill_dsc);
-//     }
-    
-// }
-
 static void draw_battery(struct battery_state state, struct battery_object battery) { 
     // Инициализируем буфер при первом вызове
     init_battery_shell();
@@ -288,7 +260,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     lv_obj_set_layout(widget->obj, LV_LAYOUT_GRID);
 
     for (int i = 0; i < BAT_COUNT; i++) {
-        battery_object *battery = battery_objects[i];
+        struct battery_object *battery = battery_objects[i];
         battery.label = lv_label_create(widget->obj);
         lv_obj_set_grid_cell(battery.label, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_END, 0, 1);
