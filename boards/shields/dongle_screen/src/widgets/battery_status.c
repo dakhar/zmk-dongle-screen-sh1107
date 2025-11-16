@@ -36,7 +36,7 @@ static lv_obj_t *battery_shell = NULL;  // Буфер для хранения и
 static bool battery_shell_initialized = false;  // Флаг инициализации
 
 
-const int PALETTE_SIZE = 5;
+#define PALETTE_SIZE 5
 const lv_color_t palette[PALETTE_SIZE] = {
     LVGL_BACKGROUND,    // индекс 0
     LVGL_FOREGROUND,    // индекс 1
