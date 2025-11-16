@@ -103,8 +103,8 @@ static void draw_battery_shell_to_buffer(void) {
     
     lv_draw_rect_dsc_t rect_fill_dsc;
     lv_draw_rect_dsc_init(&rect_fill_dsc);
-    rect_fill_dsc.bg_color = 0;
-    rect_fill_dsc.border_color = 1;
+    rect_fill_dsc.bg_color.full = 0;
+    rect_fill_dsc.border_color.full = 1;
     
     // Рисуем рамку
     lv_canvas_draw_rect(battery_shell, 1, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_fill_dsc);
@@ -156,8 +156,8 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     
     lv_draw_rect_dsc_t rect_dsc;
     lv_draw_rect_dsc_init(&rect_dsc);
-    rect_dsc.bg_color = 0;
-    rect_dsc.border_color = 1;
+    rect_dsc.bg_color.full = 0;
+    rect_dsc.border_color.full = 1;
     rect_dsc.radius = 2;
         
     if (!battery.initialized) {
@@ -196,7 +196,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
 
         lv_draw_rect_dsc_t fill_dsc;
         lv_draw_rect_dsc_init(&fill_dsc);
-        fill_dsc.bg_color = color_idx;
+        fill_dsc.bg_color.full = color_idx;
         fill_dsc.radius = 2;
 
         lv_canvas_fill_rect(battery->symbol, &fill_area, &fill_dsc);
