@@ -129,7 +129,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
         
     if (!battery.initialized) {
         // Рисуем рамку
-        lv_canvas_draw_rect(battery.symbol, 1, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_fill_dsc);
+        lv_canvas_draw_rect(battery.symbol, 1, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_dsc);
         // Рисуем вертикальные линии слева
         for (int i = 1; i < (NRG_METER_H + 2); i++) {
             lv_canvas_set_px_color(battery.symbol, 0, i, fg_color);
