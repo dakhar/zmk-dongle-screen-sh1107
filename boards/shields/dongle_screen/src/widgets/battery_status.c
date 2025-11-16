@@ -198,7 +198,7 @@ static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
     if (last_battery_levels[state.source] != state.level) {
         last_battery_levels[state.source] = state.level;
     } else {
-        return
+        return;
     }
     // Wake screen on reconnection
     if (reconnecting) {
