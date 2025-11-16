@@ -121,13 +121,13 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     init_battery_shell();
     
     // Задаём цвет фона в зависимости от уровня заряда
-    if (state.level < 1) {
-        lv_canvas_fill_bg(battery.symbol, lv_palette_main(LV_PALETTE_RED), LV_OPA_COVER);
-    } else if (state.level <= 10) {
-        lv_canvas_fill_bg(battery.symbol, lv_palette_main(LV_PALETTE_YELLOW), LV_OPA_COVER);
-    } else {
-        lv_canvas_fill_bg(battery.symbol, lv_color_white(), LV_OPA_COVER);
-    }
+    // if (state.level < 1) {
+    //     lv_canvas_fill_bg(battery.symbol, lv_palette_main(LV_PALETTE_RED), LV_OPA_COVER);
+    // } else if (state.level <= 10) {
+    //     lv_canvas_fill_bg(battery.symbol, lv_palette_main(LV_PALETTE_YELLOW), LV_OPA_COVER);
+    // } else {
+    //     lv_canvas_fill_bg(battery.symbol, lv_color_white(), LV_OPA_COVER);
+    // }
     
     // Копируем готовое изображение батареи из буфера
     lv_canvas_copy_buf(battery.symbol, battery_shell, 0, 0,(NRG_METER_W + 3), (NRG_METER_H + 2));
