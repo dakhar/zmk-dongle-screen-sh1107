@@ -92,7 +92,23 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
     return reconnecting;
 }
 
-static void draw_battery(struct battery_state state, struct battery_object battery) { 
+static void draw_battery(struct battery_state state, struct battery_object battery) {
+    if (state.level < 1 || state.level > 100) return;
+    lv_color_t bg_color = LVGL_BACKGROUND;
+    lv_color_t fg_color = LVGL_FOREGROUND;
+    lv_color_t meter_color;
+    if (state.level > 30) {
+        meter_color = lv_palette_main(LV_PALETTE_GREEN);
+    } else if (state.level > 10) {
+        meter_color = lv_palette_main(LV_PALETTE_YELLOW);
+    } else {
+        meter_color = lv_palette_main(LV_PALETTE_RED);
+    }
+    lv_draw_rect_dsc_t rect_dsc;
+    lv_draw_rect_dsc_init(&rect_dsc);
+    rect_dsc.bg_color = meter_color;
+    rect_dsc.border_color = fg_color;
+    rect_dsc.bg_opa = LV_OPA_COVER;
     // Инициализируем буфер при первом вызове
     // init_battery_shell();
     
@@ -123,7 +139,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     rect_fill_dsc.bg_color = LVGL_FOREGROUND;
     rect_fill_dsc.border_color = LVGL_FOREGROUND;
     
-    lv_canvas_draw_rect(battery.symbol, 0, 0, NRG_METER_W + 2, NRG_METER_H + 1, &rect_fill_dsc);
+    lv_canvas_draw_rect(battery.symbol, 0, 0, NRG_METER_W + 2, NRG_METER_H + 1, &rect_dsc);
 }
 
 static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
