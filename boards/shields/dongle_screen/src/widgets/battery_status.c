@@ -80,6 +80,23 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
     return reconnecting;
 }
 
+static void draw_battery_shell_to_buffer(void) {
+    // Очищаем буфер
+    lv_canvas_fill_bg(battery_shell, lv_color_white(), LV_OPA_COVER);
+    
+    lv_draw_rect_dsc_t rect_fill_dsc;
+    lv_draw_rect_dsc_init(&rect_fill_dsc);
+    rect_fill_dsc.bg_color = lv_color_black();
+    
+    // Рисуем рамку
+    lv_canvas_draw_rect(battery_shell, 1, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_fill_dsc);
+    
+    // Рисуем вертикальные линии слева
+    for (int i = 1; i < (NRG_METER_H + 2); i++) {
+        lv_canvas_set_px_color(battery_shell, 0, i, lv_color_black());
+    }
+}
+
 static void init_battery_shell(void) {
     if (battery_shell_initialized) {
         return;  // Уже инициализирован
@@ -99,22 +116,6 @@ static void init_battery_shell(void) {
     battery_shell_initialized = true;
 }
 
-static void draw_battery_shell_to_buffer(void) {
-    // Очищаем буфер
-    lv_canvas_fill_bg(battery_shell, lv_color_white(), LV_OPA_COVER);
-    
-    lv_draw_rect_dsc_t rect_fill_dsc;
-    lv_draw_rect_dsc_init(&rect_fill_dsc);
-    rect_fill_dsc.bg_color = lv_color_black();
-    
-    // Рисуем рамку
-    lv_canvas_draw_rect(battery_shell, 1, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_fill_dsc);
-    
-    // Рисуем вертикальные линии слева
-    for (int i = 1; i < (NRG_METER_H + 2); i++) {
-        lv_canvas_set_px_color(battery_shell, 0, i, lv_color_black());
-    }
-}
 
 // static void draw_battery(lv_obj_t *canvas, struct battery_state state) {
 //     int32_t energy_width = lv_obj_get_width(canvas);
