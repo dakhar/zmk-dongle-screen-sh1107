@@ -158,20 +158,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     }
     
     // Копируем готовое изображение батареи из буфера
-    lv_img_decoder_info_t info;
-    lv_res_t res = lv_img_decode(NULL, lv_obj_get_style_img_src(battery_shell, 0), &info);
-    if (res == LV_RES_OK) {
-        lv_area_t area;
-        area.x1 = 0;  // Центрируем
-        area.y1 = 0;
-        area.x2 = NRG_METER_W + 3;
-        area.y2 = NRG_METER_H + 2;
-        
-        lv_obj_invalidate(battery.symbol);
-        lv_disp_t *disp = lv_refr_get_disp_refreshing();
-        lv_draw_img(&disp->draw_ctx, &area, &area, 
-                    lv_obj_get_style_img_src(battery_shell, 0), NULL, NULL);
-    }
+    lv_obj_set_img_src(battery.symbol, battery_shell);
 }
 
 static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
