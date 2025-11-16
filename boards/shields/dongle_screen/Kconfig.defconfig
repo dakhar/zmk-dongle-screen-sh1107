@@ -59,6 +59,11 @@ endchoice
 config LV_FONT_MONTSERRAT_40
     default y
 
+config DONGLE_SCREEN_COLOR_DEPTH
+    int "Screen color depth (2-256)"
+    default 2
+    help
+      Color depth of display. 2 = monochrome.
 
 config DONGLE_SCREEN_IDLE_TIMEOUT_S
     int "Screen idle timeout in seconds (0 = never off)"
