@@ -223,8 +223,11 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     lv_obj_set_size(widget->obj, parent_width, 40);
     int bat_width = parent_width / BAT_COUNT;
     for (int i = 0; i < BAT_COUNT; i++) {
-        lv_obj_t *image_canvas = lv_canvas_create(widget->obj);
-        lv_obj_t *battery_label = lv_label_create(widget->obj);
+        lv_obj_t bat_info = lv_obj_create(widget->obj);
+        lv_obj_set_flex_flow(bat_info, LV_FLEX_FLOW_COLUMN);
+        lv_obj_set_flex_align(bat_info, LV_FLEX_ALIGN_END, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_END);
+        lv_obj_t *battery_label = lv_label_create(bat_info);
+        lv_obj_t *image_canvas = lv_canvas_create(bat_info);
 
         lv_canvas_set_buffer(image_canvas, battery_image_buffer[i], bat_width, BAT_HEIGHT, LV_IMG_CF_TRUE_COLOR);
 
