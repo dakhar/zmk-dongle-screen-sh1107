@@ -128,7 +128,7 @@ static void draw_battery(struct battery_state state, struct battery_object *batt
     
     lv_draw_rect_dsc_t rect_dsc;
     lv_draw_rect_dsc_init(&rect_dsc);
-    rect_dsc.bg_color = bg_color;
+    rect_dsc.bg_color = fg_color;
     rect_dsc.border_color = fg_color;
     // rect_dsc.border_width = BORDER_SZ;
     // rect_dsc.radius = 2;
