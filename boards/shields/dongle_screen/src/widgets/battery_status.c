@@ -36,24 +36,7 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define X_OFFSET    2
 #define BAT_WIDTH   X_OFFSET + BORDER_SZ + NRG_METER_W + BORDER_SZ
 #define BAT_HEIGHT BORDER_SZ + NRG_METER_H + BORDER_SZ
-
-#define COLOR_BG        ((lv_color_t){ .full = 0 })
-#define COLOR_FG        ((lv_color_t){ .full = 1 })
-#define COLOR_GREEN     ((lv_color_t){ .full = 2 })
-#define COLOR_RED       ((lv_color_t){ .full = 3 })
-#define COLOR_YELLOW    ((lv_color_t){ .full = 4 })
-
-#if CONFIG_LV_COLOR_DEPTH == 8
-#define BITS_PER_PIXEL 8
-#elif CONFIG_LV_COLOR_DEPTH == 16
-#define BITS_PER_PIXEL 16
-#elif CONFIG_LV_COLOR_DEPTH == 32
-#define BITS_PER_PIXEL 32
-#else CONFIG_LV_COLOR_DEPTH == 1
-#define BITS_PER_PIXEL 8
-#endif
-
-
+#define BITS_PER_PIXEL 4
 
 struct battery_state {
     uint8_t source;
@@ -62,10 +45,12 @@ struct battery_state {
 };
 
 struct battery_object {
-    uint8_t buffer[(BAT_WIDTH * BAT_HEIGHT * BITS_PER_PIXEL)/8 + 1];
+    uint8_t buffer[(NRG_METER_W + 3) * (NRG_METER_H + 2) * 4];
     lv_obj_t *symbol;
     lv_obj_t *label;
 } battery_objects[BAT_COUNT];
+    
+
 
 // Peripheral reconnection tracking
 // ZMK sends battery events with level < 1 when peripherals disconnect
@@ -99,25 +84,37 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
 }
 
 static void draw_battery(struct battery_state state, struct battery_object battery) { 
-    if (state.level < 1 || state.level > 100) return;
+    // Инициализируем буфер при первом вызове
+    // init_battery_shell();
     
-    lv_color_t bg_color = LVGL_BACKGROUND;
-    lv_color_t fg_color = LVGL_FOREGROUND;
-    lv_color_t meter_color;
-    if (state.level > 30) {
-        meter_color = lv_palette_main(LV_PALETTE_GREEN);
-    } else if (state.level > 10) {
-        meter_color = lv_palette_main(LV_PALETTE_YELLOW);
-    } else {
-        meter_color = lv_palette_main(LV_PALETTE_RED);
-    }
-    lv_draw_rect_dsc_t rect_dsc;
-    lv_draw_rect_dsc_init(&rect_dsc);
-    rect_dsc.bg_color = meter_color;
-    rect_dsc.border_color = fg_color;
-    rect_dsc.bg_opa = LV_OPA_COVER;
+    // Задаём цвет фона в зависимости от уровня заряда
+    // if (state.level < 1) {
+    //     lv_canvas_fill_bg(battery.symbol, lv_palette_main(LV_PALETTE_RED), LV_OPA_COVER);
+    // } else if (state.level <= 10) {
+    //     lv_canvas_fill_bg(battery.symbol, lv_palette_main(LV_PALETTE_YELLOW), LV_OPA_COVER);
+    // } else {
+    //     lv_canvas_fill_bg(battery.symbol, LVGL_BACKGROUND, LV_OPA_COVER);
+    // }
     
-    lv_canvas_draw_rect(battery.symbol, 0, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_dsc);
+    // Копируем готовое изображение батареи из буфера
+    // lv_canvas_copy_buf(battery.symbol, battery_shell, 0, 0,(NRG_METER_W + 3), (NRG_METER_H + 2));
+    // Рисуем вертикальные линии слева
+    // for (int i = 1; i < (NRG_METER_H + 2); i++) {
+    //     lv_canvas_set_px_color(battery.symbol, 0, i, LVGL_FOREGROUND);
+    // }
+    // for (int i = 2; i < (NRG_METER_W + 3); i++) {
+    //     for (int y = 0; y < (NRG_METER_H + 2); y++) {
+    //         lv_canvas_set_px_color(battery.symbol, i, y, LVGL_FOREGROUND);
+    //     }
+    // 
+    lv_canvas_fill_bg(battery.symbol, LVGL_BACKGROUND, LV_OPA_COVER);
+    
+    lv_draw_rect_dsc_t rect_fill_dsc;
+    lv_draw_rect_dsc_init(&rect_fill_dsc);
+    rect_fill_dsc.bg_color = LVGL_FOREGROUND;
+    rect_fill_dsc.border_color = LVGL_FOREGROUND;
+    
+    lv_canvas_draw_rect(battery.symbol, 0, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_fill_dsc);
 }
 
 static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
