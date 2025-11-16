@@ -36,7 +36,17 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define X_OFFSET    2
 #define BAT_WIDTH   X_OFFSET + BORDER_SZ + NRG_METER_W + BORDER_SZ
 #define BAT_HEIGHT BORDER_SZ + NRG_METER_H + BORDER_SZ
-#define BITS_PER_PIXEL 4
+
+#if CONFIG_LV_COLOR_DEPTH == 8
+#define BITS_PER_PIXEL 8
+#elif CONFIG_LV_COLOR_DEPTH == 16
+#define BITS_PER_PIXEL 16
+#elif CONFIG_LV_COLOR_DEPTH == 32
+#define BITS_PER_PIXEL 32
+#else CONFIG_LV_COLOR_DEPTH == 1
+#define BITS_PER_PIXEL 8
+#endif
+
 
 struct battery_state {
     uint8_t source;
@@ -45,7 +55,7 @@ struct battery_state {
 };
 
 struct battery_object {
-    uint8_t buffer[(NRG_METER_W + 3) * (NRG_METER_H + 2) * 4];
+    uint8_t buffer[(BAT_WIDTH * BAT_HEIGHT * BITS_PER_PIXEL)];
     lv_obj_t *symbol;
     lv_obj_t *label;
 } battery_objects[BAT_COUNT];
@@ -253,7 +263,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
         battery->symbol = lv_canvas_create(widget->obj);
         lv_obj_set_grid_cell(battery->symbol, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_CENTER, 1, 1);
-        lv_canvas_set_buffer(battery->symbol, battery->buffer, (NRG_METER_W + 3), (NRG_METER_H + 2), LV_IMG_CF_TRUE_COLOR);
+        lv_canvas_set_buffer(battery->symbol, battery->buffer, BAT_WIDTH, BAT_HEIGHT, LV_IMG_CF_TRUE_COLOR);
         lv_obj_add_flag(battery->symbol, LV_OBJ_FLAG_HIDDEN);
 
     }
