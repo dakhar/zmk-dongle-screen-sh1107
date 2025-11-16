@@ -130,40 +130,40 @@ static void draw_battery(struct battery_state state, struct battery_object *batt
     lv_draw_rect_dsc_init(&rect_dsc);
     rect_dsc.bg_color = bg_color;
     rect_dsc.border_color = fg_color;
-    rect_dsc.border_width = BORDER_SZ;
-    rect_dsc.radius = 2;
+    // rect_dsc.border_width = BORDER_SZ;
+    // rect_dsc.radius = 2;
     
-    if (!battery->initialized) {
-        // Draw battery contact
-        int contact_y;
-        int contact_h = BAT_HEIGHT - 4;
-        if (contact_h % 2 == 0) {
-            if (contact_h >= 2) {
-                contact_y = contact_h / 2;
-            } else {
-                contact_y = 1;
-                contact_h = 2;
-            }
-        } else {
-            if (contact_h > 1) {
-                contact_y = contact_h / 2;
-            } else if (contact_h == 1) {
-                contact_y = 1;
-                contact_h = 3;
-            } else {
-                contact_y = 0;
-                contact_h = BAT_HEIGHT;
-            }
-        }
-        lv_canvas_draw_rect(battery->symbol, 0, contact_y, X_OFFSET, contact_h, &rect_dsc);
-        lv_canvas_draw_rect(battery->symbol, X_OFFSET, 0, BAT_WIDTH, BAT_HEIGHT, &rect_dsc);
-        battery->initialized = true;
-    }
+    // if (!battery->initialized) {
+    //     // Draw battery contact
+    //     int contact_y;
+    //     int contact_h = BAT_HEIGHT - 4;
+    //     if (contact_h % 2 == 0) {
+    //         if (contact_h >= 2) {
+    //             contact_y = contact_h / 2;
+    //         } else {
+    //             contact_y = 1;
+    //             contact_h = 2;
+    //         }
+    //     } else {
+    //         if (contact_h > 1) {
+    //             contact_y = contact_h / 2;
+    //         } else if (contact_h == 1) {
+    //             contact_y = 1;
+    //             contact_h = 3;
+    //         } else {
+    //             contact_y = 0;
+    //             contact_h = BAT_HEIGHT;
+    //         }
+    //     }
+    //     lv_canvas_draw_rect(battery->symbol, 0, contact_y, X_OFFSET, contact_h, &rect_dsc);
+    //     lv_canvas_draw_rect(battery->symbol, X_OFFSET, 0, BAT_WIDTH, BAT_HEIGHT, &rect_dsc);
+    //     battery->initialized = true;
+    // }
     
     // Fill energy meter
-    if (filled_width > 0) {
-        rect_dsc.bg_color = meter_color;
-        rect_dsc.border_color = meter_color;
+    if (filled_width > 1) {
+        rect_dsc.bg_color = fg_color;
+        rect_dsc.border_color = fg_color;
         lv_canvas_draw_rect(battery->symbol, X_OFFSET + BORDER_SZ, BORDER_SZ, filled_width, NRG_METER_H, &rect_dsc);
     }
     
@@ -193,14 +193,13 @@ static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
     if (state.source >= BAT_COUNT) {
         return;
     }
-    
     // Check for reconnection using the existing battery level mechanism
     bool reconnecting = is_peripheral_reconnecting(state.source, state.level);
-    
-    // Update our tracking
-    last_battery_levels[state.source] = state.level;
-
-
+    if (last_battery_levels[state.source] != state.level) {
+        last_battery_levels[state.source] = state.level;
+    } else {
+        return
+    }
     // Wake screen on reconnection
     if (reconnecting) {
 #if CONFIG_DONGLE_SCREEN_IDLE_TIMEOUT_S > 0    
@@ -211,12 +210,10 @@ static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
                 state.source, state.level);
 #endif
     }
-
-
     LOG_DBG("source: %d, level: %d, usb: %d", state.source, state.level, state.usb_present);
     lv_obj_t *symbol = battery_objects[state.source].symbol;
     lv_obj_t *label = battery_objects[state.source].label;
-
+    
     draw_battery(state, &battery_objects[state.source]);
     draw_label(state, &battery_objects[state.source]);
     
@@ -266,7 +263,6 @@ ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_peripheral_battery_state_chan
 
 #if IS_ENABLED(CONFIG_ZMK_DONGLE_DISPLAY_DONGLE_BATTERY)
 #if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
-
 ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_battery_state_changed);
 #if IS_ENABLED(CONFIG_USB_DEVICE_STACK)
 ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_usb_conn_state_changed);
@@ -278,7 +274,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     init_palette();
     lv_coord_t parent_width = lv_obj_get_width(parent);
     
-    static lv_coord_t row_dsc[] = {15, BAT_HEIGHT, LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t row_dsc[] = {20, BAT_HEIGHT, LV_GRID_TEMPLATE_LAST};
     
     lv_coord_t *col_dsc = lv_mem_alloc((BAT_COUNT + 1) * sizeof(lv_coord_t));
     if (!col_dsc) {
@@ -293,7 +289,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     widget->obj = lv_obj_create(parent);
     lv_obj_set_style_grid_column_dsc_array(widget->obj, col_dsc, 0);
     lv_obj_set_style_grid_row_dsc_array(widget->obj, row_dsc, 0);
-    lv_obj_set_size(widget->obj, parent_width, 15 + BAT_HEIGHT);
+    lv_obj_set_size(widget->obj, parent_width, 20 + BAT_HEIGHT);
     lv_obj_center(widget->obj);
     lv_obj_set_layout(widget->obj, LV_LAYOUT_GRID);
 
