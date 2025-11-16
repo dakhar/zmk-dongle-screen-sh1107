@@ -29,11 +29,14 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define BAT_COUNT (ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET)
+#define LABEL_HEIGHT 20
 #define NRG_METER_W 25
 #define NRG_METER_H 4
-
-static lv_obj_t *battery_shell = NULL;  // Буфер для хранения изображения
-static bool battery_shell_initialized = false;  // Флаг инициализации
+#define BORDER_SZ   1
+#define X_OFFSET    2
+#define BAT_WIDTH   X_OFFSET + BORDER_SZ + NRG_METER_W + BORDER_SZ
+#define BAT_HEIGHT BORDER_SZ + NRG_METER_H + BORDER_SZ
+#define BITS_PER_PIXEL 4
 
 struct battery_state {
     uint8_t source;
@@ -80,42 +83,6 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
     return reconnecting;
 }
 
-static void draw_battery_shell_to_buffer(void) {
-    // Очищаем буфер
-    lv_canvas_fill_bg(battery_shell, LVGL_BACKGROUND, LV_OPA_COVER);
-    
-    lv_draw_rect_dsc_t rect_fill_dsc;
-    lv_draw_rect_dsc_init(&rect_fill_dsc);
-    rect_fill_dsc.bg_color = LVGL_BACKGROUND;
-    
-    // Рисуем рамку
-    lv_canvas_draw_rect(battery_shell, 1, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_fill_dsc);
-    
-    // Рисуем вертикальные линии слева
-    for (int i = 1; i < (NRG_METER_H + 2); i++) {
-        lv_canvas_set_px_color(battery_shell, 0, i, LVGL_FOREGROUND);
-    }
-}
-
-static void init_battery_shell(void) {
-    if (battery_shell_initialized) {
-        return;  // Уже инициализирован
-    }
-
-    // Создаём off-screen canvas нужного размера
-    battery_shell = lv_canvas_create(lv_scr_act());
-    lv_obj_set_size(battery_shell, NRG_METER_W + 3, NRG_METER_H + 2);
-    
-    // Выделяем память для буфера изображения
-    lv_color_t *buf = lv_mem_alloc((NRG_METER_W + 3) * (NRG_METER_H + 2) * 4);
-    lv_canvas_set_buffer(battery_shell, buf, NRG_METER_W + 3, NRG_METER_H + 2, LV_IMG_CF_TRUE_COLOR);
-
-    // Отрисовываем батарею в буфер (один раз)
-    draw_battery_shell_to_buffer();
-    
-    battery_shell_initialized = true;
-}
-
 static void draw_battery(struct battery_state state, struct battery_object battery) { 
     // Инициализируем буфер при первом вызове
     // init_battery_shell();
@@ -144,10 +111,9 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     
     lv_draw_rect_dsc_t rect_fill_dsc;
     lv_draw_rect_dsc_init(&rect_fill_dsc);
-    rect_fill_dsc.bg_color = LVGL_BACKGROUND;
+    rect_fill_dsc.bg_color = LVGL_FOREGROUND;
     rect_fill_dsc.border_color = LVGL_FOREGROUND;
     
-    // Рисуем рамку
     lv_canvas_draw_rect(battery.symbol, 0, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_fill_dsc);
 }
 
