@@ -29,7 +29,6 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define BAT_COUNT (ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET)
-#define BAT_HEIGHT 5
 #define NRG_METER_W 25
 #define NRG_METER_H 4
 
@@ -136,11 +135,11 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     lv_draw_rect_dsc_t rect_black_dsc;
     init_rect_dsc(&rect_black_dsc, LVGL_FOREGROUND);
     for (int i = 1; i < (NRG_METER_H + 2); i++) {
-        lv_canvas_set_px_color(battery.symbol, 0, i, &rect_black_dsc);
+        lv_canvas_set_px_color(battery.symbol, 0, i, LVGL_FOREGROUND);
     }
     for (int i = 2; i < (NRG_METER_W + 3); i++) {
         for (int y = 0; y < (NRG_METER_H + 2); y++) {
-            lv_canvas_set_px_color(battery.symbol, i, y, &rect_black_dsc);
+            lv_canvas_set_px_color(battery.symbol, i, y, LVGL_FOREGROUND);
         }
     }
 }
