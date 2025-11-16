@@ -129,10 +129,10 @@ static void draw_battery(struct battery_state state, struct battery_object batte
         
     if (!battery.initialized) {
         // Рисуем рамку
-        lv_canvas_draw_rect(battery->symbol, 1, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_fill_dsc);
+        lv_canvas_draw_rect(battery.symbol, 1, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_fill_dsc);
         // Рисуем вертикальные линии слева
         for (int i = 1; i < (NRG_METER_H + 2); i++) {
-            lv_canvas_set_px_color(battery->symbol, 0, i, fg_color);
+            lv_canvas_set_px_color(battery.symbol, 0, i, fg_color);
         }
         battery.initialized = true;
     }
@@ -141,7 +141,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     area.y1 = y_offset;
     area.x2 = x_offset + width - 1;
     area.y2 = y_offset + height - 1;
-    lv_canvas_fill_rect(battery->symbol, &area, &rect_dsc);
+    lv_canvas_fill_rect(battery.symbol, &area, &rect_dsc);
 
     // Инициализируем буфер при первом вызове
     if (filled_width > 0) {
@@ -156,32 +156,32 @@ static void draw_battery(struct battery_state state, struct battery_object batte
         fill_dsc.bg_color = meter_color;
         fill_dsc.radius = 2;
 
-        lv_canvas_fill_rect(battery->symbol, &fill_area, &fill_dsc);
+        lv_canvas_fill_rect(battery.symbol, &fill_area, &fill_dsc);
     }
     
     // 7. Обновляем только изменённую область
-    lv_obj_invalidate(battery->symbol);
+    lv_obj_invalidate(battery.symbol);
 }
 
 static void draw_label(struct battery_state state, struct battery_object battery) {
     if (state.level > 0) {
         lv_obj_set_style_text_color(battery->label, LVGL_FOREGROUND, 0);
-        lv_label_set_text_fmt(battery->label, "%4u", state.level);
+        lv_label_set_text_fmt(battery.label, "%4u", state.level);
     } else {
-        lv_obj_set_style_text_color(battery->label, lv_palette_main(LV_PALETTE_RED), 0);
-        lv_label_set_text(battery->label, "X");
+        lv_obj_set_style_text_color(battery.label, lv_palette_main(LV_PALETTE_RED), 0);
+        lv_label_set_text(battery.label, "X");
     }
 
     if (state.level < 1)
     {
-        lv_obj_set_style_text_color(battery->label, lv_palette_main(LV_PALETTE_RED), 0);
-        lv_label_set_text(battery->label, "X");
+        lv_obj_set_style_text_color(battery.label, lv_palette_main(LV_PALETTE_RED), 0);
+        lv_label_set_text(battery.label, "X");
     } else if (state.level <= 10) {
-        lv_obj_set_style_text_color(battery->label, lv_palette_main(LV_PALETTE_YELLOW), 0);
-        lv_label_set_text_fmt(battery->label, "%4u", state.level);
+        lv_obj_set_style_text_color(battery.label, lv_palette_main(LV_PALETTE_YELLOW), 0);
+        lv_label_set_text_fmt(battery.label, "%4u", state.level);
     } else {
-        lv_obj_set_style_text_color(battery->label, LVGL_FOREGROUND, 0);
-        lv_label_set_text_fmt(battery->label, "%4u", state.level);
+        lv_obj_set_style_text_color(battery.label, LVGL_FOREGROUND, 0);
+        lv_label_set_text_fmt(battery.label, "%4u", state.level);
     }
 }
 
