@@ -132,8 +132,6 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     // Копируем готовое изображение батареи из буфера
     // lv_canvas_copy_buf(battery.symbol, battery_shell, 0, 0,(NRG_METER_W + 3), (NRG_METER_H + 2));
     // Рисуем вертикальные линии слева
-    lv_draw_rect_dsc_t rect_black_dsc;
-    init_rect_dsc(&rect_black_dsc, LVGL_FOREGROUND);
     for (int i = 1; i < (NRG_METER_H + 2); i++) {
         lv_canvas_set_px_color(battery.symbol, 0, i, LVGL_FOREGROUND);
     }

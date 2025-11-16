@@ -7,10 +7,6 @@
 #include "custom_status_screen.h"
 #include <util.h>
 
-#define DISPLAY_NODE DT_CHOSEN(zephyr_display)
-#define DISPLAY_WIDTH  DT_PROP(DISPLAY_NODE, width)
-#define DISPLAY_HEIGHT DT_PROP(DISPLAY_NODE, height)
-
 #if CONFIG_DONGLE_SCREEN_OUTPUT_ACTIVE
 #include "widgets/output_status.h"
 static struct zmk_widget_output_status output_status_widget;
