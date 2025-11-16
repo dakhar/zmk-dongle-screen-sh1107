@@ -43,46 +43,14 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define COLOR_RED       ((lv_color_t){ .full = 3 })
 #define COLOR_YELLOW    ((lv_color_t){ .full = 4 })
 
-#if CONFIG_LV_COLOR_DEPTH > 5
-#define PALETTE_SIZE 5
-#define BITS_PER_PIXEL 4
-#define COLOR_FORMAT LV_IMG_CF_INDEXED_4BIT
-static lv_color_t palette[PALETTE_SIZE];
-static void init_palette(void) {
-    // Вычисляем цвета с учётом инверсии
-    lv_color_t bg = IS_ENABLED(CONFIG_ZMK_DISPLAY_INVERT) 
-                    ? lv_color_black()
-                    : lv_color_white();
-    lv_color_t fg = IS_ENABLED(CONFIG_ZMK_DISPLAY_INVERT)
-                    ? lv_color_white()
-                    : lv_color_black();
-    // Заполняем палитру
-    palette[0] = bg;
-    palette[1] = fg;
-    palette[2] = lv_palette_main(LV_PALETTE_GREEN);
-    palette[3] = lv_palette_main(LV_PALETTE_YELLOW);
-    palette[4] = lv_palette_main(LV_PALETTE_RED);
-}
-#else
-#define PALETTE_SIZE 2
-#define BITS_PER_PIXEL 8*4
-#define COLOR_FORMAT LV_IMG_CF_TRUE_COLOR
-static lv_color_t palette[PALETTE_SIZE];
-static void init_palette(void) {
-    // Вычисляем цвета с учётом инверсии
-    lv_color_t bg = IS_ENABLED(CONFIG_ZMK_DISPLAY_INVERT) 
-                    ? lv_color_black()
-                    : lv_color_white();
-    lv_color_t fg = IS_ENABLED(CONFIG_ZMK_DISPLAY_INVERT)
-                    ? lv_color_white()
-                    : lv_color_black();
-    // Заполняем палитру
-    palette[0] = bg;
-    palette[1] = fg;
-    palette[2] = fg;
-    palette[3] = fg;
-    palette[4] = fg;
-}
+#if CONFIG_LV_COLOR_DEPTH == 8
+#define BITS_PER_PIXEL 8
+#elif CONFIG_LV_COLOR_DEPTH == 16
+#define BITS_PER_PIXEL 16
+#elif CONFIG_LV_COLOR_DEPTH == 32
+#define BITS_PER_PIXEL 32
+#else CONFIG_LV_COLOR_DEPTH == 1
+#define BITS_PER_PIXEL 8
 #endif
 
 
@@ -133,23 +101,16 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
 static void draw_battery(struct battery_state state, struct battery_object battery) { 
     if (state.level < 1 || state.level > 100) return;
     
-    // lv_color_t bg_color = COLOR_BG;
-    // lv_color_t fg_color = COLOR_FG;
-    // lv_color_t meter_color;
-
-    // if (state.level > 30) {
-    //     meter_color = COLOR_GREEN;
-    // } else if (state.level > 10) {
-    //     meter_color = COLOR_YELLOW;
-    // } else {
-    //     meter_color = COLOR_RED;
-    // }
-    lv_color_t bg_color;
-    bg_color.full = 0;
-    lv_color_t fg_color;
-    fg_color.full = 1;
+    lv_color_t bg_color = LVGL_BACKGROUND;
+    lv_color_t fg_color = LVGL_FOREGROUND;
     lv_color_t meter_color;
-    meter_color.full = 1;
+    if (state.level > 30) {
+        meter_color = lv_palette_main(LV_PALETTE_GREEN);
+    } else if (state.level > 10) {
+        meter_color = lv_palette_main(LV_PALETTE_YELLOW);
+    } else {
+        meter_color = lv_palette_main(LV_PALETTE_RED);
+    }
     lv_draw_rect_dsc_t rect_dsc;
     lv_draw_rect_dsc_init(&rect_dsc);
     rect_dsc.bg_color = meter_color;
@@ -295,7 +256,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
         battery->symbol = lv_canvas_create(widget->obj);
         lv_obj_set_grid_cell(battery->symbol, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_CENTER, 1, 1);
-        lv_canvas_set_buffer(battery->symbol, battery->buffer, (NRG_METER_W + 3), (NRG_METER_H + 2), COLOR_FORMAT);
+        lv_canvas_set_buffer(battery->symbol, battery->buffer, (NRG_METER_W + 3), (NRG_METER_H + 2), LV_IMG_CF_TRUE_COLOR);
         lv_obj_add_flag(battery->symbol, LV_OBJ_FLAG_HIDDEN);
 
     }
