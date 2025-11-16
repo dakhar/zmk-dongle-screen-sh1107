@@ -133,18 +133,23 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
 static void draw_battery(struct battery_state state, struct battery_object battery) { 
     if (state.level < 1 || state.level > 100) return;
     
-    lv_color_t bg_color = COLOR_BG;
-    lv_color_t fg_color = COLOR_FG;
-    lv_color_t meter_color;
+    // lv_color_t bg_color = COLOR_BG;
+    // lv_color_t fg_color = COLOR_FG;
+    // lv_color_t meter_color;
 
-    if (state.level > 30) {
-        meter_color = COLOR_GREEN;
-    } else if (state.level > 10) {
-        meter_color = COLOR_YELLOW;
-    } else {
-        meter_color = COLOR_RED;
-    }
-    
+    // if (state.level > 30) {
+    //     meter_color = COLOR_GREEN;
+    // } else if (state.level > 10) {
+    //     meter_color = COLOR_YELLOW;
+    // } else {
+    //     meter_color = COLOR_RED;
+    // }
+    lv_color_t bg_color;
+    bg_color.full = 0;
+    lv_color_t fg_color;
+    fg_color.full = 1;
+    lv_color_t meter_color;
+    meter_color.full = 1;
     lv_draw_rect_dsc_t rect_dsc;
     lv_draw_rect_dsc_init(&rect_dsc);
     rect_dsc.bg_color = meter_color;
