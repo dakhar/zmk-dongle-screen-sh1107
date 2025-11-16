@@ -49,9 +49,9 @@ static void init_palette(void) {
     // Заполняем палитру
     palette[0] = bg;
     palette[1] = fg;
-    palette[2] = lv_color_green();
-    palette[3] = lv_color_yellow();
-    palette[4] = lv_color_red();
+    palette[2] = lv_palette_main(LV_PALETTE_GREEN);
+    palette[3] = lv_palette_main(LV_PALETTE_YELLOW);
+    palette[4] = lv_palette_main(LV_PALETTE_RED);
 }
 struct battery_state {
     uint8_t source;
