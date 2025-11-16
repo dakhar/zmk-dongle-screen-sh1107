@@ -273,7 +273,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     lv_coord_t *col_dsc = lv_mem_alloc((BAT_COUNT + 1) * sizeof(lv_coord_t));
     if (!col_dsc) {
         LV_LOG_ERROR("Memory allocation failed!");
-        return;
+        return -1;
     }
     for (uint8_t i = 0; i < BAT_COUNT; i++) {
         col_dsc[i] = parent_width / BAT_COUNT; 
@@ -281,8 +281,8 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     col_dsc[BAT_COUNT] = LV_GRID_TEMPLATE_LAST;  // Терминатор
     
     widget->obj = lv_obj_create(parent);
-    lv_obj_set_style_grid_column_dsc_array(cont, col_dsc, 0);
-    lv_obj_set_style_grid_row_dsc_array(cont, row_dsc, 0);
+    lv_obj_set_style_grid_column_dsc_array(widget->obj, col_dsc, 0);
+    lv_obj_set_style_grid_row_dsc_array(widget->obj, row_dsc, 0);
     lv_obj_set_size(widget->obj, parent_width, 25 + (NRG_METER_H + 4));
     lv_obj_center(widget->obj);
     lv_obj_set_layout(widget->obj, LV_LAYOUT_GRID);
