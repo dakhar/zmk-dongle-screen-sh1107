@@ -37,8 +37,7 @@ static bool battery_shell_initialized = false;  // Флаг инициализа
 
 
 #define PALETTE_SIZE 5
-const lv_color_t palette[PALETTE_SIZE];
-
+static lv_color_t palette[PALETTE_SIZE];
 static void init_palette(void) {
     // Вычисляем цвета с учётом инверсии
     lv_color_t bg = IS_ENABLED(CONFIG_ZMK_DISPLAY_INVERT) 
