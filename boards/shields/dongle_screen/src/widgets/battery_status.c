@@ -19,6 +19,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/usb.h>
 
 #include "battery_status.h"
+#include "util.h"
 
 #if IS_ENABLED(CONFIG_ZMK_DONGLE_DISPLAY_DONGLE_BATTERY)
     #define SOURCE_OFFSET 1
@@ -132,12 +133,14 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     // Копируем готовое изображение батареи из буфера
     // lv_canvas_copy_buf(battery.symbol, battery_shell, 0, 0,(NRG_METER_W + 3), (NRG_METER_H + 2));
     // Рисуем вертикальные линии слева
+    lv_draw_rect_dsc_t rect_black_dsc;
+    init_rect_dsc(&rect_black_dsc, LVGL_FOREGROUND);
     for (int i = 1; i < (NRG_METER_H + 2); i++) {
-        lv_canvas_set_px_color(battery.symbol, 0, i, LVGL_FOREGROUND);
+        lv_canvas_set_px_color(battery.symbol, 0, i, &rect_black_dsc);
     }
     for (int i = 2; i < (NRG_METER_W + 3); i++) {
         for (int y = 0; y < (NRG_METER_H + 2); y++) {
-            lv_canvas_set_px_color(battery.symbol, i, y, LVGL_FOREGROUND);
+            lv_canvas_set_px_color(battery.symbol, i, y, &rect_black_dsc);
         }
     }
 }
