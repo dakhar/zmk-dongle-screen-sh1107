@@ -161,12 +161,12 @@ static void draw_battery(struct battery_state state, struct battery_object *batt
     // }
     
     // Fill energy meter
-    if (filled_width > 1) {
-        rect_dsc.bg_color = fg_color;
-        rect_dsc.border_color = fg_color;
-        lv_canvas_draw_rect(battery->symbol, X_OFFSET + BORDER_SZ, BORDER_SZ, filled_width, NRG_METER_H, &rect_dsc);
-    }
-    
+    // if (filled_width > 1) {
+    //     rect_dsc.bg_color = fg_color;
+    //     rect_dsc.border_color = fg_color;
+    //     lv_canvas_draw_rect(battery->symbol, X_OFFSET + BORDER_SZ, BORDER_SZ, filled_width, NRG_METER_H, &rect_dsc);
+    // }
+    lv_canvas_draw_rect(battery->symbol, 0, 0, BAT_WIDTH, BAT_HEIGHT, &rect_dsc);
     // 7. Обновляем только изменённую область
     lv_obj_invalidate(battery->symbol);
 }
