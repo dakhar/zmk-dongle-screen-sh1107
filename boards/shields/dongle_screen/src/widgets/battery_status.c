@@ -96,7 +96,7 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
 }
 
 static void draw_battery(struct battery_state state, struct battery_object battery) {
-    if (!battery || !battery->symbol) return;
+    // if (!battery || !battery->symbol) return;
     if (state.level < 0 || state.level > 100) return;
     
     const int width = NRG_METER_W;
@@ -161,7 +161,28 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     
     // 7. Обновляем только изменённую область
     lv_obj_invalidate(battery->symbol);
-    
+}
+
+static void draw_label(struct battery_state state, struct battery_object battery) {
+    if (state.level > 0) {
+        lv_obj_set_style_text_color(battery->label, LVGL_FOREGROUND, 0);
+        lv_label_set_text_fmt(battery->label, "%4u", state.level);
+    } else {
+        lv_obj_set_style_text_color(battery->label, lv_palette_main(LV_PALETTE_RED), 0);
+        lv_label_set_text(battery->label, "X");
+    }
+
+    if (state.level < 1)
+    {
+        lv_obj_set_style_text_color(battery->label, lv_palette_main(LV_PALETTE_RED), 0);
+        lv_label_set_text(battery->label, "X");
+    } else if (state.level <= 10) {
+        lv_obj_set_style_text_color(battery->label, lv_palette_main(LV_PALETTE_YELLOW), 0);
+        lv_label_set_text_fmt(battery->label, "%4u", state.level);
+    } else {
+        lv_obj_set_style_text_color(battery->label, LVGL_FOREGROUND, 0);
+        lv_label_set_text_fmt(battery->label, "%4u", state.level);
+    }
 }
 
 static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
@@ -193,26 +214,7 @@ static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
     lv_obj_t *label = battery_objects[state.source].label;
 
     draw_battery(state, battery_objects[state.source]);
-    
-    if (state.level > 0) {
-        lv_obj_set_style_text_color(label, LVGL_FOREGROUND, 0);
-        lv_label_set_text_fmt(label, "%4u", state.level);
-    } else {
-        lv_obj_set_style_text_color(label, lv_palette_main(LV_PALETTE_RED), 0);
-        lv_label_set_text(label, "X");
-    }
-
-    if (state.level < 1)
-    {
-        lv_obj_set_style_text_color(label, lv_palette_main(LV_PALETTE_RED), 0);
-        lv_label_set_text(label, "X");
-    } else if (state.level <= 10) {
-        lv_obj_set_style_text_color(label, lv_palette_main(LV_PALETTE_YELLOW), 0);
-        lv_label_set_text_fmt(label, "%4u", state.level);
-    } else {
-        lv_obj_set_style_text_color(label, LVGL_FOREGROUND, 0);
-        lv_label_set_text_fmt(label, "%4u", state.level);
-    }
+    draw_label(state, battery_objects[state.source]);
     
     lv_obj_clear_flag(symbol, LV_OBJ_FLAG_HIDDEN);
     lv_obj_move_foreground(symbol);
