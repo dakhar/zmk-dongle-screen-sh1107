@@ -29,6 +29,12 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define BAT_COUNT (ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET)
 #define BAT_HEIGHT 5
+#define NRG_METER_W 25
+#define NRG_METER_H 4
+
+static lv_obj_t *battery_shell = NULL;  // Буфер для хранения изображения
+static bool battery_shell_initialized = false;  // Флаг инициализации
+
 struct battery_state {
     uint8_t source;
     uint8_t level;
@@ -36,12 +42,12 @@ struct battery_state {
 };
 
 struct battery_object {
-    lv_obj_t *container;
+    static uint8_t buffer[(NRG_METER_W + 3) * (NRG_METER_H + 2) * 4];
     lv_obj_t *symbol;
     lv_obj_t *label;
 } battery_objects[BAT_COUNT];
     
-static uint8_t battery_image_buffer[BAT_COUNT][128 * BAT_HEIGHT * 4];
+
 
 // Peripheral reconnection tracking
 // ZMK sends battery events with level < 1 when peripherals disconnect
@@ -74,37 +80,97 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
     return reconnecting;
 }
 
-static void draw_battery(lv_obj_t *canvas, uint8_t level, bool usb_present) {
-    int32_t width = lv_obj_get_width(canvas);
-    if (level < 1)
-    {
-        lv_canvas_fill_bg(canvas, lv_palette_main(LV_PALETTE_RED), LV_OPA_COVER);
-    } else if (level <= 10) {
-        lv_canvas_fill_bg(canvas, lv_palette_main(LV_PALETTE_YELLOW), LV_OPA_COVER);
-    } else {
-        lv_canvas_fill_bg(canvas, lv_color_white(), LV_OPA_COVER);
+static void init_battery_shell(void) {
+    if (battery_shell_initialized) {
+        return;  // Уже инициализирован
     }
 
+    // Создаём off-screen canvas нужного размера
+    battery_shell = lv_canvas_create(lv_scr_act());
+    lv_obj_set_size(battery_shell, NRG_METER_W + 3, NRG_METER_H + 2);
+    
+    // Выделяем память для буфера изображения
+    lv_color_t *buf lv_mem_alloc((NRG_METER_W + 3) * (NRG_METER_H + 2) * 4);
+    lv_canvas_set_buffer(battery_shell, buf, NRG_METER_W + 3, NRG_METER_H + 2, LV_IMG_CF_TRUE_COLOR);
+
+    // Отрисовываем батарею в буфер (один раз)
+    draw_battery_shell_to_buffer();
+    
+    battery_shell_initialized = true;
+}
+
+static void draw_battery_shell_to_buffer(void) {
+    // Очищаем буфер
+    lv_canvas_fill_bg(battery_shell, lv_color_white(), LV_OPA_COVER);
     
     lv_draw_rect_dsc_t rect_fill_dsc;
     lv_draw_rect_dsc_init(&rect_fill_dsc);
     rect_fill_dsc.bg_color = lv_color_black();
+    
+    // Рисуем рамку
+    lv_canvas_draw_rect(battery_shell, 1, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_fill_dsc);
+    
+    // Рисуем вертикальные линии слева
+    for (int i = 1; i < (NRG_METER_H + 2); i++) {
+        lv_canvas_set_px_color(battery_shell, 0, i, lv_color_black());
+    }
+}
 
+// static void draw_battery(lv_obj_t *canvas, struct battery_state state) {
+//     int32_t energy_width = lv_obj_get_width(canvas);
+//     int32_t width = lv_obj_get_width(canvas);
+//     if (level < 1)
+//     {
+//         lv_canvas_fill_bg(canvas, lv_palette_main(LV_PALETTE_RED), LV_OPA_COVER);
+//     } else if (level <= 10) {
+//         lv_canvas_fill_bg(canvas, lv_palette_main(LV_PALETTE_YELLOW), LV_OPA_COVER);
+//     } else {
+//         lv_canvas_fill_bg(canvas, lv_color_white(), LV_OPA_COVER);
+//     }
 
+    
+//     lv_draw_rect_dsc_t rect_fill_dsc;
+//     lv_draw_rect_dsc_init(&rect_fill_dsc);
+//     rect_fill_dsc.bg_color = lv_color_black();
 
-    lv_canvas_set_px_color(canvas, 0, 0, lv_color_black());
-    lv_canvas_set_px_color(canvas, 0, BAT_HEIGHT-1, lv_color_black());
-    lv_canvas_set_px_color(canvas, width, 0, lv_color_black());
-    lv_canvas_set_px_color(canvas, width, BAT_HEIGHT-1, lv_color_black());
+//     if (level <= 99 && level > 0)
+//     {
+//         for (int i = 1; i < (NRG_METER_H + 2) ; i++) {
+//             lv_canvas_set_px_color(canvas, 0, i, lv_color_black());
+//         }
+//         lv_canvas_draw_rect(canvas, 1, 0, (NRG_METER_W + 2), (NRG_METER_H + 2), &rect_fill_dsc);
+//     }
+    
+// }
 
-    if (level <= 99 && level > 0)
-    {
-        lv_canvas_draw_rect(canvas, 1, 1, (width/100)*level-2, 3, &rect_fill_dsc);
-        lv_canvas_set_px(canvas, width-1, 1, lv_color_black());
-        lv_canvas_set_px(canvas, width-1, 2, lv_color_black());
-        lv_canvas_set_px(canvas, width-1, 3, lv_color_black());
+static void draw_battery(struct battery_state state, struct battery_object battery) { 
+    // Инициализируем буфер при первом вызове
+    init_battery_shell();
+    
+    // Задаём цвет фона в зависимости от уровня заряда
+    if (state.level < 1) {
+        lv_canvas_fill_bg(battery.symbol, lv_palette_main(LV_PALETTE_RED), LV_OPA_COVER);
+    } else if (level <= 10) {
+        lv_canvas_fill_bg(battery.symbol, lv_palette_main(LV_PALETTE_YELLOW), LV_OPA_COVER);
+    } else {
+        lv_canvas_fill_bg(battery.symbol, lv_color_white(), LV_OPA_COVER);
     }
     
+    // Копируем готовое изображение батареи из буфера
+    lv_img_decoder_info_t info;
+    lv_res_t res = lv_img_decode(NULL, lv_obj_get_style_img_src(battery_shell, 0), &info);
+    if (res == LV_RES_OK) {
+        lv_area_t area;
+        area.x1 = 0;  // Центрируем
+        area.y1 = 0;
+        area.x2 = NRG_METER_W + 3;
+        area.y2 = NRG_METER_H + 2;
+        
+        lv_obj_invalidate(battery.symbol);
+        lv_disp_t *disp = lv_refr_get_disp_refreshing();
+        lv_draw_img(&disp->draw_ctx, &area, &area, 
+                    lv_obj_get_style_img_src(battery_shell, 0), NULL, NULL);
+    }
 }
 
 static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
@@ -134,9 +200,8 @@ static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
     LOG_DBG("source: %d, level: %d, usb: %d", state.source, state.level, state.usb_present);
     lv_obj_t *symbol = battery_objects[state.source].symbol;
     lv_obj_t *label = battery_objects[state.source].label;
-    lv_obj_t *container = battery_objects[state.source].container;
 
-    draw_battery(symbol, state.level, state.usb_present);
+    draw_battery(state, battery_objects[state.source]);
     
     if (state.level > 0) {
         lv_obj_set_style_text_color(label, lv_color_white(), 0);
@@ -158,8 +223,10 @@ static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
         lv_label_set_text_fmt(label, "%4u", state.level);
     }
     
-    lv_obj_clear_flag(container, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_move_foreground(container);
+    lv_obj_clear_flag(symbol, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_move_foreground(symbol);
+    lv_obj_clear_flag(label, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_move_foreground(label);
 
 }
 
@@ -208,35 +275,48 @@ ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_battery_state_changed);
 ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_usb_conn_state_changed);
 #endif /* IS_ENABLED(CONFIG_USB_DEVICE_STACK) */
 #endif /* !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL) */
-#endif /* IS_ENABLED(CONFIG_ZMK_DONGLE_DISPLAY_DONGLE_BATTERY) */
+#endif /* IS_ENABLED(CONFIG_ZMK_DONGLE_DISPLAY_DONGLE_BATTER */
 
 int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_status *widget, lv_obj_t *parent) {
-    widget->obj = lv_obj_create(parent);
-    lv_obj_set_flex_flow(widget->obj, LV_FLEX_FLOW_ROW);
-    lv_obj_set_flex_align(widget->obj, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    
     lv_coord_t parent_width = lv_obj_get_width(parent);
-    lv_coord_t parent_height = lv_obj_get_height(parent);
+    
+    static lv_coord_t row_dsc[] = {25, (NRG_METER_H + 4), LV_GRID_TEMPLATE_LAST};
+    
+    lv_coord_t *col_dsc = lv_mem_alloc((BAT_COUNT + 1) * sizeof(lv_coord_t));
+    if (!col_dsc) {
+        LV_LOG_ERROR("Memory allocation failed!");
+        return;
+    }
+    for (uint8_t i = 0; i < BAT_COUNT; i++) {
+        col_dsc[i] = parent_width / BAT_COUNT; 
+    }
+    col_dsc[BAT_COUNT] = LV_GRID_TEMPLATE_LAST;  // Терминатор
+    
+    widget->obj = lv_obj_create(parent);
+    lv_obj_set_style_grid_column_dsc_array(cont, col_dsc, 0);
+    lv_obj_set_style_grid_row_dsc_array(cont, row_dsc, 0);
+    lv_obj_set_size(widget->obj, parent_width, 25 + (NRG_METER_H + 4));
+    lv_obj_center(widget->obj);
+    lv_obj_set_layout(widget->obj, LV_LAYOUT_GRID);
 
-    lv_obj_set_size(widget->obj, parent_width, 40);
-    int bat_width = parent_width / BAT_COUNT;
+    int bat_width = (NRG_METER_W + 3);
+    int bat_height = (NRG_METER_H + 2);
     for (int i = 0; i < BAT_COUNT; i++) {
-        lv_obj_t *bat_info = lv_obj_create(widget->obj);
-        lv_obj_set_size(bat_info, bat_width, 40 );
-        lv_obj_set_flex_flow(bat_info, LV_FLEX_FLOW_COLUMN);
-        lv_obj_set_flex_align(bat_info, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
-        lv_obj_t *battery_label = lv_label_create(bat_info);
-        lv_obj_t *image_canvas = lv_canvas_create(bat_info);
+        battery_object = battery_objects[i];
+        lv_obj_t *battery_label = lv_label_create(widget->obj);
+        lv_obj_set_grid_cell(battery_label, LV_GRID_ALIGN_CENTER, i, 1,
+                            LV_GRID_ALIGN_END, 0, 1);
+        battery_objects[i].label = battery_label;
 
-        lv_canvas_set_buffer(image_canvas, battery_image_buffer[i], bat_width, BAT_HEIGHT, LV_IMG_CF_TRUE_COLOR);
+        lv_obj_t *image_canvas = lv_canvas_create(widget->obj);
+        lv_obj_set_grid_cell(image_canvas, LV_GRID_ALIGN_CENTER, i, 1,
+                            LV_GRID_ALIGN_CENTER, 1, 1);
 
-        lv_obj_add_flag(bat_info, LV_OBJ_FLAG_HIDDEN);
-        
-        battery_objects[i] = (struct battery_object){
-            .container = bat_info,
-            .symbol = image_canvas,
-            .label = battery_label,
-        };
+        lv_canvas_set_buffer(image_canvas, battery_objects[i].buffer, bat_width, bat_height, LV_IMG_CF_TRUE_COLOR);
+        battery_objects[i].symbol = image_canvas;
+
+        lv_obj_add_flag(battery_label, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(image_canvas, LV_OBJ_FLAG_HIDDEN);
     }
 
     sys_slist_append(&widgets, &widget->node);
