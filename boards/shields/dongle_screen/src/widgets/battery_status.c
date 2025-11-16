@@ -196,11 +196,11 @@ static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
     }
     // Check for reconnection using the existing battery level mechanism
     bool reconnecting = is_peripheral_reconnecting(state.source, state.level);
-    if (last_battery_levels[state.source] != state.level) {
+    // if (last_battery_levels[state.source] != state.level) {
         last_battery_levels[state.source] = state.level;
-    } else {
-        return;
-    }
+    // } else {
+    //     return;
+    // }
     // Wake screen on reconnection
     if (reconnecting) {
 #if CONFIG_DONGLE_SCREEN_IDLE_TIMEOUT_S > 0    
