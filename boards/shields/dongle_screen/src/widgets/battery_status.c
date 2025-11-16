@@ -290,7 +290,6 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     int bat_width = (NRG_METER_W + 3);
     int bat_height = (NRG_METER_H + 2);
     for (int i = 0; i < BAT_COUNT; i++) {
-        battery_object = battery_objects[i];
         lv_obj_t *battery_label = lv_label_create(widget->obj);
         lv_obj_set_grid_cell(battery_label, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_END, 0, 1);
