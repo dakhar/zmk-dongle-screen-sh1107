@@ -43,7 +43,7 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define COLOR_RED       ((lv_color_t){ .full = 3 })
 #define COLOR_YELLOW    ((lv_color_t){ .full = 4 })
 
-#if CONFIG_DONGLE_SCREEN_IDLE_TIMEOUT_S > 5
+#if CONFIG_LV_COLOR_DEPTH > 5
 #define PALETTE_SIZE 5
 #define BITS_PER_PIXEL 4
 #define COLOR_FORMAT LV_IMG_CF_INDEXED_4BIT
@@ -65,8 +65,8 @@ static void init_palette(void) {
 }
 #else
 #define PALETTE_SIZE 2
-#define BITS_PER_PIXEL 1
-#define COLOR_FORMAT LV_IMG_CF_INDEXED_1BIT
+#define BITS_PER_PIXEL 8*4
+#define COLOR_FORMAT LV_IMG_CF_TRUE_COLOR
 static lv_color_t palette[PALETTE_SIZE];
 static void init_palette(void) {
     // Вычисляем цвета с учётом инверсии

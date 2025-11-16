@@ -37,17 +37,14 @@ config LV_Z_MEM_POOL_SIZE
     default 10000
 
 config LV_DPI_DEF
-    default 261
+    default 121
 
 config LV_Z_BITS_PER_PIXEL
-	default 16
+	default 1
 
 choice LV_COLOR_DEPTH
-	default LV_COLOR_DEPTH_16
+	default LV_COLOR_DEPTH_1
 endchoice
-
-config LV_COLOR_16_SWAP
-	default y
 
 config LV_DISP_DEF_REFR_PERIOD
     default 20
@@ -58,12 +55,6 @@ endchoice
 
 config LV_FONT_MONTSERRAT_40
     default y
-
-config DONGLE_SCREEN_COLOR_DEPTH
-    int "Screen color depth (2-256)"
-    default 2
-    help
-      Color depth of display. 2 = monochrome.
 
 config DONGLE_SCREEN_IDLE_TIMEOUT_S
     int "Screen idle timeout in seconds (0 = never off)"
