@@ -264,7 +264,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
         battery->label = lv_label_create(widget->obj);
         lv_obj_set_grid_cell(battery->label, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_END, 0, 1);
-        lv_obj_add_flag(battery->label, LV_OLAG_HIDDEN);
+        lv_obj_add_flag(battery->label, LV_OBJ_FLAG_HIDDEN);
 
         battery->symbol = lv_canvas_create(widget->obj);
         lv_obj_set_grid_cell(battery->symbol, LV_GRID_ALIGN_CENTER, i, 1,
