@@ -118,7 +118,7 @@ static void init_battery_shell(void) {
 
 static void draw_battery(struct battery_state state, struct battery_object battery) { 
     // Инициализируем буфер при первом вызове
-    init_battery_shell();
+    // init_battery_shell();
     
     // Задаём цвет фона в зависимости от уровня заряда
     // if (state.level < 1) {
@@ -132,14 +132,23 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     // Копируем готовое изображение батареи из буфера
     // lv_canvas_copy_buf(battery.symbol, battery_shell, 0, 0,(NRG_METER_W + 3), (NRG_METER_H + 2));
     // Рисуем вертикальные линии слева
-    for (int i = 1; i < (NRG_METER_H + 2); i++) {
-        lv_canvas_set_px_color(battery.symbol, 0, i, LVGL_FOREGROUND);
-    }
-    for (int i = 2; i < (NRG_METER_W + 3); i++) {
-        for (int y = 0; y < (NRG_METER_H + 2); y++) {
-            lv_canvas_set_px_color(battery.symbol, i, y, LVGL_FOREGROUND);
-        }
-    }
+    // for (int i = 1; i < (NRG_METER_H + 2); i++) {
+    //     lv_canvas_set_px_color(battery.symbol, 0, i, LVGL_FOREGROUND);
+    // }
+    // for (int i = 2; i < (NRG_METER_W + 3); i++) {
+    //     for (int y = 0; y < (NRG_METER_H + 2); y++) {
+    //         lv_canvas_set_px_color(battery.symbol, i, y, LVGL_FOREGROUND);
+    //     }
+    // 
+    lv_canvas_fill_bg(battery.symbol, LVGL_BACKGROUND, LV_OPA_COVER);
+    
+    lv_draw_rect_dsc_t rect_fill_dsc;
+    lv_draw_rect_dsc_init(&rect_fill_dsc);
+    rect_fill_dsc.bg_color = LVGL_BACKGROUND;
+    rect_fill_dsc.border_color = LVGL_FOREGROUND;
+    
+    // Рисуем рамку
+    lv_canvas_draw_rect(battery.symbol, 0, 0, NRG_METER_W + 2, NRG_METER_H + 2, &rect_fill_dsc);
 }
 
 static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
