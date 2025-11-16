@@ -169,7 +169,7 @@ static void draw_battery(struct battery_state state, struct battery_object *batt
     // }
     lv_canvas_draw_rect(battery->symbol, 0, 0, BAT_WIDTH, BAT_HEIGHT, &rect_dsc);
     // 7. Обновляем только изменённую область
-    // lv_obj_invalidate(battery->symbol);
+    lv_obj_invalidate(battery->symbol);
 }
 
 static void draw_label(struct battery_state state, struct battery_object *battery) {
@@ -188,6 +188,7 @@ static void draw_label(struct battery_state state, struct battery_object *batter
         lv_obj_set_style_text_color(battery->label, LVGL_FOREGROUND, 0);
         lv_label_set_text_fmt(battery->label, "%4u", state.level);
     }
+    lv_obj_invalidate(battery->label);
 }
 
 static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
