@@ -54,8 +54,8 @@ struct battery_state {
     bool usb_present;
 };
 
-struct battery_object {
-    uint8_t buffer[(BAT_WIDTH * BAT_HEIGHT * BITS_PER_PIXEL)];
+struct battery_object {uint8_t buffer[(NRG_METER_W + 3) * (NRG_METER_H + 2) * 4];
+        // uint8_t buffer[(BAT_WIDTH * BAT_HEIGHT * BITS_PER_PIXEL)];
     lv_obj_t *symbol;
     lv_obj_t *label;
 } battery_objects[BAT_COUNT];
@@ -263,7 +263,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
         battery->symbol = lv_canvas_create(widget->obj);
         lv_obj_set_grid_cell(battery->symbol, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_CENTER, 1, 1);
-        lv_canvas_set_buffer(battery->symbol, battery->buffer, BAT_WIDTH, BAT_HEIGHT, LV_IMG_CF_TRUE_COLOR);
+        lv_canvas_set_buffer(battery->symbol, battery->buffer, BAT_WIDTH, BAT_WIDTH, LV_IMG_CF_TRUE_COLOR);
         lv_obj_add_flag(battery->symbol, LV_OBJ_FLAG_HIDDEN);
 
     }
