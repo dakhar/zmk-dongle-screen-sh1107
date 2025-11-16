@@ -37,14 +37,23 @@ static bool battery_shell_initialized = false;  // Флаг инициализа
 
 
 #define PALETTE_SIZE 5
-const lv_color_t palette[PALETTE_SIZE] = {
-    LVGL_BACKGROUND,    // индекс 0
-    LVGL_FOREGROUND,    // индекс 1
-    lv_color_green(),     // индекс 2
-    lv_color_yellow(),   // индекс 3
-    lv_color_red()     // индекс 4
-};
+const lv_color_t palette[PALETTE_SIZE];
 
+static void init_palette(void) {
+    // Вычисляем цвета с учётом инверсии
+    lv_color_t bg = IS_ENABLED(CONFIG_ZMK_DISPLAY_INVERT) 
+                    ? lv_color_black()
+                    : lv_color_white();
+    lv_color_t fg = IS_ENABLED(CONFIG_ZMK_DISPLAY_INVERT)
+                    ? lv_color_white()
+                    : lv_color_black();
+    // Заполняем палитру
+    palette[0] = bg;
+    palette[1] = fg;
+    palette[2] = lv_color_green();
+    palette[3] = lv_color_yellow();
+    palette[4] = lv_color_red();
+}
 struct battery_state {
     uint8_t source;
     uint8_t level;
@@ -304,6 +313,7 @@ ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_usb_conn_state_changed);
 #endif /* IS_ENABLED(CONFIG_ZMK_DONGLE_DISPLAY_DONGLE_BATTER */
 
 int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_status *widget, lv_obj_t *parent) {
+    init_palette();
     lv_coord_t parent_width = lv_obj_get_width(parent);
     
     static lv_coord_t row_dsc[] = {25, (NRG_METER_H + 4), LV_GRID_TEMPLATE_LAST};
