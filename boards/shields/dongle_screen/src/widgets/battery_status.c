@@ -136,10 +136,10 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     
     lv_draw_rect_dsc_t rect_fill_dsc;
     lv_draw_rect_dsc_init(&rect_fill_dsc);
-    rect_fill_dsc.bg_color = LVGL_FOREGROUND;
-    rect_fill_dsc.border_color = LVGL_FOREGROUND;
+    rect_fill_dsc.bg_color = fg_color;
+    rect_fill_dsc.border_color = fg_color;
     
-    lv_canvas_draw_rect(battery.symbol, 0, 0, NRG_METER_W + 2, NRG_METER_H + 1, &rect_dsc);
+    lv_canvas_draw_rect(battery.symbol, 0, 0, NRG_METER_W + 2, NRG_METER_H + 1, &rect_fill_dsc);
 }
 
 static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
