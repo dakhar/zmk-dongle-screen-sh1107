@@ -131,7 +131,6 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
 }
 
 static void draw_battery(struct battery_state state, struct battery_object battery) { 
-    if (!battery) return;
     if (state.level < 1 || state.level > 100) return;
     
     lv_color_t bg_color = COLOR_BG;
