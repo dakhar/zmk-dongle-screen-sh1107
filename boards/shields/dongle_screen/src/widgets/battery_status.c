@@ -133,11 +133,11 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     // lv_canvas_copy_buf(battery.symbol, battery_shell, 0, 0,(NRG_METER_W + 3), (NRG_METER_H + 2));
     // Рисуем вертикальные линии слева
     for (int i = 1; i < (NRG_METER_H + 2); i++) {
-        lv_canvas_set_px_color(battery.symbol, 0, i, lv_color_black());
+        lv_canvas_set_px_color(battery.symbol, 0, i, lv_color_red());
     }
     for (int i = 2; i < (NRG_METER_W + 3); i++) {
         for (int y = 0; y < (NRG_METER_H + 2); y++) {
-            lv_canvas_set_px_color(battery.symbol, i, y, lv_color_black());
+            lv_canvas_set_px_color(battery.symbol, i, y, lv_color_red());
         }
     }
 }
