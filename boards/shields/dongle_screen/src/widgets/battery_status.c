@@ -260,7 +260,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     lv_obj_set_layout(widget->obj, LV_LAYOUT_GRID);
 
     for (int i = 0; i < BAT_COUNT; i++) {
-        struct battery_object *battery = battery_objects[i];
+        struct battery_object *battery = &battery_objects[i];
         battery.label = lv_label_create(widget->obj);
         lv_obj_set_grid_cell(battery.label, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_END, 0, 1);
