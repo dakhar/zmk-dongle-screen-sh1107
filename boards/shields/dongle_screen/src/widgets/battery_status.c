@@ -54,6 +54,7 @@ struct battery_state {
 };
 
 struct battery_object {
+    bool *initialized;
     uint8_t buffer[BAT_WIDTH * BAT_HEIGHT * BYTES_PER_PIXEL];
     lv_obj_t *symbol;
     lv_obj_t *label;
@@ -116,7 +117,31 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     lv_draw_rect_dsc_init(&rect_fill_dsc);
     rect_fill_dsc.bg_color = bg_color;
     rect_fill_dsc.border_color = fg_color;
-    
+    // if (!battery.initialized) {
+    // Draw battery contact
+    int contact_y;
+    int contact_h = BAT_HEIGHT - 4;
+    if (contact_h % 2 == 0) {
+        if (contact_h >= 2) {
+            contact_y = contact_h / 2;
+        } else {
+            contact_y = 1;
+            contact_h = 2;
+        }
+    } else {
+        if (contact_h > 1) {
+            contact_y = contact_h / 2;
+        } else if (contact_h == 1) {
+            contact_y = 1;
+            contact_h = 3;
+        } else {
+            contact_y = 0;
+            contact_h = BAT_HEIGHT;
+        }
+    }
+    lv_canvas_draw_rect(battery->symbol, 0, contact_y, X_OFFSET, contact_h, &rect_fill_dsc);
+    battery.initialized = true;
+    // }
     lv_canvas_draw_rect(battery.symbol, X_OFFSET, 0, BAT_WIDTH - X_OFFSET, BAT_HEIGHT, &rect_fill_dsc);
 }
 
