@@ -58,23 +58,6 @@ lv_obj_t *zmk_display_status_screen()
     lv_style_set_text_line_space(&global_style, 1);
     lv_obj_add_style(screen, &global_style, LV_PART_MAIN);
  
-    screen_row_dsc = lv_mem_alloc(2 * sizeof(lv_coord_t));
-    if (!widget_row_dsc) {
-        LV_LOG_ERROR("Memory allocation failed!");
-        return -1;
-    }
-    widget_row_dsc[0] = canvas_h;
-    widget_row_dsc[1] = LV_GRID_TEMPLATE_LAST;
-
-    widget_col_dsc = lv_mem_alloc((BAT_COUNT + 1) * sizeof(lv_coord_t));
-    if (!widget_col_dsc) {
-        LV_LOG_ERROR("Memory allocation failed!");
-        return -1;
-    }
-    for (uint8_t i = 0; i < BAT_COUNT; i++) {
-        widget_col_dsc[i] = parent_width / BAT_COUNT; 
-    }
-    widget_col_dsc[BAT_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
 #if CONFIG_DONGLE_SCREEN_OUTPUT_ACTIVE
     zmk_widget_output_status_init(&output_status_widget, screen);
     lv_obj_align(zmk_widget_output_status_obj(&output_status_widget), LV_ALIGN_TOP_MID, 0, 10);
