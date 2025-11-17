@@ -32,17 +32,6 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define BORDER_SZ   1
 #define CONTACT_L   3
 
-#if CONFIG_LV_COLOR_DEPTH == 8
-#define BYTES_PER_PIXEL 1
-#elif CONFIG_LV_COLOR_DEPTH == 16
-#define BYTES_PER_PIXEL 2
-#elif CONFIG_LV_COLOR_DEPTH == 32
-#define BYTES_PER_PIXEL 4
-#else 
-#define BYTES_PER_PIXEL 1
-#define MONOCHROME true
-#endif
-
 static int battery_h;
 static int battery_w;
 static int nrg_meter_h;
@@ -56,15 +45,15 @@ static void calc_battery_dimensions(lv_obj_t *obj, lv_point_t size) {
     const lv_font_t *font = label_dsc.font ? label_dsc.font : lv_theme_get_font_normal(obj);
     label_h = font->line_height;
 #if CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL
-    nrg_meter_h = size.y - BORDER_SZ * 2 - CONTACT_L;
-    nrg_meter_w = nrg_meter_h / 2;
+    battery_h = size.y - CONTACT_L;
+    battery_w = battery_h / 2;
 #else
-    nrg_meter_w = (size.x / BAT_COUNT) - BORDER_SZ * 2 - CONTACT_L;
-    nrg_meter_h = nrg_meter_w / 2;
-    nrg_meter_h = (size.y - label_h) > nrg_meter_h ? nrg_meter_h : (size.y - label_h);
+    battery_w = (size.x / BAT_COUNT) - CONTACT_L;
+    battery_h = battery_w / 2;
+    battery_h = (size.y - label_h) > battery_h ? battery_h : size.y - label_h;
 #endif
-    battery_w = nrg_meter_w + BORDER_SZ * 2;
-    battery_h = nrg_meter_h + BORDER_SZ * 2;
+    nrg_meter_w = battery_w - BORDER_SZ * 2;
+    nrg_meter_h = battery_h - BORDER_SZ * 2;
 #if CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL
     lable_max_w = (size.x / BAT_COUNT) - battery_w;
 #else
@@ -94,7 +83,6 @@ static void init_descriptors(void) {
     rect_contact.border_color = LVGL_BACKGROUND;
     rect_contact.border_side = LV_BORDER_SIDE_FULL;
 }
-
 
 static lv_coord_t *widget_row_dsc;
 static lv_coord_t *widget_col_dsc;
@@ -149,11 +137,11 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     char level_str[4];
 
     int text_y = (lv_obj_get_height(battery.canvas) - label_h) / 2;
-
-    if (MONOCHROME) {
-        meter_color = LVGL_FOREGROUND;
-        text_color = LVGL_FOREGROUND;
-    } else if (state.level > 30) {
+#if MONOCHROME
+    meter_color = LVGL_FOREGROUND;
+    text_color = LVGL_FOREGROUND;
+#else 
+    if (state.level > 30) {
         meter_color = lv_palette_main(LV_PALETTE_GREEN);
         text_color = LVGL_FOREGROUND;
     } else if (state.level > 10) {
@@ -163,6 +151,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
         meter_color = lv_palette_main(LV_PALETTE_RED);
         text_color = lv_palette_main(LV_PALETTE_RED);
     }
+#endif
     rect_meter.bg_color = meter_color;
     label_dsc.color = text_color;
 
@@ -176,22 +165,21 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     // Fill energy meter
     const int meter_width = LV_CLAMP(0, (nrg_meter_w * state.level + 50) / 100, nrg_meter_w);
     const int meter_height = LV_CLAMP(0, (nrg_meter_h * state.level + 50) / 100, nrg_meter_h);
-    
-    if (nrg_meter_w > nrg_meter_h)
-    {
-        lv_canvas_draw_text (battery.canvas, 0, 0, lable_max_w, &label_dsc, level_str); 
-        if (state.level < 1 || state.level > 100) return;
-        lv_canvas_draw_rect(battery.canvas, 0, label_h, CONTACT_L, battery_h, &rect_contact);
-        lv_canvas_draw_rect(battery.canvas, CONTACT_L, label_h, battery_w, battery_h, &rect_shell);
-        lv_canvas_draw_rect(battery.canvas, CONTACT_L + battery_w - BORDER_SZ - meter_width, 
+#if CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL
+    lv_canvas_draw_text (battery.canvas, 0, 0, lable_max_w, &label_dsc, level_str); 
+    if (state.level < 1 || state.level > 100) return;
+    lv_canvas_draw_rect(battery.canvas, 0, label_h, CONTACT_L, battery_h, &rect_contact);
+    lv_canvas_draw_rect(battery.canvas, CONTACT_L, label_h, battery_w, battery_h, &rect_shell);
+    lv_canvas_draw_rect(battery.canvas, CONTACT_L + battery_w - BORDER_SZ - meter_width, 
                             label_h + BORDER_SZ, meter_width, nrg_meter_h, &rect_meter);
-    } else {
-        lv_canvas_draw_text (battery.canvas, battery_w, text_y, lable_max_w, &label_dsc, level_str);
-        if (state.level < 1 || state.level > 100) return;
-        lv_canvas_draw_rect(battery.canvas, 0, 0, battery_w, CONTACT_L, &rect_contact);
-        lv_canvas_draw_rect(battery.canvas, 0, CONTACT_L, battery_w, battery_h, &rect_shell);
-        lv_canvas_draw_rect(battery.canvas, BORDER_SZ, CONTACT_L + battery_h - BORDER_SZ - meter_height, nrg_meter_w, meter_height, &rect_meter);
-    }
+#else
+    lv_canvas_draw_text (battery.canvas, battery_w, text_y, lable_max_w, &label_dsc, level_str);
+    if (state.level < 1 || state.level > 100) return;
+    lv_canvas_draw_rect(battery.canvas, 0, 0, battery_w, CONTACT_L, &rect_contact);
+    lv_canvas_draw_rect(battery.canvas, 0, CONTACT_L, battery_w, battery_h, &rect_shell);
+    lv_canvas_draw_rect(battery.canvas, BORDER_SZ, CONTACT_L + battery_h - BORDER_SZ - meter_height, 
+                        nrg_meter_w, meter_height, &rect_meter);
+#endif
     
 }
 

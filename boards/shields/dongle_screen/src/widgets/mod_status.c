@@ -3,8 +3,8 @@
 #include <zmk/hid.h>
 #include <lvgl.h>
 #include "mod_status.h"
-#include <fonts.h> // <-- Wichtig für LV_FONT_DECLARE
 
+#include <fonts.h>
 #include <util.h>
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
@@ -20,20 +20,13 @@ static void update_mod_status(struct zmk_widget_mod_status *widget)
     int n = 0;
 
     if (mods & (MOD_LCTL | MOD_RCTL))
-        syms[n++] = "󰘴";
+        syms[n++] = "⌃";
     if (mods & (MOD_LSFT | MOD_RSFT))
-        syms[n++] = "󰘶"; // U+F0636
+        syms[n++] = "󰘶"; 
     if (mods & (MOD_LALT | MOD_RALT))
-        syms[n++] = "󰘵"; // U+F0635
+        syms[n++] = "⌥"; 
     if (mods & (MOD_LGUI | MOD_RGUI))
-    // set next syms according to CONFIG_DONGLE_SCREEN_SYSTEM (0,1,2)
-#if CONFIG_DONGLE_SCREEN_SYSTEM_ICON == 1
-        syms[n++] = "󰌽"; // U+DF3D
-#elif CONFIG_DONGLE_SCREEN_SYSTEM_ICON == 2
-        syms[n++] = ""; // U+E62A
-#else
-        syms[n++] = "󰘳"; // U+F0633
-#endif
+        syms[n++] = ""; 
 
     for (int i = 0; i < n; ++i)
     {
@@ -61,7 +54,7 @@ int zmk_widget_mod_status_init(struct zmk_widget_mod_status *widget, lv_obj_t *p
     widget->label = lv_label_create(widget->obj);
     lv_obj_align(widget->label, LV_ALIGN_CENTER, 0, 0);
     lv_label_set_text(widget->label, "-");
-    lv_obj_set_style_text_font(widget->label, &NerdFonts_Regular_20, 0); // <-- NerdFont setzen
+    lv_obj_set_style_text_font(widget->label, &FiraCodeNerdMono_26, 0);
 
     k_timer_init(&mod_status_timer, mod_status_timer_cb, NULL);
     k_timer_user_data_set(&mod_status_timer, widget);
