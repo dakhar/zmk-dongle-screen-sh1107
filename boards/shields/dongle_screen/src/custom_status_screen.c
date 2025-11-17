@@ -73,9 +73,9 @@ lv_obj_t *zmk_display_status_screen()
         return -1;
     }
     for (uint8_t i = 0; i < COL_COUNT; i++) {
-        widget_col_dsc[i] = DISPLAY_HEIGHT / COL_COUNT; 
+        screen_col_dsc[i] = DISPLAY_HEIGHT / COL_COUNT; 
     }
-    widget_col_dsc[COL_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
+    screen_col_dsc[COL_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
     lv_obj_set_layout(screen, LV_LAYOUT_GRID);
     lv_obj_set_style_grid_column_dsc_array(screen, screen_col_dsc, 0);
     lv_obj_set_style_grid_row_dsc_array(screen, screen_row_dsc, 0);
