@@ -84,7 +84,7 @@ static void init_descriptors(void) {
                     (LV_BORDER_SIDE_LEFT || LV_BORDER_SIDE_RIGHT);
                     
     lv_draw_label_dsc_init(&label_dsc);
-    label_dsc.font = &lv_font_montserrat_14;
+    label_dsc.font = &lv_font_montserrat_12;
 }
 
 static int label_h = BATTERY_H;
