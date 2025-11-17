@@ -142,7 +142,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
 
     lv_draw_label_dsc_t label_dsc;
     lv_draw_label_dsc_init(&label_dsc);
-    label_dsc.text_color = fg_color;
+    label_dsc.color = fg_color;
 
     lv_canvas_fill_bg(battery.canvas, bg_color, LV_OPA_COVER);
     
