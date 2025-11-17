@@ -56,17 +56,6 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define MONOCHROME true
 #endif
 
-struct battery_state {
-    uint8_t source;
-    uint8_t level;
-    bool usb_present;
-};
-
-struct battery_object {
-    bool *initialized;
-    uint8_t buffer[CANVAS_W * CANVAS_H * BYTES_PER_PIXEL];
-    lv_obj_t *canvas;
-} battery_objects[BAT_COUNT];
 
 static lv_draw_rect_dsc_t rect_shell;
 static lv_draw_rect_dsc_t rect_meter;
@@ -108,6 +97,17 @@ static void get_label_height(void) {
 #else
 #define CANVAS_H    ((BATTERY_H < label_height) ? label_height : BATTERY_H)
 #endif
+struct battery_state {
+    uint8_t source;
+    uint8_t level;
+    bool usb_present;
+};
+
+struct battery_object {
+    bool *initialized;
+    uint8_t *buffer;
+    lv_obj_t *canvas;
+} battery_objects[BAT_COUNT];
 
 // Peripheral reconnection tracking
 // ZMK sends battery events with level < 1 when peripherals disconnect
@@ -300,7 +300,13 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
 
     for (int i = 0; i < BAT_COUNT; i++) {
         struct battery_object *battery = &battery_objects[i];
-
+        
+        const int buf_size = (CANVAS_W * CANVAS_H * BYTES_PER_PIXEL);  // bytes
+        battery->buffer = lv_mem_alloc(buf_size); 
+        if (!battery->buffer) {
+            LV_LOG_ERROR("Canvas buffer allocation failed!");
+            return -1;
+        }
         battery->canvas = lv_canvas_create(widget->obj);
         lv_obj_set_grid_cell(battery->canvas, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_CENTER, 0, 1);
