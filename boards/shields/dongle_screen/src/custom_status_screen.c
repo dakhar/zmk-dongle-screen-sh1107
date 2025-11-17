@@ -17,6 +17,10 @@
 typedef void (*widget_init_func)(void*, lv_obj_t*, lv_point_t);
 typedef lv_obj_t* (*widget_obj_getter)(void*);
 
+struct widget_layout {
+    uint8_t col, row, colspan, rowspan;
+};
+
 static void init_status_widget(
     void *widget,                        // указатель на структуру виджета
     lv_obj_t *parent,                  // родительский контейнер (screen)
@@ -41,9 +45,6 @@ static void init_status_widget(
     );
 }
 
-struct widget_layout {
-    uint8_t col, row, colspan, rowspan;
-};
 struct widget_layout wpm_layout     {0, 0, 3, 1};
 struct widget_layout output_layout  {3, 0, COL_COUNT-3, 2};
 struct widget_layout layer_layout   {0, 2, COL_COUNT, 2};

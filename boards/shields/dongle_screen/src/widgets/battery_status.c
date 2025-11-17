@@ -301,11 +301,10 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     widget_col_dsc[BAT_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
     
     widget->obj = lv_obj_create(parent);
+    lv_obj_set_size(widget->obj, size.x, size.y);
+    lv_obj_set_layout(widget->obj, LV_LAYOUT_GRID);
     lv_obj_set_style_grid_column_dsc_array(widget->obj, widget_col_dsc, 0);
     lv_obj_set_style_grid_row_dsc_array(widget->obj, widget_row_dsc, 0);
-    lv_obj_set_size(widget->obj, size.x, size.y);
-    lv_obj_center(widget->obj);
-    lv_obj_set_layout(widget->obj, LV_LAYOUT_GRID);
 
     for (int i = 0; i < BAT_COUNT; i++) {
         struct battery_object *battery = &battery_objects[i];
