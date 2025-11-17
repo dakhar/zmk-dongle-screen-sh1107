@@ -111,7 +111,8 @@ ZMK_SUBSCRIPTION(widget_output_status, zmk_usb_conn_state_changed);
 int zmk_widget_output_status_init(struct zmk_widget_output_status *widget, lv_obj_t *parent)
 {
     widget->obj = lv_obj_create(parent);
-    lv_obj_set_size(widget->obj, 240, 77);
+    lv_coord_t parent_width = lv_obj_get_width(parent);
+    lv_obj_set_size(widget->obj, parent_width, 77);
 
     widget->transport_label = lv_label_create(widget->obj);
     lv_obj_align(widget->transport_label, LV_ALIGN_TOP_RIGHT, -10, 10);
