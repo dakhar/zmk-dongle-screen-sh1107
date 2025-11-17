@@ -43,6 +43,39 @@ static void init_status_widget(
         LV_GRID_ALIGN_CENTER, row, rowspan
     );
 }
+/**
+ * Заполняет все ячейки сетки текстовыми метками с координатами (R1C1, R1C2 и т.д.)
+ * @param parent Родительский объект LVGL (экран или контейнер с сеткой)
+ * @param rows Количество строк в сетке
+ * @param cols Количество столбцов в сетке
+ * @param cell_width Ширина ячейки в пикселях
+ * @param cell_height Высота ячейки в пикселях
+ */
+static void fill_grid_with_coordinates(lv_obj_t *parent, uint8_t rows, uint8_t cols, int cell_width, int cell_height) {
+    for (uint8_t row = 0; row < rows; row++) {
+        for (uint8_t col = 0; col < cols; col++) {
+            // Создаём текстовый лейбл для ячейки
+            lv_obj_t *label = lv_label_create(parent);
+            
+            // Формируем текст: "R{row+1}C{col+1}" (индексация с 1)
+            char text[10];
+            snprintf(text, sizeof(text), "R%dC%d", row + 1, col + 1);
+            lv_label_set_text(label, text);
+            
+            // Выравниваем текст по центру ячейки
+            lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
+            
+            // Устанавливаем позицию и размер через сетку
+            lv_obj_set_grid_cell(label,
+                LV_GRID_ALIGN_CENTER, col, 1,  // колонка, ширина в ячейках
+                LV_GRID_ALIGN_CENTER, row, 1); // строка, высота в ячейках
+
+            // Дополнительно: можно задать стиль (цвет, шрифт)
+            // lv_obj_set_style_text_color(label, lv_color_white(), 0);
+            // lv_obj_set_style_text_font(label, &lv_font_montserrat_12, 0);
+        }
+    }
+}
 
 struct widget_layout {
     uint8_t col, row, colspan, rowspan;
@@ -120,62 +153,62 @@ lv_obj_t *zmk_display_status_screen()
     lv_obj_set_layout(screen, LV_LAYOUT_GRID);
     lv_obj_set_style_grid_column_dsc_array(screen, screen_col_dsc, 0);
     lv_obj_set_style_grid_row_dsc_array(screen, screen_row_dsc, 0);
- 
+    fill_grid_with_coordinates(screen, ROW_COUNT, COL_COUNT, GRID_CELL_WIDTH, GRID_CELL_HEIGHT);
 
-#if CONFIG_DONGLE_SCREEN_WPM_ACTIVE
-    init_status_widget(
-        &wpm_status_widget,
-        screen,
-        0, 0,      // col, row
-        3, 1,      // colspan, rowspan
-        zmk_widget_wpm_status_init,
-        zmk_widget_wpm_status_obj
-    );
-#endif
+// #if CONFIG_DONGLE_SCREEN_WPM_ACTIVE
+//     init_status_widget(
+//         &wpm_status_widget,
+//         screen,
+//         0, 0,      // col, row
+//         3, 1,      // colspan, rowspan
+//         zmk_widget_wpm_status_init,
+//         zmk_widget_wpm_status_obj
+//     );
+// #endif
 
-#if CONFIG_DONGLE_SCREEN_OUTPUT_ACTIVE
-    init_status_widget(
-        &output_status_widget,
-        screen,
-        3, 0,      // col, row
-        COL_COUNT-3, 1,      // colspan, rowspan
-        zmk_widget_output_status_init,
-        zmk_widget_output_status_obj
-    );
-#endif
+// #if CONFIG_DONGLE_SCREEN_OUTPUT_ACTIVE
+//     init_status_widget(
+//         &output_status_widget,
+//         screen,
+//         3, 0,      // col, row
+//         COL_COUNT-3, 1,      // colspan, rowspan
+//         zmk_widget_output_status_init,
+//         zmk_widget_output_status_obj
+//     );
+// #endif
 
-#if CONFIG_DONGLE_SCREEN_LAYER_ACTIVE
-    init_status_widget(
-        &layer_status_widget,
-        screen,
-        0, 1,      // col, row
-        COL_COUNT, 2,      // colspan, rowspan
-        zmk_widget_layer_status_init,
-        zmk_widget_layer_status_obj
-    );
-#endif
+// #if CONFIG_DONGLE_SCREEN_LAYER_ACTIVE
+//     init_status_widget(
+//         &layer_status_widget,
+//         screen,
+//         0, 1,      // col, row
+//         COL_COUNT, 2,      // colspan, rowspan
+//         zmk_widget_layer_status_init,
+//         zmk_widget_layer_status_obj
+//     );
+// #endif
 
-#if CONFIG_DONGLE_SCREEN_MODIFIER_ACTIVE
-    init_status_widget(
-        &mod_widget,
-        screen,
-        0, MODIFIER_ROW,      // col, row
-        COL_COUNT, 1,      // colspan, rowspan
-        zmk_widget_mod_status_init,
-        zmk_widget_mod_status_obj
-    );
-#endif
+// #if CONFIG_DONGLE_SCREEN_MODIFIER_ACTIVE
+//     init_status_widget(
+//         &mod_widget,
+//         screen,
+//         0, MODIFIER_ROW,      // col, row
+//         COL_COUNT, 1,      // colspan, rowspan
+//         zmk_widget_mod_status_init,
+//         zmk_widget_mod_status_obj
+//     );
+// #endif
 
-#if CONFIG_DONGLE_SCREEN_BATTERY_ACTIVE
-    init_status_widget(
-        &dongle_battery_status_widget,
-        screen,
-        0, 0,      // col, row
-        COL_COUNT, 1,      // colspan, rowspan
-        zmk_widget_dongle_battery_status_init,
-        zmk_widget_dongle_battery_status_obj
-    );
-#endif
+// #if CONFIG_DONGLE_SCREEN_BATTERY_ACTIVE
+//     init_status_widget(
+//         &dongle_battery_status_widget,
+//         screen,
+//         0, 0,      // col, row
+//         COL_COUNT, 1,      // colspan, rowspan
+//         zmk_widget_dongle_battery_status_init,
+//         zmk_widget_dongle_battery_status_obj
+//     );
+// #endif
 
     return screen;
 }
