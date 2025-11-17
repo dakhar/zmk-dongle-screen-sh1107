@@ -54,7 +54,7 @@ static void calc_battery_dimensions(lv_obj_t *obj, lv_point_t size) {
 #endif
     nrg_meter_w = battery_w - BORDER_SZ * 2;
     nrg_meter_h = battery_h - BORDER_SZ * 2;
-#if CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL
+#ifdef CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL
     lable_max_w = (size.x / BAT_COUNT) - battery_w;
 #else
     lable_max_w = (size.x / BAT_COUNT);
@@ -165,7 +165,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     // Fill energy meter
     const int meter_width = LV_CLAMP(0, (nrg_meter_w * state.level + 50) / 100, nrg_meter_w);
     const int meter_height = LV_CLAMP(0, (nrg_meter_h * state.level + 50) / 100, nrg_meter_h);
-#if CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL
+#ifdef CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL
     lv_canvas_draw_text (battery.canvas, 0, 0, lable_max_w, &label_dsc, level_str); 
     if (state.level < 1 || state.level > 100) return;
     lv_canvas_draw_rect(battery.canvas, 0, label_h, CONTACT_L, battery_h, &rect_contact);
