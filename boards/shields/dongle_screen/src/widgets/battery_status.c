@@ -43,7 +43,7 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define BYTES_PER_PIXEL 2
 #elif CONFIG_LV_COLOR_DEPTH == 32
 #define BYTES_PER_PIXEL 4
-#else CONFIG_LV_COLOR_DEPTH == 1
+#else 
 #define BYTES_PER_PIXEL 1
 #endif
 
@@ -109,21 +109,21 @@ static void draw_battery(struct battery_state state, struct battery_object batte
 
     lv_draw_rect_dsc_t rect_shell;
     lv_draw_rect_dsc_init(&rect_shell);
-    rect_dsc.bg_color = bg_color;
-    rect_dsc.bg_opa = LV_OPA_COVER;
-    rect_dsc.border_side = LV_BORDER_SIDE_FULL;
-    rect_dsc.border_width = BORDER_SZ;
-    rect_dsc.border_color = fg_color;
+    rect_shell.bg_color = bg_color;
+    rect_shell.bg_opa = LV_OPA_COVER;
+    rect_shell.border_side = LV_BORDER_SIDE_FULL;
+    rect_shell.border_width = BORDER_SZ;
+    rect_shell.border_color = fg_color;
 
     lv_draw_rect_dsc_t rect_meter;
     lv_draw_rect_dsc_init(&rect_meter);
-    rect_dsc.bg_color = meter_color;
-    rect_dsc.bg_opa = LV_OPA_COVER;
+    rect_meter.bg_color = meter_color;
+    rect_meter.bg_opa = LV_OPA_COVER;
 
     lv_draw_rect_dsc_t rect_contact;
     lv_draw_rect_dsc_init(&rect_contact);
-    rect_dsc.bg_color = bg_color;
-    rect_dsc.bg_opa = LV_OPA_COVER;
+    rect_contact.bg_color = bg_color;
+    rect_contact.bg_opa = LV_OPA_COVER;
 
     lv_canvas_fill_bg(battery.symbol, bg_color, LV_OPA_COVER);
     
@@ -158,9 +158,6 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     int filled_width = (NRG_METER_W * state.level + 50) / 100;  // Округление
     filled_width = LV_CLAMP(0, filled_width, NRG_METER_W);
     if (filled_width > 1) {
-        lv_canvas_draw_rect(battery.symbol, X_OFFSET, 0, BAT_WIDTH - X_OFFSET, BAT_HEIGHT, &rect_fill_dsc);
-        rect_dsc.bg_color = fg_color;
-        rect_dsc.border_color = fg_color;
         lv_canvas_draw_rect(battery.symbol, X_OFFSET + BORDER_SZ, BORDER_SZ, filled_width, NRG_METER_H, &rect_meter);
     }
     
