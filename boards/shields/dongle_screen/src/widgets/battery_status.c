@@ -35,6 +35,7 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define NRG_METER_H 25
 #define BORDER_SZ   1
 #define CONTACT_L    2
+
 #if NRG_METER_W >= NRG_METER_H
 #define BATTERY_W   (CONTACT_L + BORDER_SZ + NRG_METER_W + BORDER_SZ)
 #define BATTERY_H   (BORDER_SZ + NRG_METER_H + BORDER_SZ)
@@ -70,31 +71,28 @@ struct battery_object {
     lv_obj_t *canvas;
 } battery_objects[BAT_COUNT];
 
-
 static lv_draw_rect_dsc_t rect_shell;
 static lv_draw_rect_dsc_t rect_meter;
 static lv_draw_rect_dsc_t rect_contact;
 static lv_draw_label_dsc_t label_dsc;
 
 static void init_descriptors(void) {
-    lv_color_t bg_color = LVGL_BACKGROUND;
-    lv_color_t fg_color = LVGL_FOREGROUND;
     
     lv_draw_rect_dsc_init(&rect_shell);
-    rect_shell.bg_color = bg_color;
+    rect_shell.bg_color = LVGL_BACKGROUND;
     rect_shell.bg_opa = LV_OPA_COVER;
     rect_shell.border_side = LV_BORDER_SIDE_FULL;
     rect_shell.border_width = BORDER_SZ;
-    rect_shell.border_color = fg_color;
+    rect_shell.border_color = LVGL_FOREGROUND;
 
     lv_draw_rect_dsc_init(&rect_meter);
     rect_meter.bg_opa = LV_OPA_COVER;
 
     lv_draw_rect_dsc_init(&rect_contact);
-    rect_contact.bg_color = fg_color;
+    rect_contact.bg_color = LVGL_FOREGROUND;
     rect_contact.bg_opa = LV_OPA_COVER;
     rect_contact.border_width = BORDER_SZ;
-    rect_contact.border_color = bg_color;
+    rect_contact.border_color = LVGL_BACKGROUND;
     rect_contact.border_side = (NRG_METER_W < NRG_METER_H) ? \
                     (LV_BORDER_SIDE_LEFT || LV_BORDER_SIDE_RIGHT) : \
                     (LV_BORDER_SIDE_TOP || LV_BORDER_SIDE_BOTTOM);
@@ -142,14 +140,14 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     char level_str[4];
     
     if (MONOCHROME) {
-        meter_color = fg_color;
-        text_color = fg_color;
+        meter_color = LVGL_FOREGROUND;
+        text_color = LVGL_FOREGROUND;
     } else if (state.level > 30) {
         meter_color = lv_palette_main(LV_PALETTE_GREEN);
-        text_color = fg_color;
+        text_color = LVGL_FOREGROUND;
     } else if (state.level > 10) {
         meter_color = lv_palette_main(LV_PALETTE_YELLOW);
-        text_color = fg_color;
+        text_color = LVGL_FOREGROUND;
     } else {
         meter_color = lv_palette_main(LV_PALETTE_RED);
         text_color = lv_palette_main(LV_PALETTE_RED);
@@ -162,7 +160,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
         strcpy(level_str, "ERR");
     }
 
-    lv_canvas_fill_bg(battery.canvas, bg_color, LV_OPA_COVER);
+    lv_canvas_fill_bg(battery.canvas, LVGL_BACKGROUND, LV_OPA_COVER);
 
     // Fill energy meter
     const int meter_width = LV_CLAMP(0, (NRG_METER_W * state.level + 50) / 100, NRG_METER_W);
