@@ -137,7 +137,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     char level_str[4];
 
     int text_y = (lv_obj_get_height(battery.canvas) - label_h) / 2;
-#if MONOCHROME
+#ifdef MONOCHROME
     meter_color = LVGL_FOREGROUND;
     text_color = LVGL_FOREGROUND;
 #else 

@@ -51,7 +51,7 @@ static struct output_status_state get_state(const zmk_event_t *_eh)
 
 static void set_status_symbol(struct zmk_widget_output_status *widget, struct output_status_state state)
 {
-#if MONOCHROME
+#ifdef MONOCHROME
     const char *ble_color = LVGL_FOREGROUND;
     const char *usb_color = LVGL_FOREGROUND;
 #else
@@ -72,7 +72,7 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
     switch (state.selected_endpoint.transport) {
         case ZMK_TRANSPORT_USB:
             if (state.usb_is_hid_ready == 0) {
-                snprintf(transport_text, sizeof(transport_text), "⚡");
+                snprintf(transport_text, sizeof(transport_text), "⚡ 󰕓");
             } else {
                 snprintf(transport_text, sizeof(transport_text), "󰕓");
             }
