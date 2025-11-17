@@ -26,11 +26,9 @@ static void init_status_widget(
     widget_obj_getter obj_getter       // функция получения lv_obj_t из виджета
 ) {
     // Расчёт физических размеров
-    const int cell_w = DISPLAY_WIDTH / COL_COUNT;
-    const int cell_h = DISPLAY_HEIGHT / ROW_COUNT;
     lv_point_t size = {
-        .x = colspan * cell_w,
-        .y = rowspan * cell_h
+        .x = colspan * GRID_CELL_WIDTH,
+        .y = rowspan * GRID_CELL_HEIGHT
     };
 
     // Инициализация виджета
@@ -96,15 +94,14 @@ lv_obj_t *zmk_display_status_screen()
     lv_style_set_text_letter_space(&global_style, 1);
     lv_style_set_text_line_space(&global_style, 1);
     lv_obj_add_style(screen, &global_style, LV_PART_MAIN);
-    const int cell_w = DISPLAY_WIDTH / COL_COUNT;
-    const int cell_h = DISPLAY_HEIGHT / ROW_COUNT;
+    
     screen_row_dsc = lv_mem_alloc(ROW_COUNT * sizeof(lv_coord_t));
     if (!screen_row_dsc) {
         LV_LOG_ERROR("Memory allocation failed!");
         return NULL;
     }
     for (uint8_t i = 0; i < ROW_COUNT; i++) {
-        screen_row_dsc[i] = cell_h; 
+        screen_row_dsc[i] = GRID_CELL_HEIGHT; 
     }
     screen_row_dsc[ROW_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
 
@@ -114,13 +111,13 @@ lv_obj_t *zmk_display_status_screen()
         return NULL;
     }
     for (uint8_t i = 0; i < COL_COUNT; i++) {
-        screen_col_dsc[i] = cell_w; 
+        screen_col_dsc[i] = GRID_CELL_WIDTH; 
     }
     screen_col_dsc[COL_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
     lv_obj_set_layout(screen, LV_LAYOUT_GRID);
     lv_obj_set_style_grid_column_dsc_array(screen, screen_col_dsc, 0);
     lv_obj_set_style_grid_row_dsc_array(screen, screen_row_dsc, 0);
-    fill_grid_with_coordinates(screen, ROW_COUNT, COL_COUNT, GRID_CELL_WIDTH, GRID_CELL_HEIGHT);
+    
 
 #if CONFIG_DONGLE_SCREEN_WPM_ACTIVE
     init_status_widget(
@@ -176,6 +173,5 @@ lv_obj_t *zmk_display_status_screen()
         zmk_widget_dongle_battery_status_obj
     );
 #endif
-
     return screen;
 }
