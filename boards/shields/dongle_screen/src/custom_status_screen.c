@@ -43,7 +43,7 @@ static lv_coord_t *screen_col_dsc;
 
 lv_obj_t *zmk_display_status_screen()
 {
-    lv_style_init(&globa_style);
+    lv_style_init(&global_style);
     
     lv_obj_t *screen;
     screen = lv_obj_create(NULL);
