@@ -44,7 +44,7 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #elif CONFIG_LV_COLOR_DEPTH == 32
 #define BYTES_PER_PIXEL 4
 #else 
-#define BYTES_PER_PIXEL 
+#define BYTES_PER_PIXEL 1
 #define MONOCHROME
 #endif
 
