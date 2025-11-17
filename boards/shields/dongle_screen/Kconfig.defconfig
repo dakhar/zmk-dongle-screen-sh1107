@@ -96,6 +96,11 @@ config DONGLE_SCREEN_BATTERY_ACTIVE
     default y
     help
       If the Battery Widget should be active or not
+config DONGLE_SCREEN_BATTERY_VERTICAL
+    bool "Vertical battery align"
+    default y
+    help
+      If the Vertical battery align should be active or not
 
 config DONGLE_SCREEN_SYSTEM_ICON
     int "The icon to display when the 'LGUI'/'RGUI' is pressed. (0: macOS, 1: Linux, 2: Windows)"

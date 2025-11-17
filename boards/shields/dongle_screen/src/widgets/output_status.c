@@ -108,7 +108,7 @@ ZMK_SUBSCRIPTION(widget_output_status, zmk_ble_active_profile_changed);
 ZMK_SUBSCRIPTION(widget_output_status, zmk_usb_conn_state_changed);
 
 // output_status.c
-int zmk_widget_output_status_init(struct zmk_widget_output_status *widget, lv_obj_t *parent)
+int zmk_widget_output_status_init(struct zmk_widget_output_status *widget, lv_obj_t *parent, lv_point_t size)
 {
     widget->obj = lv_obj_create(parent);
     lv_coord_t parent_width = lv_obj_get_width(parent);

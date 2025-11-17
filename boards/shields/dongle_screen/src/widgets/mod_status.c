@@ -53,7 +53,7 @@ static void mod_status_timer_cb(struct k_timer *timer)
 
 static struct k_timer mod_status_timer;
 
-int zmk_widget_mod_status_init(struct zmk_widget_mod_status *widget, lv_obj_t *parent)
+int zmk_widget_mod_status_init(struct zmk_widget_mod_status *widget, lv_obj_t *parent, lv_point_t size)
 {
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, 180, 40);

@@ -29,21 +29,8 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define BAT_COUNT (ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET)
-#define LABEL_W 25
-#define NRG_METER_W 4
-#define NRG_METER_H 20
 #define BORDER_SZ   1
-#define CONTACT_L    2
-
-#if NRG_METER_W >= NRG_METER_H
-#define BATTERY_W   (CONTACT_L + BORDER_SZ + NRG_METER_W + BORDER_SZ)
-#define BATTERY_H   (BORDER_SZ + NRG_METER_H + BORDER_SZ)
-#define CANVAS_W    ((BATTERY_W < LABEL_W) ? LABEL_W : BATTERY_W)
-#else
-#define BATTERY_W   (BORDER_SZ + NRG_METER_W + BORDER_SZ)
-#define BATTERY_H   (BORDER_SZ + NRG_METER_H + BORDER_SZ + CONTACT_L)
-#define CANVAS_W    (BATTERY_W + LABEL_W)
-#endif
+#define CONTACT_L   3
 
 #if CONFIG_LV_COLOR_DEPTH == 8
 #define BYTES_PER_PIXEL 1
@@ -56,14 +43,38 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define MONOCHROME true
 #endif
 
+static int battery_h;
+static int battery_w;
+static int nrg_meter_h;
+static int nrg_meter_w;
+static int lable_max_w;
+static int label_h;
+
+static lv_draw_label_dsc_t label_dsc;
+
+static void calc_battery_dimensions(lv_obj_t *obj, lv_point_t size) {
+    if (CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL) {
+        nrg_meter_h = size.y - BORDER_SZ * 2 - CONTACT_L;
+        nrg_meter_w = nrg_meter_h / 2;
+        battery_h = nrg_meter_h + BORDER_SZ * 2 + CONTACT_L;
+        battery_w = nrg_meter_w + BORDER_SZ * 2;
+        lable_max_w = (size.w / BAT_COUNT) - battery_w;
+    } else {
+        nrg_meter_w = size.w - BORDER_SZ * 2 - CONTACT_L;
+        nrg_meter_h = nrg_meter_w / 2;
+        battery_h = nrg_meter_h + BORDER_SZ * 2;
+        battery_w = nrg_meter_w + BORDER_SZ * 2 + CONTACT_L;
+        lable_max_w = (size.w / BAT_COUNT);
+    }
+    const lv_font_t *font = label_dsc.font ? label_dsc.font : lv_theme_get_font_normal(obj);
+    label_h = font->line_height;
+}
 
 static lv_draw_rect_dsc_t rect_shell;
 static lv_draw_rect_dsc_t rect_meter;
 static lv_draw_rect_dsc_t rect_contact;
-static lv_draw_label_dsc_t label_dsc;
 
 static void init_descriptors(void) {
-    
     lv_draw_rect_dsc_init(&rect_shell);
     rect_shell.bg_color = LVGL_BACKGROUND;
     rect_shell.bg_opa = LV_OPA_COVER;
@@ -79,29 +90,9 @@ static void init_descriptors(void) {
     rect_contact.bg_opa = LV_OPA_COVER;
     rect_contact.border_width = BORDER_SZ;
     rect_contact.border_color = LVGL_BACKGROUND;
-    rect_contact.border_side = (NRG_METER_W < NRG_METER_H) ? \
-                    (LV_BORDER_SIDE_TOP || LV_BORDER_SIDE_BOTTOM) : \
-                    (LV_BORDER_SIDE_LEFT || LV_BORDER_SIDE_RIGHT);
-                    
-    lv_draw_label_dsc_init(&label_dsc);
-    label_dsc.font = &lv_font_montserrat_12;
+    rect_contact.border_side = LV_BORDER_SIDE_FULL;
 }
 
-static int label_h = BATTERY_H;
-static void calc_label_h(lv_obj_t *obj) {
-    const lv_font_t *font = label_dsc.font ? label_dsc.font : lv_theme_get_font_normal(obj);
-    label_h = font->line_height;
-}
-
-static int canvas_h = BATTERY_H;
-static void calc_canvas_h(void) {
-    if (NRG_METER_W >= NRG_METER_H) {
-        canvas_h = BATTERY_H + label_h;
-    } else {
-        canvas_h = ((BATTERY_H < label_h) ? label_h : BATTERY_H);
-    }
-    
-}
 
 static lv_coord_t *widget_row_dsc;
 static lv_coord_t *widget_col_dsc;
@@ -150,13 +141,12 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
 }
 
 static void draw_battery(struct battery_state state, struct battery_object battery) {
-    assert(NRG_METER_W > 0 && NRG_METER_H > 0);
-    assert(BATTERY_W > CONTACT_L && BATTERY_H > CONTACT_L);
     if (!battery.canvas) return;
     lv_color_t meter_color;
     lv_color_t text_color;
     char level_str[4];
-    int text_y = (canvas_h - label_h) / 2;
+
+    int text_y = (lv_obj_get_height(battery.canvas) - label_h) / 2;
 
     if (MONOCHROME) {
         meter_color = LVGL_FOREGROUND;
@@ -182,22 +172,22 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     lv_canvas_fill_bg(battery.canvas, LVGL_BACKGROUND, LV_OPA_COVER);
 
     // Fill energy meter
-    const int meter_width = LV_CLAMP(0, (NRG_METER_W * state.level + 50) / 100, NRG_METER_W);
-    const int meter_height = LV_CLAMP(0, (NRG_METER_H * state.level + 50) / 100, NRG_METER_H);
+    const int meter_width = LV_CLAMP(0, (nrg_meter_w * state.level + 50) / 100, nrg_meter_w);
+    const int meter_height = LV_CLAMP(0, (nrg_meter_h * state.level + 50) / 100, nrg_meter_h);
     
-    if (NRG_METER_W >= NRG_METER_H)
+    if (nrg_meter_w > nrg_meter_h)
     {
-        lv_canvas_draw_text (battery.canvas, 0, 0, LABEL_W, &label_dsc, level_str); 
+        lv_canvas_draw_text (battery.canvas, 0, 0, lable_max_w, &label_dsc, level_str); 
         if (state.level < 1 || state.level > 100) return;
-        lv_canvas_draw_rect(battery.canvas, 0, label_h, CONTACT_L, BATTERY_H, &rect_contact);
-        lv_canvas_draw_rect(battery.canvas, CONTACT_L, label_h, BATTERY_W - CONTACT_L, BATTERY_H, &rect_shell);
-        lv_canvas_draw_rect(battery.canvas, CONTACT_L + BORDER_SZ, label_h + BORDER_SZ, meter_width, NRG_METER_H, &rect_meter);
+        lv_canvas_draw_rect(battery.canvas, 0, label_h, CONTACT_L, battery_h, &rect_contact);
+        lv_canvas_draw_rect(battery.canvas, CONTACT_L, label_h, battery_w - CONTACT_L, battery_h, &rect_shell);
+        lv_canvas_draw_rect(battery.canvas, CONTACT_L + BORDER_SZ, label_h + BORDER_SZ, meter_width, nrg_meter_h, &rect_meter);
     } else {
-        lv_canvas_draw_text (battery.canvas, BATTERY_W, text_y, LABEL_W, &label_dsc, level_str);
+        lv_canvas_draw_text (battery.canvas, battery_w, text_y, lable_max_w, &label_dsc, level_str);
         if (state.level < 1 || state.level > 100) return;
-        lv_canvas_draw_rect(battery.canvas, 0, 0, BATTERY_W, CONTACT_L, &rect_contact);
-        lv_canvas_draw_rect(battery.canvas, 0, CONTACT_L, BATTERY_W, BATTERY_H - CONTACT_L, &rect_shell);
-        lv_canvas_draw_rect(battery.canvas, BORDER_SZ, BORDER_SZ, NRG_METER_W, NRG_METER_H - meter_height, &rect_meter);
+        lv_canvas_draw_rect(battery.canvas, 0, 0, battery_w, CONTACT_L, &rect_contact);
+        lv_canvas_draw_rect(battery.canvas, 0, CONTACT_L, battery_w, battery_h - CONTACT_L, &rect_shell);
+        lv_canvas_draw_rect(battery.canvas, BORDER_SZ, BORDER_SZ, nrg_meter_w, nrg_meter_h - meter_height, &rect_meter);
     }
     
 }
@@ -283,19 +273,20 @@ ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_usb_conn_state_changed);
 #endif /* !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL) */
 #endif /* IS_ENABLED(CONFIG_ZMK_DONGLE_DISPLAY_DONGLE_BATTER */
 
-int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_status *widget, lv_obj_t *parent) {
-    init_descriptors();
-    calc_label_h(parent);
-    calc_canvas_h();
+int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_status *widget, lv_obj_t *parent, lv_point_t size) {
+    
+    lv_draw_label_dsc_init(&label_dsc);
+    label_dsc.font = &lv_font_montserrat_12;
 
-    lv_coord_t parent_width = lv_obj_get_width(parent);
+    calc_battery_dimensions(parent,size);
+    init_descriptors();
     
     widget_row_dsc = lv_mem_alloc(2 * sizeof(lv_coord_t));
     if (!widget_row_dsc) {
         LV_LOG_ERROR("Memory allocation failed!");
         return -1;
     }
-    widget_row_dsc[0] = canvas_h;
+    widget_row_dsc[0] = size.y;
     widget_row_dsc[1] = LV_GRID_TEMPLATE_LAST;
 
     widget_col_dsc = lv_mem_alloc((BAT_COUNT + 1) * sizeof(lv_coord_t));
@@ -304,21 +295,21 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
         return -1;
     }
     for (uint8_t i = 0; i < BAT_COUNT; i++) {
-        widget_col_dsc[i] = parent_width / BAT_COUNT; 
+        widget_col_dsc[i] = size.x / BAT_COUNT; 
     }
     widget_col_dsc[BAT_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
     
     widget->obj = lv_obj_create(parent);
     lv_obj_set_style_grid_column_dsc_array(widget->obj, widget_col_dsc, 0);
     lv_obj_set_style_grid_row_dsc_array(widget->obj, widget_row_dsc, 0);
-    lv_obj_set_size(widget->obj, parent_width, canvas_h);
+    lv_obj_set_size(widget->obj, size.x, size.y);
     lv_obj_center(widget->obj);
     lv_obj_set_layout(widget->obj, LV_LAYOUT_GRID);
 
     for (int i = 0; i < BAT_COUNT; i++) {
         struct battery_object *battery = &battery_objects[i];
         
-        const int buf_size = (CANVAS_W * canvas_h * BYTES_PER_PIXEL);  // bytes
+        const int buf_size = (size.x * size.y * BYTES_PER_PIXEL);  // bytes
         battery->buffer = lv_mem_alloc(buf_size); 
         if (!battery->buffer) {
             LV_LOG_ERROR("Canvas buffer allocation failed!");
@@ -327,7 +318,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
         battery->canvas = lv_canvas_create(widget->obj);
         lv_obj_set_grid_cell(battery->canvas, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_CENTER, 0, 1);
-        lv_canvas_set_buffer(battery->canvas, battery->buffer, CANVAS_W, canvas_h, LV_IMG_CF_TRUE_COLOR);
+        lv_canvas_set_buffer(battery->canvas, battery->buffer, size.x, size.y, LV_IMG_CF_TRUE_COLOR);
         lv_obj_add_flag(battery->canvas, LV_OBJ_FLAG_HIDDEN);
     }
 

@@ -53,7 +53,7 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_wpm_status, struct wpm_status_state,
 ZMK_SUBSCRIPTION(widget_wpm_status, zmk_wpm_state_changed);
 
 // output_status.c
-int zmk_widget_wpm_status_init(struct zmk_widget_wpm_status *widget, lv_obj_t *parent)
+int zmk_widget_wpm_status_init(struct zmk_widget_wpm_status *widget, lv_obj_t *parent, lv_point_t size)
 {
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, 240, 77);
