@@ -309,7 +309,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     for (int i = 0; i < BAT_COUNT; i++) {
         struct battery_object *battery = &battery_objects[i];
         
-        const int buf_size = (size.x * size.y * BYTES_PER_PIXEL);  // bytes
+        const int buf_size = (size.x / BAT_COUNT * size.y * BYTES_PER_PIXEL);  // bytes
         battery->buffer = lv_mem_alloc(buf_size); 
         if (!battery->buffer) {
             LV_LOG_ERROR("Canvas buffer allocation failed!");
@@ -318,7 +318,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
         battery->canvas = lv_canvas_create(widget->obj);
         lv_obj_set_grid_cell(battery->canvas, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_CENTER, 0, 1);
-        lv_canvas_set_buffer(battery->canvas, battery->buffer, size.x, size.y, LV_IMG_CF_TRUE_COLOR);
+        lv_canvas_set_buffer(battery->canvas, battery->buffer, size.x / BAT_COUNT, size.y, LV_IMG_CF_TRUE_COLOR);
         lv_obj_add_flag(battery->canvas, LV_OBJ_FLAG_HIDDEN);
     }
 
