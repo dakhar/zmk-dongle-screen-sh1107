@@ -26,8 +26,8 @@ static void init_status_widget(
 ) {
     // Расчёт физических размеров
     lv_point_t size = {
-        .x = layout.colspan * GRID_CELL_WIDTH,
-        .y = layout.rowspan * GRID_CELL_HEIGHT
+        .x = layout->colspan * GRID_CELL_WIDTH,
+        .y = layout->rowspan * GRID_CELL_HEIGHT
     };
 
     // Инициализация виджета
@@ -36,8 +36,8 @@ static void init_status_widget(
     // Установка позиции в сетке
     lv_obj_set_grid_cell(
         obj_getter(widget),
-        LV_GRID_ALIGN_CENTER, layout.col, layout.colspan,
-        LV_GRID_ALIGN_CENTER, layout.row, layout.rowspan
+        LV_GRID_ALIGN_CENTER, layout->col, layout->colspan,
+        LV_GRID_ALIGN_CENTER, layout->row, layout->rowspan
     );
 }
 
@@ -92,7 +92,7 @@ lv_obj_t *zmk_display_status_screen()
     lv_obj_set_size(screen, DISPLAY_WIDTH, DISPLAY_HEIGHT);
     lv_obj_set_style_bg_color(screen, LVGL_BACKGROUND, LV_PART_MAIN);
     lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, LV_PART_MAIN);
-    lv_style_set_text_font(&global_style, &lv_font_unscii_8); // ToDo: Font is not recognized
+    // lv_style_set_text_font(&global_style, &lv_font_unscii_8); // ToDo: Font is not recognized
     lv_style_set_text_color(&global_style, LVGL_FOREGROUND);
     lv_style_set_text_letter_space(&global_style, 1);
     lv_style_set_text_line_space(&global_style, 1);
