@@ -135,7 +135,7 @@ lv_obj_t *zmk_display_status_screen()
         &output_status_widget,
         screen,
         0, 1,      // col, row
-        1, 1,      // colspan, rowspan
+        COL_COUNT, 1,      // colspan, rowspan
         zmk_widget_output_status_init,
         zmk_widget_output_status_obj
     );
@@ -146,7 +146,7 @@ lv_obj_t *zmk_display_status_screen()
         &layer_status_widget,
         screen,
         0, 2,      // col, row
-        1, 1,      // colspan, rowspan
+        COL_COUNT, 1,      // colspan, rowspan
         zmk_widget_layer_status_init,
         zmk_widget_layer_status_obj
     );
@@ -157,7 +157,7 @@ lv_obj_t *zmk_display_status_screen()
         &mod_widget,
         screen,
         0, 3,      // col, row
-        1, 1,      // colspan, rowspan
+        COL_COUNT, 1,      // colspan, rowspan
         zmk_widget_mod_status_init,
         zmk_widget_mod_status_obj
     );
@@ -168,7 +168,7 @@ lv_obj_t *zmk_display_status_screen()
         &dongle_battery_status_widget,
         screen,
         0, 4,      // col, row
-        1, 1,      // colspan, rowspan
+        COL_COUNT, 1,      // colspan, rowspan
         zmk_widget_dongle_battery_status_init,
         zmk_widget_dongle_battery_status_obj
     );
