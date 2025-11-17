@@ -90,29 +90,28 @@ lv_obj_t *zmk_display_status_screen()
 
 #if CONFIG_DONGLE_SCREEN_OUTPUT_ACTIVE
     zmk_widget_output_status_init(&output_status_widget, screen);
-    lv_obj_set_grid_cell(zmk_widget_wpm_status_obj(&output_status_widget), 
+    lv_obj_set_grid_cell(zmk_widget_output_status_obj(&output_status_widget), 
                             LV_GRID_ALIGN_CENTER, 3, COL_COUNT-3,
                             LV_GRID_ALIGN_CENTER, 0, 1);
 #endif
 
 #if CONFIG_DONGLE_SCREEN_LAYER_ACTIVE
     zmk_widget_layer_status_init(&layer_status_widget, screen);
-    lv_obj_set_grid_cell(zmk_widget_wpm_status_obj(&layer_status_widget), 
+    lv_obj_set_grid_cell(zmk_widget_layer_status_obj(&layer_status_widget), 
                             LV_GRID_ALIGN_CENTER, 0, COL_COUNT,
                             LV_GRID_ALIGN_CENTER, 1, 2);
 #endif
 
 #if CONFIG_DONGLE_SCREEN_MODIFIER_ACTIVE
     zmk_widget_mod_status_init(&mod_widget, screen);
-    lv_obj_align(zmk_widget_mod_status_obj(&mod_widget), LV_ALIGN_CENTER, 0, 35);
-    lv_obj_set_grid_cell(zmk_widget_wpm_status_obj(&mod_widget), 
+    lv_obj_set_grid_cell(zmk_widget_mod_status_obj(&mod_widget), 
                             LV_GRID_ALIGN_CENTER, 0, COL_COUNT,
                             LV_GRID_ALIGN_CENTER, ROW_COUNT-2, 1);
 #endif
 
 #if CONFIG_DONGLE_SCREEN_BATTERY_ACTIVE
     zmk_widget_dongle_battery_status_init(&dongle_battery_status_widget, screen);
-    lv_obj_set_grid_cell(zmk_widget_wpm_status_obj(&dongle_battery_status_widget), 
+    lv_obj_set_grid_cell(zmk_widget_dongle_battery_status_obj(&dongle_battery_status_widget), 
                             LV_GRID_ALIGN_CENTER, 0, COL_COUNT,
                             LV_GRID_ALIGN_CENTER, ROW_COUNT-1, 1);
 #endif
