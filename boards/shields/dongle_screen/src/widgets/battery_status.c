@@ -44,7 +44,7 @@ static lv_draw_label_dsc_t label_dsc;
 static void calc_battery_dimensions(lv_obj_t *obj, lv_point_t size) {
     const lv_font_t *font = label_dsc.font ? label_dsc.font : lv_theme_get_font_normal(obj);
     label_h = font->line_height;
-#if CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL
+#ifdef CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL
     battery_h = size.y - CONTACT_L;
     battery_w = battery_h / 2;
 #else
