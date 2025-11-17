@@ -59,7 +59,7 @@ lv_obj_t *zmk_display_status_screen()
     lv_style_set_text_line_space(&global_style, 1);
     lv_obj_add_style(screen, &global_style, LV_PART_MAIN);
     const int cell_w = DISPLAY_WIDTH / ROW_COUNT;
-    const int cell_h = DISPLAY_HEIGHT / COL_COUNT
+    const int cell_h = DISPLAY_HEIGHT / COL_COUNT;
     screen_row_dsc = lv_mem_alloc(ROW_COUNT * sizeof(lv_coord_t));
     if (!screen_row_dsc) {
         LV_LOG_ERROR("Memory allocation failed!");

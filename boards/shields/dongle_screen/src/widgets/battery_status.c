@@ -53,21 +53,22 @@ static int label_h;
 static lv_draw_label_dsc_t label_dsc;
 
 static void calc_battery_dimensions(lv_obj_t *obj, lv_point_t size) {
+    const lv_font_t *font = label_dsc.font ? label_dsc.font : lv_theme_get_font_normal(obj);
+    label_h = font->line_height;
     if (CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL) {
         nrg_meter_h = size.y - BORDER_SZ * 2 - CONTACT_L;
         nrg_meter_w = nrg_meter_h / 2;
         battery_h = nrg_meter_h + BORDER_SZ * 2 + CONTACT_L;
         battery_w = nrg_meter_w + BORDER_SZ * 2;
-        lable_max_w = (size.w / BAT_COUNT) - battery_w;
+        lable_max_w = (size.x / BAT_COUNT) - battery_w;
     } else {
-        nrg_meter_w = size.w - BORDER_SZ * 2 - CONTACT_L;
+        nrg_meter_w = (size.x / BAT_COUNT) - BORDER_SZ * 2 - CONTACT_L;
         nrg_meter_h = nrg_meter_w / 2;
+        nrg_meter_h = (size.y - label_h) > nrg_meter_h ? nrg_meter_h : (size.y - label_h);
         battery_h = nrg_meter_h + BORDER_SZ * 2;
         battery_w = nrg_meter_w + BORDER_SZ * 2 + CONTACT_L;
-        lable_max_w = (size.w / BAT_COUNT);
+        lable_max_w = (size.x / BAT_COUNT);
     }
-    const lv_font_t *font = label_dsc.font ? label_dsc.font : lv_theme_get_font_normal(obj);
-    label_h = font->line_height;
 }
 
 static lv_draw_rect_dsc_t rect_shell;
