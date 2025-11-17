@@ -58,15 +58,16 @@ static void calc_battery_dimensions(lv_obj_t *obj, lv_point_t size) {
     if (CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL) {
         nrg_meter_h = size.y - BORDER_SZ * 2 - CONTACT_L;
         nrg_meter_w = nrg_meter_h / 2;
-        battery_h = nrg_meter_h + BORDER_SZ * 2 + CONTACT_L;
-        battery_w = nrg_meter_w + BORDER_SZ * 2;
-        lable_max_w = (size.x / BAT_COUNT) - battery_w;
     } else {
         nrg_meter_w = (size.x / BAT_COUNT) - BORDER_SZ * 2 - CONTACT_L;
         nrg_meter_h = nrg_meter_w / 2;
         nrg_meter_h = (size.y - label_h) > nrg_meter_h ? nrg_meter_h : (size.y - label_h);
-        battery_h = nrg_meter_h + BORDER_SZ * 2;
-        battery_w = nrg_meter_w + BORDER_SZ * 2 + CONTACT_L;
+    }
+    battery_w = nrg_meter_w + BORDER_SZ * 2;
+    battery_h = nrg_meter_h + BORDER_SZ * 2;
+    if (CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL) {
+        lable_max_w = (size.x / BAT_COUNT) - battery_w;
+    } else {
         lable_max_w = (size.x / BAT_COUNT);
     }
 }
@@ -181,14 +182,15 @@ static void draw_battery(struct battery_state state, struct battery_object batte
         lv_canvas_draw_text (battery.canvas, 0, 0, lable_max_w, &label_dsc, level_str); 
         if (state.level < 1 || state.level > 100) return;
         lv_canvas_draw_rect(battery.canvas, 0, label_h, CONTACT_L, battery_h, &rect_contact);
-        lv_canvas_draw_rect(battery.canvas, CONTACT_L, label_h, battery_w - CONTACT_L, battery_h, &rect_shell);
-        lv_canvas_draw_rect(battery.canvas, CONTACT_L + BORDER_SZ, label_h + BORDER_SZ, meter_width, nrg_meter_h, &rect_meter);
+        lv_canvas_draw_rect(battery.canvas, CONTACT_L, label_h, battery_w, battery_h, &rect_shell);
+        lv_canvas_draw_rect(battery.canvas, CONTACT_L + battery_w - BORDER_SZ - meter_width, 
+                            label_h + BORDER_SZ, meter_width, nrg_meter_h, &rect_meter);
     } else {
         lv_canvas_draw_text (battery.canvas, battery_w, text_y, lable_max_w, &label_dsc, level_str);
         if (state.level < 1 || state.level > 100) return;
         lv_canvas_draw_rect(battery.canvas, 0, 0, battery_w, CONTACT_L, &rect_contact);
-        lv_canvas_draw_rect(battery.canvas, 0, CONTACT_L, battery_w, battery_h - CONTACT_L, &rect_shell);
-        lv_canvas_draw_rect(battery.canvas, BORDER_SZ, BORDER_SZ, nrg_meter_w, nrg_meter_h - meter_height, &rect_meter);
+        lv_canvas_draw_rect(battery.canvas, 0, CONTACT_L, battery_w, battery_h, &rect_shell);
+        lv_canvas_draw_rect(battery.canvas, BORDER_SZ, CONTACT_L + battery_h - BORDER_SZ - meter_width, nrg_meter_w, meter_height, &rect_meter);
     }
     
 }
