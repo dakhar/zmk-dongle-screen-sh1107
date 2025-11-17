@@ -63,7 +63,7 @@ lv_obj_t *zmk_display_status_screen()
     screen_row_dsc = lv_mem_alloc(ROW_COUNT * sizeof(lv_coord_t));
     if (!screen_row_dsc) {
         LV_LOG_ERROR("Memory allocation failed!");
-        return -1;
+        return NULL;
     }
     for (uint8_t i = 0; i < ROW_COUNT; i++) {
         screen_row_dsc[i] = cell_h; 
@@ -73,7 +73,7 @@ lv_obj_t *zmk_display_status_screen()
     screen_col_dsc = lv_mem_alloc(COL_COUNT * sizeof(lv_coord_t));
     if (!screen_col_dsc) {
         LV_LOG_ERROR("Memory allocation failed!");
-        return -1;
+        return NULL;
     }
     for (uint8_t i = 0; i < COL_COUNT; i++) {
         screen_col_dsc[i] = cell_w; 

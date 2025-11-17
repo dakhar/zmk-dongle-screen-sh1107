@@ -67,10 +67,8 @@ ZMK_SUBSCRIPTION(widget_layer_status, zmk_layer_state_changed);
 int zmk_widget_layer_status_init(struct zmk_widget_layer_status *widget, lv_obj_t *parent, lv_point_t size)
 {    
     const lv_font_t *font = &lv_font_montserrat_32;
-
-    lv_coord_t parent_width = lv_obj_get_width(parent);
     widget->obj = lv_label_create(parent);
-    lv_obj_set_size(widget->obj, parent_width, font->line_height);
+    lv_obj_set_size(widget->obj, size.x, font->line_height);
     lv_obj_center(widget->obj);
     lv_obj_set_style_text_font(widget->obj, font, 0);
 
