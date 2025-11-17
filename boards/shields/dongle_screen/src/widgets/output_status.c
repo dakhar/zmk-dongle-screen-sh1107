@@ -51,21 +51,6 @@ static struct output_status_state get_state(const zmk_event_t *_eh)
 
 static void set_status_symbol(struct zmk_widget_output_status *widget, struct output_status_state state)
 {
-#ifdef MONOCHROME
-    const char *ble_color = LVGL_FOREGROUND;
-    const char *usb_color = LVGL_FOREGROUND;
-#else
-    const char *ble_color = LVGL_FOREGROUND;
-    const char *usb_color = LVGL_FOREGROUND;
-
-    if (state.active_profile_connected == 1) {
-        ble_color = lv_palette_main(LV_PALETTE_GREEN);
-    } else if (state.active_profile_bonded == 1) {
-        ble_color = lv_palette_main(LV_PALETTE_BLUE);
-    } else {
-        ble_color = LVGL_FOREGROUND;
-    }
-#endif
     
     char transport_text[50] = {};
 
