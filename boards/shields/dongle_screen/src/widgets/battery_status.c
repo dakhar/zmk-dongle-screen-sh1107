@@ -31,7 +31,7 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define BAT_COUNT (ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET)
 #define LABEL_W 25
 #define NRG_METER_W 4
-#define NRG_METER_H 25
+#define NRG_METER_H 20
 #define BORDER_SZ   1
 #define CONTACT_L    2
 
@@ -84,6 +84,7 @@ static void init_descriptors(void) {
                     (LV_BORDER_SIDE_TOP || LV_BORDER_SIDE_BOTTOM);
                     
     lv_draw_label_dsc_init(&label_dsc);
+    label_dsc.font = LV_FONT_MONTSERRAT_14;
 }
 
 static int label_h = BATTERY_H;
@@ -194,7 +195,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     } else {
         lv_canvas_draw_text (battery.canvas, BATTERY_W, text_y, LABEL_W, &label_dsc, level_str);
         if (state.level < 1 || state.level > 100) return;
-        lv_canvas_draw_rect(battery.canvas, 0, 0, BATTERY_W, BATTERY_H - CONTACT_L, &rect_contact);
+        lv_canvas_draw_rect(battery.canvas, 0, 0, BATTERY_W, CONTACT_L, &rect_contact);
         lv_canvas_draw_rect(battery.canvas, 0, CONTACT_L, BATTERY_W, BATTERY_H - CONTACT_L, &rect_shell);
         lv_canvas_draw_rect(battery.canvas, BORDER_SZ, BORDER_SZ, NRG_METER_W, NRG_METER_H - meter_height, &rect_meter);
     }
