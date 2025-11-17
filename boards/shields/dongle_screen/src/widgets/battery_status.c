@@ -45,7 +45,7 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define BYTES_PER_PIXEL 4
 #else 
 #define BYTES_PER_PIXEL 1
-#define MONOCHROME
+#define MONOCHROME true
 #endif
 
 struct battery_state {
