@@ -154,7 +154,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     int nrg_meter; 
     if (NRG_METER_W >= NRG_METER_H)
     {
-        rect_shell.border_side = (LV_BORDER_SIDE_UP || LV_BORDER_SIDE_DOWN);
+        rect_shell.border_side = (LV_BORDER_SIDE_TOP || LV_BORDER_SIDE_BOTTOM);
         lv_canvas_draw_rect(battery.canvas, 0, 0, CONTACT_L, BATTERY_H, &rect_contact);
         lv_canvas_draw_rect(battery.canvas, CONTACT_L, 0, BATTERY_W - CONTACT_L, BATTERY_H, &rect_shell);
         nrg_meter = (NRG_METER_W * state.level + 50) / 100;  // Округление
