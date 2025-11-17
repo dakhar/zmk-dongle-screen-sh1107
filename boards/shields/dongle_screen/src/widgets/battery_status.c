@@ -44,7 +44,8 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #elif CONFIG_LV_COLOR_DEPTH == 32
 #define BYTES_PER_PIXEL 4
 #else 
-#define BYTES_PER_PIXEL 1
+#define BYTES_PER_PIXEL 
+#define MONOCHROME
 #endif
 
 struct battery_state {
@@ -99,7 +100,9 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     lv_color_t bg_color = LVGL_BACKGROUND;
     lv_color_t fg_color = LVGL_FOREGROUND;
     lv_color_t meter_color;
-    if (state.level > 30) {
+    if (MONOCHROME) {
+        meter_color = fg_color;
+    } else if (state.level > 30) {
         meter_color = lv_palette_main(LV_PALETTE_GREEN);
     } else if (state.level > 10) {
         meter_color = lv_palette_main(LV_PALETTE_YELLOW);
@@ -122,7 +125,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
 
     lv_draw_rect_dsc_t rect_contact;
     lv_draw_rect_dsc_init(&rect_contact);
-    rect_contact.bg_color = bg_color;
+    rect_contact.bg_color = fg_color;
     rect_contact.bg_opa = LV_OPA_COVER;
 
     lv_canvas_fill_bg(battery.symbol, bg_color, LV_OPA_COVER);
