@@ -166,19 +166,19 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     const int meter_width = LV_CLAMP(0, (nrg_meter_w * state.level + 50) / 100, nrg_meter_w);
     const int meter_height = LV_CLAMP(0, (nrg_meter_h * state.level + 50) / 100, nrg_meter_h);
 #ifdef CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL
-    lv_canvas_draw_text (battery.canvas, 0, 0, lable_max_w, &label_dsc, level_str); 
-    if (state.level < 1 || state.level > 100) return;
-    lv_canvas_draw_rect(battery.canvas, 0, label_h, CONTACT_L, battery_h, &rect_contact);
-    lv_canvas_draw_rect(battery.canvas, CONTACT_L, label_h, battery_w, battery_h, &rect_shell);
-    lv_canvas_draw_rect(battery.canvas, CONTACT_L + battery_w - BORDER_SZ - meter_width, 
-                            label_h + BORDER_SZ, meter_width, nrg_meter_h, &rect_meter);
-#else
     lv_canvas_draw_text (battery.canvas, battery_w, text_y, lable_max_w, &label_dsc, level_str);
     if (state.level < 1 || state.level > 100) return;
     lv_canvas_draw_rect(battery.canvas, 0, 0, battery_w, CONTACT_L, &rect_contact);
     lv_canvas_draw_rect(battery.canvas, 0, CONTACT_L, battery_w, battery_h, &rect_shell);
     lv_canvas_draw_rect(battery.canvas, BORDER_SZ, CONTACT_L + battery_h - BORDER_SZ - meter_height, 
                         nrg_meter_w, meter_height, &rect_meter);
+#else
+    lv_canvas_draw_text (battery.canvas, 0, 0, lable_max_w, &label_dsc, level_str); 
+    if (state.level < 1 || state.level > 100) return;
+    lv_canvas_draw_rect(battery.canvas, 0, label_h, CONTACT_L, battery_h, &rect_contact);
+    lv_canvas_draw_rect(battery.canvas, CONTACT_L, label_h, battery_w, battery_h, &rect_shell);
+    lv_canvas_draw_rect(battery.canvas, CONTACT_L + battery_w - BORDER_SZ - meter_width, 
+                            label_h + BORDER_SZ, meter_width, nrg_meter_h, &rect_meter);
 #endif
     
 }
