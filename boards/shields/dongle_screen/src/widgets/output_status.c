@@ -128,7 +128,7 @@ int zmk_widget_output_status_init(struct zmk_widget_output_status *widget, lv_ob
                             LV_GRID_ALIGN_CENTER, 0, 1);
 
     widget->ble_label = lv_label_create(widget->obj);
-    lv_obj_set_grid_cell(ble_label,
+    lv_obj_set_grid_cell(widget->ble_label,
                             LV_GRID_ALIGN_CENTER, 0, 2,
                             LV_GRID_ALIGN_CENTER, 1, 1);
 
