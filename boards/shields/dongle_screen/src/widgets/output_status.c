@@ -111,14 +111,14 @@ ZMK_SUBSCRIPTION(widget_output_status, zmk_usb_conn_state_changed);
 int zmk_widget_output_status_init(struct zmk_widget_output_status *widget, lv_obj_t *parent, lv_point_t size)
 {
     widget->obj = lv_obj_create(parent);
-    lv_coord_t parent_width = lv_obj_get_width(parent);
-    lv_obj_set_size(widget->obj, parent_width, 77);
+    
+    lv_obj_set_size(widget->obj, size.x, size.y);
 
     widget->transport_label = lv_label_create(widget->obj);
-    lv_obj_align(widget->transport_label, LV_ALIGN_TOP_RIGHT, -10, 10);
+    // lv_obj_align(widget->transport_label, LV_ALIGN_TOP_RIGHT, -10, 10);
 
     widget->ble_label = lv_label_create(widget->obj);
-    lv_obj_align(widget->ble_label, LV_ALIGN_TOP_RIGHT, -10, 56);
+    // lv_obj_align(widget->ble_label, LV_ALIGN_TOP_RIGHT, -10, );
 
     sys_slist_append(&widgets, &widget->node);
 

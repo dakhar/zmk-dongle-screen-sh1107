@@ -87,7 +87,7 @@ config DONGLE_SCREEN_LAYER_ACTIVE
 
 config DONGLE_SCREEN_OUTPUT_ACTIVE
     bool "Output Widget active"
-    default n
+    default y
     help
       If the Output Widget should be active or not
 
