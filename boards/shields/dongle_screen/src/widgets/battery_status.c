@@ -190,7 +190,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
         if (state.level < 1 || state.level > 100) return;
         lv_canvas_draw_rect(battery.canvas, 0, 0, battery_w, CONTACT_L, &rect_contact);
         lv_canvas_draw_rect(battery.canvas, 0, CONTACT_L, battery_w, battery_h, &rect_shell);
-        lv_canvas_draw_rect(battery.canvas, BORDER_SZ, CONTACT_L + battery_h - BORDER_SZ - meter_width, nrg_meter_w, meter_height, &rect_meter);
+        lv_canvas_draw_rect(battery.canvas, BORDER_SZ, CONTACT_L + battery_h - BORDER_SZ - meter_height, nrg_meter_w, meter_height, &rect_meter);
     }
     
 }

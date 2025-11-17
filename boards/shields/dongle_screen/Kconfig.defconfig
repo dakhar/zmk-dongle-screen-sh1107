@@ -98,7 +98,7 @@ config DONGLE_SCREEN_BATTERY_ACTIVE
       If the Battery Widget should be active or not
 config DONGLE_SCREEN_BATTERY_VERTICAL
     bool "Vertical battery align"
-    default y
+    default n
     help
       If the Vertical battery align should be active or not
 
