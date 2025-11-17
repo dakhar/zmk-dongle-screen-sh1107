@@ -16,6 +16,7 @@ config ZMK_DISPLAY_STATUS_SCREEN_CUSTOM
     select LV_USE_LINE 
     select LV_USE_GRID
     select LV_FONT_UNSCII_8
+    select LV_FONT_MONTSERRAT_32
     select ZMK_WPM
     imply ZMK_HID_INDICATORS
 
@@ -52,9 +53,6 @@ config LV_DISP_DEF_REFR_PERIOD
 choice LV_FONT_DEFAULT
     default LV_FONT_DEFAULT_MONTSERRAT_20
 endchoice
-
-config LV_FONT_MONTSERRAT_40
-    default y
 
 config DONGLE_SCREEN_IDLE_TIMEOUT_S
     int "Screen idle timeout in seconds (0 = never off)"
