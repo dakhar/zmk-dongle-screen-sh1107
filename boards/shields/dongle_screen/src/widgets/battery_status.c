@@ -70,47 +70,37 @@ struct battery_object {
     lv_obj_t *canvas;
 } battery_objects[BAT_COUNT];
 
-static lv_color_t bg_color;
-static lv_color_t fg_color;
 
-static void init_palette(void) {
-    // Вычисляем цвета с учётом инверсии
-    lv_color_t bg = IS_ENABLED(CONFIG_ZMK_DISPLAY_INVERT) 
-                    ? lv_color_black()
-                    : lv_color_white();
-    lv_color_t fg = IS_ENABLED(CONFIG_ZMK_DISPLAY_INVERT)
-                    ? lv_color_white()
-                    : lv_color_black();
-    // Заполняем палитру
-    bg_color = bg;
-    fg_color = fg;
+static lv_draw_rect_dsc_t rect_shell;
+static lv_draw_rect_dsc_t rect_meter;
+static lv_draw_rect_dsc_t rect_contact;
+static lv_draw_label_dsc_t label_dsc;
+
+static void init_descriptors(void) {
+    lv_color_t bg_color = LVGL_BACKGROUND;
+    lv_color_t fg_color = LVGL_FOREGROUND;
+    
+    lv_draw_rect_dsc_init(&rect_shell);
+    rect_shell.bg_color = bg_color;
+    rect_shell.bg_opa = LV_OPA_COVER;
+    rect_shell.border_side = LV_BORDER_SIDE_FULL;
+    rect_shell.border_width = BORDER_SZ;
+    rect_shell.border_color = fg_color;
+
+    lv_draw_rect_dsc_init(&rect_meter);
+    rect_meter.bg_opa = LV_OPA_COVER;
+
+    lv_draw_rect_dsc_init(&rect_contact);
+    rect_contact.bg_color = fg_color;
+    rect_contact.bg_opa = LV_OPA_COVER;
+    rect_contact.border_width = BORDER_SZ;
+    rect_contact.border_color = bg_color;
+    rect_contact.border_side = (NRG_METER_W < NRG_METER_H) ? \
+                    (LV_BORDER_SIDE_LEFT || LV_BORDER_SIDE_RIGHT) : \
+                    (LV_BORDER_SIDE_TOP || LV_BORDER_SIDE_BOTTOM);
+                    
+    lv_draw_label_dsc_init(&label_dsc);
 }
-init_palette();
-
-lv_draw_rect_dsc_t rect_shell;
-lv_draw_rect_dsc_init(&rect_shell);
-rect_shell.bg_color = bg_color;
-rect_shell.bg_opa = LV_OPA_COVER;
-rect_shell.border_side = LV_BORDER_SIDE_FULL;
-rect_shell.border_width = BORDER_SZ;
-rect_shell.border_color = fg_color;
-
-lv_draw_rect_dsc_t rect_meter;
-lv_draw_rect_dsc_init(&rect_meter);
-rect_meter.bg_opa = LV_OPA_COVER;
-
-lv_draw_rect_dsc_t rect_contact;
-lv_draw_rect_dsc_init(&rect_contact);
-rect_contact.bg_color = fg_color;
-rect_contact.bg_opa = LV_OPA_COVER;
-rect_contact.border_width = BORDER_SZ;
-rect_contact.border_color = bg_color;
-rect_contact.border_side = (NRG_METER_W < NRG_METER_H) ? \
-                (LV_BORDER_SIDE_LEFT || LV_BORDER_SIDE_RIGHT) : \
-                (LV_BORDER_SIDE_TOP || LV_BORDER_SIDE_BOTTOM);
-
-lv_draw_label_dsc_t label_dsc;
-lv_draw_label_dsc_init(&label_dsc);
 
 // Peripheral reconnection tracking
 // ZMK sends battery events with level < 1 when peripherals disconnect
@@ -277,7 +267,7 @@ ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_usb_conn_state_changed);
 #endif /* IS_ENABLED(CONFIG_ZMK_DONGLE_DISPLAY_DONGLE_BATTER */
 
 int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_status *widget, lv_obj_t *parent) {
-
+    init_descriptors();
     lv_coord_t parent_width = lv_obj_get_width(parent);
     
     static lv_coord_t row_dsc[] = {CANVAS_H, LV_GRID_TEMPLATE_LAST};
