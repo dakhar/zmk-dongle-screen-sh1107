@@ -80,11 +80,11 @@ static void init_descriptors(void) {
     rect_contact.border_width = BORDER_SZ;
     rect_contact.border_color = LVGL_BACKGROUND;
     rect_contact.border_side = (NRG_METER_W < NRG_METER_H) ? \
-                    (LV_BORDER_SIDE_LEFT || LV_BORDER_SIDE_RIGHT) : \
-                    (LV_BORDER_SIDE_TOP || LV_BORDER_SIDE_BOTTOM);
+                    (LV_BORDER_SIDE_TOP || LV_BORDER_SIDE_BOTTOM) : \
+                    (LV_BORDER_SIDE_LEFT || LV_BORDER_SIDE_RIGHT);
                     
     lv_draw_label_dsc_init(&label_dsc);
-    label_dsc.font = LV_FONT_MONTSERRAT_14;
+    label_dsc.font = &lv_font_montserrat_14;
 }
 
 static int label_h = BATTERY_H;
