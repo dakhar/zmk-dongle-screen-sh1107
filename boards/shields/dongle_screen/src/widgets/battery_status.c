@@ -92,6 +92,9 @@ static void calc_label_height(lv_obj_t *obj) {
     label_height = font->line_height;
 }
 
+static lv_coord_t *widget_row_dsc;
+static lv_coord_t *widget_col_dsc;
+
 struct battery_state {
     uint8_t source;
     uint8_t level;
@@ -272,30 +275,38 @@ ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_usb_conn_state_changed);
 
 int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_status *widget, lv_obj_t *parent) {
     init_descriptors();
-    calc_label_height(parent);
-    lv_coord_t parent_width = lv_obj_get_width(parent);
-    
+    calc_label_height();
+
+    int canvas_h;
     if (NRG_METER_W >= NRG_METER_H) {
         const int canvas_h = BATTERY_H + label_height;
     } else {
         const int canvas_h = ((BATTERY_H < label_height) ? label_height : BATTERY_H);
     }
-
-    static lv_coord_t row_dsc[] = {canvas_h, LV_GRID_TEMPLATE_LAST};
     
-    lv_coord_t *col_dsc = lv_mem_alloc((BAT_COUNT + 1) * sizeof(lv_coord_t));
-    if (!col_dsc) {
+    lv_coord_t parent_width = lv_obj_get_width(parent);
+    
+    widget_row_dsc = lv_mem_alloc(2 * sizeof(lv_coord_t));
+    if (!widget_row_dsc) {
+        LV_LOG_ERROR("Memory allocation failed!");
+        return -1;
+    }
+    widget_row_dsc[0] = canvas_h;
+    widget_row_dsc[1] = LV_GRID_TEMPLATE_LAST;
+
+    widget_col_dsc = lv_mem_alloc((BAT_COUNT + 1) * sizeof(lv_coord_t));
+    if (!widget_col_dsc) {
         LV_LOG_ERROR("Memory allocation failed!");
         return -1;
     }
     for (uint8_t i = 0; i < BAT_COUNT; i++) {
-        col_dsc[i] = parent_width / BAT_COUNT; 
+        widget_col_dsc[i] = parent_width / BAT_COUNT; 
     }
-    col_dsc[BAT_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
+    widget_col_dsc[BAT_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
     
     widget->obj = lv_obj_create(parent);
-    lv_obj_set_style_grid_column_dsc_array(widget->obj, col_dsc, 0);
-    lv_obj_set_style_grid_row_dsc_array(widget->obj, row_dsc, 0);
+    lv_obj_set_style_grid_column_dsc_array(widget->obj, widget_col_dsc, 0);
+    lv_obj_set_style_grid_row_dsc_array(widget->obj, widget_row_dsc, 0);
     lv_obj_set_size(widget->obj, parent_width, canvas_h);
     lv_obj_center(widget->obj);
     lv_obj_set_layout(widget->obj, LV_LAYOUT_GRID);
