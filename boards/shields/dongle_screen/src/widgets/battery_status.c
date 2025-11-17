@@ -92,8 +92,6 @@ static void calc_label_height(lv_obj_t *obj) {
     label_height = font->line_height;
 }
 
-static int canvas_h;
-
 struct battery_state {
     uint8_t source;
     uint8_t level;
