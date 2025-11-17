@@ -93,7 +93,7 @@ static void calc_label_h(lv_obj_t *obj) {
 }
 
 static int canvas_h = BATTERY_H;
-static void calc_canvas_h(lv_obj_t *obj) {
+static void calc_canvas_h(void) {
     if (NRG_METER_W >= NRG_METER_H) {
         canvas_h = BATTERY_H + label_h;
     } else {
@@ -284,7 +284,7 @@ ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_usb_conn_state_changed);
 
 int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_status *widget, lv_obj_t *parent) {
     init_descriptors();
-    calc_label_h();
+    calc_label_h(parent);
     calc_canvas_h();
 
     lv_coord_t parent_width = lv_obj_get_width(parent);
