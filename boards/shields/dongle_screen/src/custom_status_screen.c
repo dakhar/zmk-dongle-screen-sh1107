@@ -20,15 +20,14 @@ typedef lv_obj_t* (*widget_obj_getter)(void*);
 static void init_status_widget(
     void *widget,                        // указатель на структуру виджета
     lv_obj_t *parent,                  // родительский контейнер (screen)
-    uint8_t col, uint8_t row,         // позиция в сетке
-    uint8_t colspan, uint8_t rowspan,   // размеры в ячейках сетки
+    struct widget_layout *layout,
     widget_init_func init_func,       // функция инициализации виджета
     widget_obj_getter obj_getter       // функция получения lv_obj_t из виджета
 ) {
     // Расчёт физических размеров
     lv_point_t size = {
-        .x = colspan * GRID_CELL_WIDTH,
-        .y = rowspan * GRID_CELL_HEIGHT
+        .x = layout.colspan * GRID_CELL_WIDTH,
+        .y = layout.rowspan * GRID_CELL_HEIGHT
     };
 
     // Инициализация виджета
@@ -37,15 +36,19 @@ static void init_status_widget(
     // Установка позиции в сетке
     lv_obj_set_grid_cell(
         obj_getter(widget),
-        LV_GRID_ALIGN_CENTER, col, colspan,
-        LV_GRID_ALIGN_CENTER, row, rowspan
+        LV_GRID_ALIGN_CENTER, layout.col, layout.colspan,
+        LV_GRID_ALIGN_CENTER, layout.row, layout.rowspan
     );
 }
 
 struct widget_layout {
     uint8_t col, row, colspan, rowspan;
-    bool active_config;
 };
+struct widget_layout wpm_layout     {0, 0, 3, 1};
+struct widget_layout output_layout  {3, 0, COL_COUNT-3, 2};
+struct widget_layout layer_layout   {0, 2, COL_COUNT, 2};
+struct widget_layout mod_layout     {0, 4, COL_COUNT, 1};
+struct widget_layout battery_layout {0, 5, COL_COUNT, 1};
 
 #if CONFIG_DONGLE_SCREEN_OUTPUT_ACTIVE
 #include "widgets/output_status.h"
@@ -123,8 +126,7 @@ lv_obj_t *zmk_display_status_screen()
     init_status_widget(
         &wpm_status_widget,
         screen,
-        0, 0,      // col, row
-        1, 1,      // colspan, rowspan
+        &wpm_layout,      // colspan, rowspan
         zmk_widget_wpm_status_init,
         zmk_widget_wpm_status_obj
     );
@@ -134,8 +136,7 @@ lv_obj_t *zmk_display_status_screen()
     init_status_widget(
         &output_status_widget,
         screen,
-        0, 1,      // col, row
-        COL_COUNT, 1,      // colspan, rowspan
+        &output_layout,      // colspan, rowspan
         zmk_widget_output_status_init,
         zmk_widget_output_status_obj
     );
@@ -145,8 +146,7 @@ lv_obj_t *zmk_display_status_screen()
     init_status_widget(
         &layer_status_widget,
         screen,
-        0, 2,      // col, row
-        COL_COUNT, 1,      // colspan, rowspan
+        &layer_layout,      // colspan, rowspan
         zmk_widget_layer_status_init,
         zmk_widget_layer_status_obj
     );
@@ -156,8 +156,7 @@ lv_obj_t *zmk_display_status_screen()
     init_status_widget(
         &mod_widget,
         screen,
-        0, 3,      // col, row
-        COL_COUNT, 1,      // colspan, rowspan
+        &mod_layout,      // colspan, rowspan
         zmk_widget_mod_status_init,
         zmk_widget_mod_status_obj
     );
@@ -167,8 +166,7 @@ lv_obj_t *zmk_display_status_screen()
     init_status_widget(
         &dongle_battery_status_widget,
         screen,
-        0, 4,      // col, row
-        COL_COUNT, 1,      // colspan, rowspan
+        &battery_layout,
         zmk_widget_dongle_battery_status_init,
         zmk_widget_dongle_battery_status_obj
     );
