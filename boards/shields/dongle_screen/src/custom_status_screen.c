@@ -71,8 +71,8 @@ static void fill_grid_with_coordinates(lv_obj_t *parent, uint8_t rows, uint8_t c
                 LV_GRID_ALIGN_CENTER, row, 1); // строка, высота в ячейках
 
             // Дополнительно: можно задать стиль (цвет, шрифт)
-            // lv_obj_set_style_text_color(label, lv_color_white(), 0);
-            // lv_obj_set_style_text_font(label, &lv_font_montserrat_12, 0);
+            lv_obj_set_style_text_color(label, lv_color_white(), 0);
+            lv_obj_set_style_text_font(label, &lv_font_montserrat_12, 0);
         }
     }
 }
@@ -82,30 +82,30 @@ struct widget_layout {
     bool active_config;
 };
 
-#if CONFIG_DONGLE_SCREEN_OUTPUT_ACTIVE
-#include "widgets/output_status.h"
-static struct zmk_widget_output_status output_status_widget;
-#endif
+// #if CONFIG_DONGLE_SCREEN_OUTPUT_ACTIVE
+// #include "widgets/output_status.h"
+// static struct zmk_widget_output_status output_status_widget;
+// #endif
 
-#if CONFIG_DONGLE_SCREEN_LAYER_ACTIVE
-#include "widgets/layer_status.h"
-static struct zmk_widget_layer_status layer_status_widget;
-#endif
+// #if CONFIG_DONGLE_SCREEN_LAYER_ACTIVE
+// #include "widgets/layer_status.h"
+// static struct zmk_widget_layer_status layer_status_widget;
+// #endif
 
-#if CONFIG_DONGLE_SCREEN_BATTERY_ACTIVE
-#include "widgets/battery_status.h"
-static struct zmk_widget_dongle_battery_status dongle_battery_status_widget;
-#endif
+// #if CONFIG_DONGLE_SCREEN_BATTERY_ACTIVE
+// #include "widgets/battery_status.h"
+// static struct zmk_widget_dongle_battery_status dongle_battery_status_widget;
+// #endif
 
-#if CONFIG_DONGLE_SCREEN_WPM_ACTIVE
-#include "widgets/wpm_status.h"
-static struct zmk_widget_wpm_status wpm_status_widget;
-#endif
+// #if CONFIG_DONGLE_SCREEN_WPM_ACTIVE
+// #include "widgets/wpm_status.h"
+// static struct zmk_widget_wpm_status wpm_status_widget;
+// #endif
 
-#if CONFIG_DONGLE_SCREEN_MODIFIER_ACTIVE
-#include "widgets/mod_status.h"
-static struct zmk_widget_mod_status mod_widget;
-#endif
+// #if CONFIG_DONGLE_SCREEN_MODIFIER_ACTIVE
+// #include "widgets/mod_status.h"
+// static struct zmk_widget_mod_status mod_widget;
+// #endif
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
