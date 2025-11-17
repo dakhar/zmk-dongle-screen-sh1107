@@ -39,8 +39,11 @@ static struct zmk_widget_mod_status mod_widget;
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 lv_style_t global_style;
-static lv_coord_t *screen_row_dsc;
-static lv_coord_t *screen_col_dsc;
+// static lv_coord_t *screen_row_dsc;
+// static lv_coord_t *screen_col_dsc;
+
+static lv_coord_t screen_row_dsc[] = {20, LV_GRID_FR(1), LV_GRID_FR(2), LV_GRID_FR(3), LV_GRID_FR(4), LV_GRID_FR(5), LV_GRID_TEMPLATE_LAST};
+static lv_coord_t screen_col_dsc[] = {15, LV_GRID_FR(1), LV_GRID_FR(2), LV_GRID_FR(3), LV_GRID_FR(4), LV_GRID_FR(5), LV_GRID_FR(6), LV_GRID_FR(7), LV_GRID_TEMPLATE_LAST};
 
 lv_obj_t *zmk_display_status_screen()
 {
@@ -60,25 +63,25 @@ lv_obj_t *zmk_display_status_screen()
     lv_obj_add_style(screen, &global_style, LV_PART_MAIN);
     const int cell_w = DISPLAY_WIDTH / COL_COUNT;
     const int cell_h = DISPLAY_HEIGHT / ROW_COUNT;
-    screen_row_dsc = lv_mem_alloc(ROW_COUNT * sizeof(lv_coord_t));
-    if (!screen_row_dsc) {
-        LV_LOG_ERROR("Memory allocation failed!");
-        return NULL;
-    }
-    for (uint8_t i = 0; i < ROW_COUNT; i++) {
-        screen_row_dsc[i] = cell_h; 
-    }
-    screen_row_dsc[ROW_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
+    // screen_row_dsc = lv_mem_alloc(ROW_COUNT * sizeof(lv_coord_t));
+    // if (!screen_row_dsc) {
+    //     LV_LOG_ERROR("Memory allocation failed!");
+    //     return NULL;
+    // }
+    // for (uint8_t i = 0; i < ROW_COUNT; i++) {
+    //     screen_row_dsc[i] = cell_h; 
+    // }
+    // screen_row_dsc[ROW_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
 
-    screen_col_dsc = lv_mem_alloc(COL_COUNT * sizeof(lv_coord_t));
-    if (!screen_col_dsc) {
-        LV_LOG_ERROR("Memory allocation failed!");
-        return NULL;
-    }
-    for (uint8_t i = 0; i < COL_COUNT; i++) {
-        screen_col_dsc[i] = cell_w; 
-    }
-    screen_col_dsc[COL_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
+    // screen_col_dsc = lv_mem_alloc(COL_COUNT * sizeof(lv_coord_t));
+    // if (!screen_col_dsc) {
+    //     LV_LOG_ERROR("Memory allocation failed!");
+    //     return NULL;
+    // }
+    // for (uint8_t i = 0; i < COL_COUNT; i++) {
+    //     screen_col_dsc[i] = cell_w; 
+    // }
+    // screen_col_dsc[COL_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
     lv_obj_set_layout(screen, LV_LAYOUT_GRID);
     lv_obj_set_style_grid_column_dsc_array(screen, screen_col_dsc, 0);
     lv_obj_set_style_grid_row_dsc_array(screen, screen_row_dsc, 0);
