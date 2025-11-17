@@ -87,16 +87,12 @@ static void init_descriptors(void) {
 }
 
 static int label_height = BATTERY_H;
-static void get_label_height(lv_obj_t *obj) {
+static void calc_label_height(lv_obj_t *obj) {
     const lv_font_t *font = label_dsc.font ? label_dsc.font : lv_theme_get_font_normal(obj);
     label_height = font->line_height;
 }
 
-#if NRG_METER_W >= NRG_METER_H
-#define CANVAS_H    (BATTERY_H + label_height)
-#else
-#define CANVAS_H    ((BATTERY_H < label_height) ? label_height : BATTERY_H)
-#endif
+
 struct battery_state {
     uint8_t source;
     uint8_t level;
@@ -147,7 +143,8 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     lv_color_t meter_color;
     lv_color_t text_color;
     char level_str[4];
-    int text_y = (CANVAS_H - label_height) / 2;
+    lv_coord_t parent_height = lv_obj_get_height(battery.canvas);
+    int text_y = (parent_height - label_height) / 2;
 
     if (MONOCHROME) {
         meter_color = LVGL_FOREGROUND;
@@ -276,10 +273,16 @@ ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_usb_conn_state_changed);
 
 int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_status *widget, lv_obj_t *parent) {
     init_descriptors();
-    get_label_height(parent);
+    calc_label_height(parent);
     lv_coord_t parent_width = lv_obj_get_width(parent);
-    
-    static lv_coord_t row_dsc[] = {CANVAS_H, LV_GRID_TEMPLATE_LAST};
+    const int canvas_h;
+    if (NRG_METER_W >= NRG_METER_H) {
+        canvas_h = BATTERY_H + label_height;
+    } else {
+        canvas_h = ((BATTERY_H < label_height) ? label_height : BATTERY_H)
+    }
+
+    static lv_coord_t row_dsc[] = {canvas_h, LV_GRID_TEMPLATE_LAST};
     
     lv_coord_t *col_dsc = lv_mem_alloc((BAT_COUNT + 1) * sizeof(lv_coord_t));
     if (!col_dsc) {
@@ -294,14 +297,14 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     widget->obj = lv_obj_create(parent);
     lv_obj_set_style_grid_column_dsc_array(widget->obj, col_dsc, 0);
     lv_obj_set_style_grid_row_dsc_array(widget->obj, row_dsc, 0);
-    lv_obj_set_size(widget->obj, parent_width, CANVAS_H);
+    lv_obj_set_size(widget->obj, parent_width, canvas_h);
     lv_obj_center(widget->obj);
     lv_obj_set_layout(widget->obj, LV_LAYOUT_GRID);
 
     for (int i = 0; i < BAT_COUNT; i++) {
         struct battery_object *battery = &battery_objects[i];
         
-        const int buf_size = (CANVAS_W * CANVAS_H * BYTES_PER_PIXEL);  // bytes
+        const int buf_size = (CANVAS_W * canvas_h * BYTES_PER_PIXEL);  // bytes
         battery->buffer = lv_mem_alloc(buf_size); 
         if (!battery->buffer) {
             LV_LOG_ERROR("Canvas buffer allocation failed!");
@@ -310,7 +313,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
         battery->canvas = lv_canvas_create(widget->obj);
         lv_obj_set_grid_cell(battery->canvas, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_CENTER, 0, 1);
-        lv_canvas_set_buffer(battery->canvas, battery->buffer, CANVAS_W, CANVAS_H, LV_IMG_CF_TRUE_COLOR);
+        lv_canvas_set_buffer(battery->canvas, battery->buffer, CANVAS_W, canvas_h, LV_IMG_CF_TRUE_COLOR);
         lv_obj_add_flag(battery->canvas, LV_OBJ_FLAG_HIDDEN);
     }
 
