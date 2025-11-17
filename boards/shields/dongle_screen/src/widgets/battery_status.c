@@ -87,8 +87,8 @@ static void init_descriptors(void) {
 }
 
 static int label_height = BATTERY_H;
-static void get_label_height(void) {
-    const lv_font_t *font = label_dsc.font ? label_dsc.font : lv_theme_get_font_normal();
+static void get_label_height(lv_obj_t *obj) {
+    const lv_font_t *font = label_dsc.font ? label_dsc.font : lv_theme_get_font_normal(obj);
     label_height = font->line_height;
 }
 
@@ -276,7 +276,7 @@ ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_usb_conn_state_changed);
 
 int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_status *widget, lv_obj_t *parent) {
     init_descriptors();
-    get_label_height();
+    get_label_height(parent);
     lv_coord_t parent_width = lv_obj_get_width(parent);
     
     static lv_coord_t row_dsc[] = {CANVAS_H, LV_GRID_TEMPLATE_LAST};
