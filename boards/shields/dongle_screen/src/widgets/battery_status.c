@@ -95,6 +95,7 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
 
 static void draw_battery(struct battery_state state, struct battery_object battery) {
     if (state.level < 1 || state.level > 100) return;
+
     lv_color_t bg_color = LVGL_BACKGROUND;
     lv_color_t fg_color = LVGL_FOREGROUND;
     lv_color_t meter_color;
@@ -105,18 +106,27 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     } else {
         meter_color = lv_palette_main(LV_PALETTE_RED);
     }
-    lv_draw_rect_dsc_t rect_dsc;
-    lv_draw_rect_dsc_init(&rect_dsc);
-    rect_dsc.bg_color = meter_color;
+
+    lv_draw_rect_dsc_t rect_shell;
+    lv_draw_rect_dsc_init(&rect_shell);
+    rect_dsc.bg_color = bg_color;
+    rect_dsc.bg_opa = LV_OPA_COVER;
+    rect_dsc.border_side = LV_BORDER_SIDE_FULL;
+    rect_dsc.border_width = BORDER_SZ;
     rect_dsc.border_color = fg_color;
+
+    lv_draw_rect_dsc_t rect_meter;
+    lv_draw_rect_dsc_init(&rect_meter);
+    rect_dsc.bg_color = meter_color;
+    rect_dsc.bg_opa = LV_OPA_COVER;
+
+    lv_draw_rect_dsc_t rect_contact;
+    lv_draw_rect_dsc_init(&rect_contact);
+    rect_dsc.bg_color = bg_color;
     rect_dsc.bg_opa = LV_OPA_COVER;
 
     lv_canvas_fill_bg(battery.symbol, bg_color, LV_OPA_COVER);
     
-    lv_draw_rect_dsc_t rect_fill_dsc;
-    lv_draw_rect_dsc_init(&rect_fill_dsc);
-    rect_fill_dsc.bg_color = bg_color;
-    rect_fill_dsc.border_color = fg_color;
     // if (!battery.initialized) {
     // Draw battery contact
     int contact_y;
@@ -139,10 +149,21 @@ static void draw_battery(struct battery_state state, struct battery_object batte
             contact_h = BAT_HEIGHT;
         }
     }
-    lv_canvas_draw_rect(battery->symbol, 0, contact_y, X_OFFSET, contact_h, &rect_fill_dsc);
+    lv_canvas_draw_rect(battery.symbol, 0, contact_y, X_OFFSET, contact_h, &rect_contact);
     battery.initialized = true;
     // }
-    lv_canvas_draw_rect(battery.symbol, X_OFFSET, 0, BAT_WIDTH - X_OFFSET, BAT_HEIGHT, &rect_fill_dsc);
+    
+    lv_canvas_draw_rect(battery.symbol, X_OFFSET, 0, BAT_WIDTH - X_OFFSET, BAT_HEIGHT, &rect_shell);
+    // Fill energy meter
+    int filled_width = (NRG_METER_W * state.level + 50) / 100;  // Округление
+    filled_width = LV_CLAMP(0, filled_width, NRG_METER_W);
+    if (filled_width > 1) {
+        lv_canvas_draw_rect(battery.symbol, X_OFFSET, 0, BAT_WIDTH - X_OFFSET, BAT_HEIGHT, &rect_fill_dsc);
+        rect_dsc.bg_color = fg_color;
+        rect_dsc.border_color = fg_color;
+        lv_canvas_draw_rect(battery.symbol, X_OFFSET + BORDER_SZ, BORDER_SZ, filled_width, NRG_METER_H, &rect_meter);
+    }
+    
 }
 
 static void set_battery_symbol(lv_obj_t *widget, struct battery_state state) {
