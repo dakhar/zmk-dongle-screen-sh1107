@@ -69,8 +69,34 @@ struct battery_object {
     uint8_t buffer[CANVAS_W * CANVAS_H * BYTES_PER_PIXEL];
     lv_obj_t *canvas;
 } battery_objects[BAT_COUNT];
-    
 
+const lv_color_t bg_color = LVGL_BACKGROUND;
+const lv_color_t fg_color = LVGL_FOREGROUND;
+
+lv_draw_rect_dsc_t rect_shell;
+lv_draw_rect_dsc_init(&rect_shell);
+rect_shell.bg_color = bg_color;
+rect_shell.bg_opa = LV_OPA_COVER;
+rect_shell.border_side = LV_BORDER_SIDE_FULL;
+rect_shell.border_width = BORDER_SZ;
+rect_shell.border_color = fg_color;
+
+lv_draw_rect_dsc_t rect_meter;
+lv_draw_rect_dsc_init(&rect_meter);
+rect_meter.bg_opa = LV_OPA_COVER;
+
+lv_draw_rect_dsc_t rect_contact;
+lv_draw_rect_dsc_init(&rect_contact);
+rect_contact.bg_color = fg_color;
+rect_contact.bg_opa = LV_OPA_COVER;
+rect_contact.border_width = BORDER_SZ;
+rect_contact.border_color = bg_color;
+rect_contact.border_side = (NRG_METER_W < NRG_METER_H) ? \
+                (LV_BORDER_SIDE_LEFT || LV_BORDER_SIDE_RIGHT) : \
+                (LV_BORDER_SIDE_TOP || LV_BORDER_SIDE_BOTTOM);
+
+lv_draw_label_dsc_t label_dsc;
+lv_draw_label_dsc_init(&label_dsc);
 
 // Peripheral reconnection tracking
 // ZMK sends battery events with level < 1 when peripherals disconnect
@@ -104,75 +130,53 @@ static bool is_peripheral_reconnecting(uint8_t source, uint8_t new_level) {
 }
 
 static void draw_battery(struct battery_state state, struct battery_object battery) {
-    if (state.level < 1 || state.level > 100) return;
-
-    lv_color_t bg_color = LVGL_BACKGROUND;
-    lv_color_t fg_color = LVGL_FOREGROUND;
+    assert(NRG_METER_W > 0 && NRG_METER_H > 0);
+    assert(BATTERY_W > CONTACT_L && BATTERY_H > CONTACT_L);
+    if (!battery.canvas) return;
     lv_color_t meter_color;
+    lv_color_t text_color;
+    char level_str[4];
     
     if (MONOCHROME) {
         meter_color = fg_color;
+        text_color = fg_color;
     } else if (state.level > 30) {
         meter_color = lv_palette_main(LV_PALETTE_GREEN);
+        text_color = fg_color;
     } else if (state.level > 10) {
         meter_color = lv_palette_main(LV_PALETTE_YELLOW);
+        text_color = fg_color;
     } else {
         meter_color = lv_palette_main(LV_PALETTE_RED);
+        text_color = lv_palette_main(LV_PALETTE_RED);
+    }
+    rect_meter.bg_color = meter_color;
+    label_dsc.color = text_color;
+
+    int len = snprintf(level_str, sizeof(level_str), "%d", state.level);
+    if (len < 0 || len >= sizeof(level_str) || state.level < 1 || state.level > 100) {
+        strcpy(level_str, "ERR");
     }
 
-    lv_draw_rect_dsc_t rect_shell;
-    lv_draw_rect_dsc_init(&rect_shell);
-    rect_shell.bg_color = bg_color;
-    rect_shell.bg_opa = LV_OPA_COVER;
-    rect_shell.border_side = LV_BORDER_SIDE_FULL;
-    rect_shell.border_width = BORDER_SZ;
-    rect_shell.border_color = fg_color;
-
-    lv_draw_rect_dsc_t rect_meter;
-    lv_draw_rect_dsc_init(&rect_meter);
-    rect_meter.bg_color = meter_color;
-    rect_meter.bg_opa = LV_OPA_COVER;
-
-    lv_draw_rect_dsc_t rect_contact;
-    lv_draw_rect_dsc_init(&rect_contact);
-    rect_contact.bg_color = fg_color;
-    rect_contact.bg_opa = LV_OPA_COVER;
-    rect_contact.border_width = BORDER_SZ;
-    rect_contact.border_color = bg_color;
-
-    lv_draw_label_dsc_t label_dsc;
-    lv_draw_label_dsc_init(&label_dsc);
-    label_dsc.color = fg_color;
-
     lv_canvas_fill_bg(battery.canvas, bg_color, LV_OPA_COVER);
-    
-    battery.initialized = true;
-    // }
-    
-    
+
     // Fill energy meter
-    int nrg_meter; 
+    const int meter_width = LV_CLAMP(0, (NRG_METER_W * state.level + 50) / 100, NRG_METER_W);
+    const int meter_height = LV_CLAMP(0, (NRG_METER_H * state.level + 50) / 100, NRG_METER_H);
+    
     if (NRG_METER_W >= NRG_METER_H)
     {
-        rect_shell.border_side = (LV_BORDER_SIDE_TOP || LV_BORDER_SIDE_BOTTOM);
+        lv_canvas_draw_text (battery.canvas, 0, BATTERY_H, LABEL_W, &label_dsc, level_str); 
+        if (state.level < 1 || state.level > 100) return;
         lv_canvas_draw_rect(battery.canvas, 0, 0, CONTACT_L, BATTERY_H, &rect_contact);
         lv_canvas_draw_rect(battery.canvas, CONTACT_L, 0, BATTERY_W - CONTACT_L, BATTERY_H, &rect_shell);
-        nrg_meter = (NRG_METER_W * state.level + 50) / 100;  // Округление
-        nrg_meter = LV_CLAMP(0, nrg_meter, NRG_METER_W);
-        if (nrg_meter > 1) {
-            lv_canvas_draw_rect(battery.canvas, CONTACT_L + BORDER_SZ, BORDER_SZ, nrg_meter, NRG_METER_H, &rect_meter);
-        }
-        lv_canvas_draw_text (battery.canvas, 0, BATTERY_H, LABEL_W, &label_dsc, state.level);
+        lv_canvas_draw_rect(battery.canvas, CONTACT_L + BORDER_SZ, BORDER_SZ, meter_width, NRG_METER_H, &rect_meter);
     } else {
+        lv_canvas_draw_text (battery.canvas, BATTERY_W, 0, LABEL_W, &label_dsc, level_str);
+        if (state.level < 1 || state.level > 100) return;
         lv_canvas_draw_rect(battery.canvas, 0, 0, BATTERY_W, BATTERY_H - CONTACT_L, &rect_shell);
-        rect_shell.border_side = (LV_BORDER_SIDE_LEFT || LV_BORDER_SIDE_RIGHT);
         lv_canvas_draw_rect(battery.canvas, 0, BATTERY_H - CONTACT_L, BATTERY_W, CONTACT_L, &rect_shell);
-        nrg_meter = (NRG_METER_H * state.level + 50) / 100;  // Округление
-        nrg_meter = LV_CLAMP(0, nrg_meter, NRG_METER_H);
-        if (nrg_meter > 1) {
-            lv_canvas_draw_rect(battery.canvas, BORDER_SZ, BORDER_SZ, NRG_METER_W, nrg_meter, &rect_meter);
-        }
-        lv_canvas_draw_text (battery.canvas, BATTERY_W, 0, LABEL_W, &label_dsc, state.level);
+        lv_canvas_draw_rect(battery.canvas, BORDER_SZ, BORDER_SZ, NRG_METER_W, meter_height, &rect_meter);
     }
     
 }
