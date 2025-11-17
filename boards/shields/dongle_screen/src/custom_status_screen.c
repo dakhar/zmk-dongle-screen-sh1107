@@ -7,6 +7,8 @@
 #include "custom_status_screen.h"
 #include <util.h>
 
+#define WPM_FONT LV_FONT_MONTSERRAT_20
+
 #if CONFIG_DONGLE_SCREEN_OUTPUT_ACTIVE
 #include "widgets/output_status.h"
 static struct zmk_widget_output_status output_status_widget;
@@ -36,24 +38,43 @@ static struct zmk_widget_mod_status mod_widget;
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 lv_style_t global_style;
+static lv_coord_t *screen_row_dsc;
+static lv_coord_t *screen_col_dsc;
 
 lv_obj_t *zmk_display_status_screen()
 {
-    lv_style_init(&global_style);
+    lv_style_init(&globa_style);
     
     lv_obj_t *screen;
     screen = lv_obj_create(NULL);
     lv_obj_set_size(screen, DISPLAY_WIDTH, DISPLAY_HEIGHT);
     lv_obj_set_style_bg_color(screen, LVGL_BACKGROUND, LV_PART_MAIN);
-    lv_obj_set_style_bg_opa(screen, 255, LV_PART_MAIN);
+    lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, LV_PART_MAIN);
 
     
-    // lv_style_set_text_font(&global_style, &lv_font_unscii_8); // ToDo: Font is not recognized
+    lv_style_set_text_font(&global_style, &lv_font_unscii_8); // ToDo: Font is not recognized
     lv_style_set_text_color(&global_style, LVGL_FOREGROUND);
     lv_style_set_text_letter_space(&global_style, 1);
     lv_style_set_text_line_space(&global_style, 1);
     lv_obj_add_style(screen, &global_style, LV_PART_MAIN);
+ 
+    screen_row_dsc = lv_mem_alloc(2 * sizeof(lv_coord_t));
+    if (!widget_row_dsc) {
+        LV_LOG_ERROR("Memory allocation failed!");
+        return -1;
+    }
+    widget_row_dsc[0] = canvas_h;
+    widget_row_dsc[1] = LV_GRID_TEMPLATE_LAST;
 
+    widget_col_dsc = lv_mem_alloc((BAT_COUNT + 1) * sizeof(lv_coord_t));
+    if (!widget_col_dsc) {
+        LV_LOG_ERROR("Memory allocation failed!");
+        return -1;
+    }
+    for (uint8_t i = 0; i < BAT_COUNT; i++) {
+        widget_col_dsc[i] = parent_width / BAT_COUNT; 
+    }
+    widget_col_dsc[BAT_COUNT] = LV_GRID_TEMPLATE_LAST;  // Terminator
 #if CONFIG_DONGLE_SCREEN_OUTPUT_ACTIVE
     zmk_widget_output_status_init(&output_status_widget, screen);
     lv_obj_align(zmk_widget_output_status_obj(&output_status_widget), LV_ALIGN_TOP_MID, 0, 10);
