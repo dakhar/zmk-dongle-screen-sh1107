@@ -29,7 +29,6 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define BAT_COUNT (ZMK_SPLIT_CENTRAL_PERIPHERAL_COUNT + SOURCE_OFFSET)
-#define LABEL_H 25
 #define LABEL_W 25
 #define NRG_METER_W 4
 #define NRG_METER_H 25
@@ -40,12 +39,10 @@ static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 #define BATTERY_W   (CONTACT_L + BORDER_SZ + NRG_METER_W + BORDER_SZ)
 #define BATTERY_H   (BORDER_SZ + NRG_METER_H + BORDER_SZ)
 #define CANVAS_W    ((BATTERY_W < LABEL_W) ? LABEL_W : BATTERY_W)
-#define CANVAS_H    (BATTERY_H + LABEL_H)
 #else
 #define BATTERY_W   (BORDER_SZ + NRG_METER_W + BORDER_SZ)
 #define BATTERY_H   (BORDER_SZ + NRG_METER_H + BORDER_SZ + CONTACT_L)
 #define CANVAS_W    (BATTERY_W + LABEL_W)
-#define CANVAS_H    ((BATTERY_H < LABEL_H) ? LABEL_H : BATTERY_H)
 #endif
 
 #if CONFIG_LV_COLOR_DEPTH == 8
@@ -81,9 +78,9 @@ static void init_descriptors(void) {
     lv_draw_rect_dsc_init(&rect_shell);
     rect_shell.bg_color = LVGL_BACKGROUND;
     rect_shell.bg_opa = LV_OPA_COVER;
-    rect_shell.border_side = LV_BORDER_SIDE_FULL;
     rect_shell.border_width = BORDER_SZ;
     rect_shell.border_color = LVGL_FOREGROUND;
+    rect_shell.border_side = LV_BORDER_SIDE_FULL;
 
     lv_draw_rect_dsc_init(&rect_meter);
     rect_meter.bg_opa = LV_OPA_COVER;
@@ -99,6 +96,18 @@ static void init_descriptors(void) {
                     
     lv_draw_label_dsc_init(&label_dsc);
 }
+
+static int label_height = BATTERY_H;
+static void get_label_height(void) {
+    const lv_font_t *font = label_dsc.font ? label_dsc.font : lv_theme_get_font_normal();
+    label_height = font->line_height;
+}
+
+#if NRG_METER_W >= NRG_METER_H
+#define CANVAS_H    (BATTERY_H + label_height)
+#else
+#define CANVAS_H    ((BATTERY_H < label_height) ? label_height : BATTERY_H)
+#endif
 
 // Peripheral reconnection tracking
 // ZMK sends battery events with level < 1 when peripherals disconnect
@@ -138,7 +147,8 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     lv_color_t meter_color;
     lv_color_t text_color;
     char level_str[4];
-    
+    int text_y = (CANVAS_H - label_height) / 2;
+
     if (MONOCHROME) {
         meter_color = LVGL_FOREGROUND;
         text_color = LVGL_FOREGROUND;
@@ -157,7 +167,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
 
     int len = snprintf(level_str, sizeof(level_str), "%d", state.level);
     if (len < 0 || len >= sizeof(level_str) || state.level < 1 || state.level > 100) {
-        strcpy(level_str, "ERR");
+        strcpy(level_str, "X");
     }
 
     lv_canvas_fill_bg(battery.canvas, LVGL_BACKGROUND, LV_OPA_COVER);
@@ -168,17 +178,17 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     
     if (NRG_METER_W >= NRG_METER_H)
     {
-        lv_canvas_draw_text (battery.canvas, 0, BATTERY_H, LABEL_W, &label_dsc, level_str); 
+        lv_canvas_draw_text (battery.canvas, 0, 0, LABEL_W, &label_dsc, level_str); 
         if (state.level < 1 || state.level > 100) return;
-        lv_canvas_draw_rect(battery.canvas, 0, 0, CONTACT_L, BATTERY_H, &rect_contact);
-        lv_canvas_draw_rect(battery.canvas, CONTACT_L, 0, BATTERY_W - CONTACT_L, BATTERY_H, &rect_shell);
-        lv_canvas_draw_rect(battery.canvas, CONTACT_L + BORDER_SZ, BORDER_SZ, meter_width, NRG_METER_H, &rect_meter);
+        lv_canvas_draw_rect(battery.canvas, 0, label_height, CONTACT_L, BATTERY_H, &rect_contact);
+        lv_canvas_draw_rect(battery.canvas, CONTACT_L, label_height, BATTERY_W - CONTACT_L, BATTERY_H, &rect_shell);
+        lv_canvas_draw_rect(battery.canvas, CONTACT_L + BORDER_SZ, label_height + BORDER_SZ, meter_width, NRG_METER_H, &rect_meter);
     } else {
-        lv_canvas_draw_text (battery.canvas, BATTERY_W, 0, LABEL_W, &label_dsc, level_str);
+        lv_canvas_draw_text (battery.canvas, BATTERY_W, text_y, LABEL_W, &label_dsc, level_str);
         if (state.level < 1 || state.level > 100) return;
-        lv_canvas_draw_rect(battery.canvas, 0, 0, BATTERY_W, BATTERY_H - CONTACT_L, &rect_shell);
-        lv_canvas_draw_rect(battery.canvas, 0, BATTERY_H - CONTACT_L, BATTERY_W, CONTACT_L, &rect_shell);
-        lv_canvas_draw_rect(battery.canvas, BORDER_SZ, BORDER_SZ, NRG_METER_W, meter_height, &rect_meter);
+        lv_canvas_draw_rect(battery.canvas, 0, 0, BATTERY_W, BATTERY_H - CONTACT_L, &rect_contact);
+        lv_canvas_draw_rect(battery.canvas, 0, CONTACT_L, BATTERY_W, BATTERY_H - CONTACT_L, &rect_shell);
+        lv_canvas_draw_rect(battery.canvas, BORDER_SZ, BORDER_SZ, NRG_METER_W, NRG_METER_H - meter_height, &rect_meter);
     }
     
 }
@@ -266,6 +276,7 @@ ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_usb_conn_state_changed);
 
 int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_status *widget, lv_obj_t *parent) {
     init_descriptors();
+    get_label_height();
     lv_coord_t parent_width = lv_obj_get_width(parent);
     
     static lv_coord_t row_dsc[] = {CANVAS_H, LV_GRID_TEMPLATE_LAST};
