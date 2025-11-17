@@ -279,9 +279,9 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
 
     int canvas_h;
     if (NRG_METER_W >= NRG_METER_H) {
-        const int canvas_h = BATTERY_H + label_height;
+        canvas_h = BATTERY_H + label_height;
     } else {
-        const int canvas_h = ((BATTERY_H < label_height) ? label_height : BATTERY_H);
+        canvas_h = ((BATTERY_H < label_height) ? label_height : BATTERY_H);
     }
     
     lv_coord_t parent_width = lv_obj_get_width(parent);
