@@ -10,5 +10,5 @@ struct zmk_widget_mod_status
     lv_obj_t *label;
 };
 
-int zmk_widget_mod_status_init(struct zmk_widget_mod_status *widget, lv_obj_t *parent);
+int zmk_widget_mod_status_init(struct zmk_widget_mod_status *widget, lv_obj_t *parent, lv_point_t size);
 lv_obj_t *zmk_widget_mod_status_obj(struct zmk_widget_mod_status *widget);
