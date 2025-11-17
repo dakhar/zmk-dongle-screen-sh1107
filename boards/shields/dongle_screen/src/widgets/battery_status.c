@@ -70,8 +70,8 @@ struct battery_object {
     lv_obj_t *canvas;
 } battery_objects[BAT_COUNT];
 
-const lv_color_t bg_color = LVGL_BACKGROUND;
-const lv_color_t fg_color = LVGL_FOREGROUND;
+lv_color_t bg_color = LVGL_BACKGROUND;
+lv_color_t fg_color = LVGL_FOREGROUND;
 
 lv_draw_rect_dsc_t rect_shell;
 lv_draw_rect_dsc_init(&rect_shell);
