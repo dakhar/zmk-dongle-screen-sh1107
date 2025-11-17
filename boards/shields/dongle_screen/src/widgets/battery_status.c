@@ -70,8 +70,22 @@ struct battery_object {
     lv_obj_t *canvas;
 } battery_objects[BAT_COUNT];
 
-lv_color_t bg_color = LVGL_BACKGROUND;
-lv_color_t fg_color = LVGL_FOREGROUND;
+static lv_color_t bg_color;
+static lv_color_t fg_color;
+
+static void init_palette(void) {
+    // Вычисляем цвета с учётом инверсии
+    lv_color_t bg = IS_ENABLED(CONFIG_ZMK_DISPLAY_INVERT) 
+                    ? lv_color_black()
+                    : lv_color_white();
+    lv_color_t fg = IS_ENABLED(CONFIG_ZMK_DISPLAY_INVERT)
+                    ? lv_color_white()
+                    : lv_color_black();
+    // Заполняем палитру
+    bg_color = bg;
+    fg_color = fg;
+}
+init_palette();
 
 lv_draw_rect_dsc_t rect_shell;
 lv_draw_rect_dsc_init(&rect_shell);
@@ -263,6 +277,7 @@ ZMK_SUBSCRIPTION(widget_dongle_battery_status, zmk_usb_conn_state_changed);
 #endif /* IS_ENABLED(CONFIG_ZMK_DONGLE_DISPLAY_DONGLE_BATTER */
 
 int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_status *widget, lv_obj_t *parent) {
+
     lv_coord_t parent_width = lv_obj_get_width(parent);
     
     static lv_coord_t row_dsc[] = {CANVAS_H, LV_GRID_TEMPLATE_LAST};
