@@ -52,7 +52,7 @@ static struct output_status_state get_state(const zmk_event_t *_eh)
 static void set_status_symbol(struct zmk_widget_output_status *widget, struct output_status_state state)
 {
     
-    char *transport_text[7] = "";
+    char *transport_text[7];
     switch (state.selected_endpoint.transport) {
         transport_text[1] = "󰂲";
 #ifdef ZMK_SPLIT_ROLE_CENTRAL
