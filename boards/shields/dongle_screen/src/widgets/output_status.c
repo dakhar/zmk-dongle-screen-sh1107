@@ -52,40 +52,39 @@ static struct output_status_state get_state(const zmk_event_t *_eh)
 static void set_status_symbol(struct zmk_widget_output_status *widget, struct output_status_state state)
 {
     
-    char *transport_text[7];
+    char *transport_text[6] = {NULL};
     switch (state.selected_endpoint.transport) {
-        transport_text[1] = "󰂲";
-#ifdef ZMK_SPLIT_ROLE_CENTRAL
-        transport_text[2] = "󰎦";
-        transport_text[3] = "󰎩";
-        transport_text[4] = "󰎬";
-        transport_text[5] = "󰎮";
-        transport_text[6] = "󰎰";
-#endif
         case ZMK_TRANSPORT_USB:
             transport_text[0] = "";
             break;
         case ZMK_TRANSPORT_BLE:
-            transport_text[0] = " ";
+            transport_text[0] = "󰂲";
+#ifdef ZMK_SPLIT_ROLE_CENTRAL
+            transport_text[1] = "󰎦";
+            transport_text[2] = "󰎩";
+            transport_text[3] = "󰎬";
+            transport_text[4] = "󰎮";
+            transport_text[5] = "󰎰";
+#endif
             if (state.active_profile_bonded) {
                 if (state.active_profile_connected) {
                     transport_text[1] = "󰂱";
 #ifdef ZMK_SPLIT_ROLE_CENTRAL
                     switch (state.selected_endpoint.ble.profile_index) {
                     case 0:
-                        transport_text[2] = "󰎤";
+                        transport_text[1] = "󰎤";
                         break;
                     case 1:
-                        transport_text[3] = "󰎧";
+                        transport_text[2] = "󰎧";
                         break;
                     case 2:
-                        transport_text[4] = "󰎪";
+                        transport_text[3] = "󰎪";
                         break;
                     case 3:
-                        transport_text[5] = "󰎭";
+                        transport_text[4] = "󰎭";
                         break;
                     case 4:
-                        transport_text[6] = "󰎱";
+                        transport_text[5] = "󰎱";
                         break;
                     }
 #endif
@@ -95,25 +94,26 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
 #ifdef ZMK_SPLIT_ROLE_CENTRAL
                 switch (state.selected_endpoint.ble.profile_index) {
                 case 0:
-                    transport_text[2] = "󰎥";
+                    transport_text[1] = "󰎥";
                     break;
                 case 1:
-                    transport_text[3] = "󰎨";
+                    transport_text[2] = "󰎨";
                     break;
                 case 2:
-                    transport_text[4] = "󰎫";
+                    transport_text[3] = "󰎫";
                     break;
                 case 3:
-                    transport_text[5] = "󰎲";
+                    transport_text[4] = "󰎲";
                     break;
                 case 4:
-                    transport_text[6] = "󰎯";
+                    transport_text[5] = "󰎯";
                     break;
                 }
 #endif
             }
             break;
     }
+    lv_obj_set_style_text_font(widget->transport_label, &nerd_24, 0);
     lv_obj_set_style_text_align(widget->transport_label, LV_TEXT_ALIGN_RIGHT, 0);
     lv_label_set_text(widget->transport_label, transport_text);
 }
