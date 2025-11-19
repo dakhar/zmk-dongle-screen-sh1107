@@ -2,7 +2,8 @@
 
 #include <lvgl.h>
 
-// LV_FONT_DECLARE(NerdFonts_Regular_20);
-// LV_FONT_DECLARE(NerdFonts_Regular_40);
-LV_FONT_DECLARE(FiraCodeNerdMono_26);
-LV_FONT_DECLARE(FiraCodeNerdMono_32);
+LV_FONT_DECLARE(nerd_12);
+LV_FONT_DECLARE(nerd_20);
+LV_FONT_DECLARE(nerd_24);
+LV_FONT_DECLARE(nerd_32);
+LV_FONT_DECLARE(nerd_40);

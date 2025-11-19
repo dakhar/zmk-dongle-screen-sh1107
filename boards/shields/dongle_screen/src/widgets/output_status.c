@@ -52,29 +52,70 @@ static struct output_status_state get_state(const zmk_event_t *_eh)
 static void set_status_symbol(struct zmk_widget_output_status *widget, struct output_status_state state)
 {
     
-    char transport_text[50] = {};
-
+    char *transport_text[7] = "";
     switch (state.selected_endpoint.transport) {
+        transport_text[1] = "󰂲";
+#ifdef ZMK_SPLIT_ROLE_CENTRAL
+        transport_text[2] = "󰎦";
+        transport_text[3] = "󰎩";
+        transport_text[4] = "󰎬";
+        transport_text[5] = "󰎮";
+        transport_text[6] = "󰎰";
+#endif
         case ZMK_TRANSPORT_USB:
-            if (state.usb_is_hid_ready == 0) {
-                snprintf(transport_text, sizeof(transport_text), "⚡ 󰕓");
-            } else {
-                snprintf(transport_text, sizeof(transport_text), "󰕓");
-            }
-            
+            transport_text[0] = "";
             break;
         case ZMK_TRANSPORT_BLE:
-            snprintf(transport_text, sizeof(transport_text), "BLE");
+            transport_text[0] = " ";
+            if (state.active_profile_bonded) {
+                if (state.active_profile_connected) {
+                    transport_text[1] = "󰂱";
+#ifdef ZMK_SPLIT_ROLE_CENTRAL
+                    switch (state.selected_endpoint.ble.profile_index) {
+                    case 0:
+                        transport_text[2] = "󰎤";
+                        break;
+                    case 1:
+                        transport_text[3] = "󰎧";
+                        break;
+                    case 2:
+                        transport_text[4] = "󰎪";
+                        break;
+                    case 3:
+                        transport_text[5] = "󰎭";
+                        break;
+                    case 4:
+                        transport_text[6] = "󰎱";
+                        break;
+                    }
+#endif
+                }
+            } else {
+                transport_text[1] = "󰂳";
+#ifdef ZMK_SPLIT_ROLE_CENTRAL
+                switch (state.selected_endpoint.ble.profile_index) {
+                case 0:
+                    transport_text[2] = "󰎥";
+                    break;
+                case 1:
+                    transport_text[3] = "󰎨";
+                    break;
+                case 2:
+                    transport_text[4] = "󰎫";
+                    break;
+                case 3:
+                    transport_text[5] = "󰎲";
+                    break;
+                case 4:
+                    transport_text[6] = "󰎯";
+                    break;
+                }
+#endif
+            }
             break;
     }
     lv_obj_set_style_text_align(widget->transport_label, LV_TEXT_ALIGN_RIGHT, 0);
     lv_label_set_text(widget->transport_label, transport_text);
-
-    char ble_text[12];
-
-    snprintf(ble_text, sizeof(ble_text), "%d", state.active_profile_index + 1);
-    // lv_obj_set_style_text_align(widget->ble_label, LV_TEXT_ALIGN_RIGHT, 0);
-    lv_label_set_text(widget->ble_label, ble_text);
 }
 
 static void output_status_update_cb(struct output_status_state state)
@@ -122,7 +163,7 @@ int zmk_widget_output_status_init(struct zmk_widget_output_status *widget, lv_ob
     lv_obj_set_style_grid_row_dsc_array(widget->obj, widget_row_dsc, 0);
 
     widget->transport_label = lv_label_create(widget->obj);
-    lv_obj_set_style_text_font(widget->transport_label, &FiraCodeNerdMono_26, 0);
+    lv_obj_set_style_text_font(widget->transport_label, &nerd_24, 0);
     lv_obj_set_grid_cell(widget->transport_label, 
                             LV_GRID_ALIGN_CENTER, 0, 2,
                             LV_GRID_ALIGN_CENTER, 0, 1);
