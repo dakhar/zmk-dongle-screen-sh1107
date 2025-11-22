@@ -14,7 +14,6 @@ static void update_mod_status(struct zmk_widget_mod_status *widget)
     uint8_t mods = zmk_hid_get_keyboard_report()->body.modifiers;
     char text[32] = "";
     int idx = 0;
-
     char *syms[4];
     int n = 0;
 
@@ -51,7 +50,7 @@ int zmk_widget_mod_status_init(struct zmk_widget_mod_status *widget, lv_obj_t *p
     lv_obj_set_size(widget->obj, size.x, size.y);
 
     widget->label = lv_label_create(widget->obj);
-    lv_obj_align(widget->label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_align(widget->label, LV_TEXT_ALIGN_CENTER, 0, 0);
     lv_label_set_text(widget->label, "-");
     lv_obj_set_style_text_font(widget->label, &nerd_24, 0);
 

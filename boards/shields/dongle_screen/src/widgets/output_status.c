@@ -51,71 +51,76 @@ static struct output_status_state get_state(const zmk_event_t *_eh)
 
 static void set_status_symbol(struct zmk_widget_output_status *widget, struct output_status_state state)
 {
-    
-    char *transport_text[6] = {NULL};
+
+    char text[32] = {NULL};
+    int idx = 0;
+    char *syms[6];
+    int n = 0;
     switch (state.selected_endpoint.transport) {
         case ZMK_TRANSPORT_USB:
-            transport_text[0] = "";
+            syms[0] = "";
             break;
         case ZMK_TRANSPORT_BLE:
-            transport_text[0] = "󰂲";
+            syms[0] = "󰂲";
 #ifdef ZMK_SPLIT_ROLE_CENTRAL
-            transport_text[1] = "󰎦";
-            transport_text[2] = "󰎩";
-            transport_text[3] = "󰎬";
-            transport_text[4] = "󰎮";
-            transport_text[5] = "󰎰";
+            syms[1] = "󰎦";
+            syms[2] = "󰎩";
+            syms[3] = "󰎬";
+            syms[4] = "󰎮";
+            syms[5] = "󰎰";
 #endif
             if (state.active_profile_bonded) {
                 if (state.active_profile_connected) {
-                    transport_text[1] = "󰂱";
+                    syms[0] = "󰂱";
 #ifdef ZMK_SPLIT_ROLE_CENTRAL
                     switch (state.selected_endpoint.ble.profile_index) {
                     case 0:
-                        transport_text[1] = "󰎤";
+                        syms[1] = "󰎤";
                         break;
                     case 1:
-                        transport_text[2] = "󰎧";
+                        syms[2] = "󰎧";
                         break;
                     case 2:
-                        transport_text[3] = "󰎪";
+                        syms[3] = "󰎪";
                         break;
                     case 3:
-                        transport_text[4] = "󰎭";
+                        syms[4] = "󰎭";
                         break;
                     case 4:
-                        transport_text[5] = "󰎱";
+                        syms[5] = "󰎱";
                         break;
                     }
 #endif
                 }
             } else {
-                transport_text[1] = "󰂳";
+                syms[0] = "󰂳";
 #ifdef ZMK_SPLIT_ROLE_CENTRAL
                 switch (state.selected_endpoint.ble.profile_index) {
                 case 0:
-                    transport_text[1] = "󰎥";
+                    syms[1] = "󰎥";
                     break;
                 case 1:
-                    transport_text[2] = "󰎨";
+                    syms[2] = "󰎨";
                     break;
                 case 2:
-                    transport_text[3] = "󰎫";
+                    syms[3] = "󰎫";
                     break;
                 case 3:
-                    transport_text[4] = "󰎲";
+                    syms[4] = "󰎲";
                     break;
                 case 4:
-                    transport_text[5] = "󰎯";
+                    syms[5] = "󰎯";
                     break;
                 }
 #endif
             }
             break;
     }
-    lv_obj_set_style_text_font(widget->transport_label, &nerd_24, 0);
-    lv_obj_set_style_text_align(widget->transport_label, LV_TEXT_ALIGN_RIGHT, 0);
-    lv_label_set_text(widget->transport_label, transport_text);
+    for (int i = 0; i < n; ++i) {
+        idx += snprintf(&text[idx], sizeof(text) - idx, "%s", syms[i]);
+    }
+
+    lv_label_set_text(widget->label, idx ? text : "");
 }
 
 static void output_status_update_cb(struct output_status_state state)
@@ -162,16 +167,12 @@ int zmk_widget_output_status_init(struct zmk_widget_output_status *widget, lv_ob
     lv_obj_set_style_grid_column_dsc_array(widget->obj, widget_col_dsc, 0);
     lv_obj_set_style_grid_row_dsc_array(widget->obj, widget_row_dsc, 0);
 
-    widget->transport_label = lv_label_create(widget->obj);
-    lv_obj_set_style_text_font(widget->transport_label, &nerd_24, 0);
-    lv_obj_set_grid_cell(widget->transport_label, 
+    widget->label = lv_label_create(widget->obj);
+    lv_obj_set_style_text_font(widget->label, &nerd_24, 0);
+    lv_obj_set_style_text_align(widget->label, LV_TEXT_ALIGN_RIGHT, 0);
+    lv_obj_set_grid_cell(widget->label, 
                             LV_GRID_ALIGN_CENTER, 0, 2,
                             LV_GRID_ALIGN_CENTER, 0, 1);
-
-    widget->ble_label = lv_label_create(widget->obj);
-    lv_obj_set_grid_cell(widget->ble_label,
-                            LV_GRID_ALIGN_CENTER, 0, 2,
-                            LV_GRID_ALIGN_CENTER, 1, 1);
 
     sys_slist_append(&widgets, &widget->node);
 
