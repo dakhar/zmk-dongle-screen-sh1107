@@ -62,18 +62,18 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
             break;
         case ZMK_TRANSPORT_BLE:
             syms[0] = "󰂲";
-#ifdef ZMK_SPLIT_ROLE_CENTRAL
+
             syms_length = 6;
             syms[1] = "󰎦";
             syms[2] = "󰎩";
             syms[3] = "󰎬";
             syms[4] = "󰎮";
             syms[5] = "󰎰";
-#endif
+
             if (state.active_profile_bonded) {
                 if (state.active_profile_connected) {
                     syms[0] = "󰂱";
-#ifdef ZMK_SPLIT_ROLE_CENTRAL
+
                     syms_length = 6;
                     switch (state.selected_endpoint.ble.profile_index) {
                     case 0:
@@ -92,11 +92,11 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
                         syms[5] = "󰎱";
                         break;
                     }
-#endif
+
                 }
             } else {
                 syms[0] = "󰂳";
-#ifdef ZMK_SPLIT_ROLE_CENTRAL
+
                 syms_length = 6;
                 switch (state.selected_endpoint.ble.profile_index) {
                 case 0:
@@ -115,7 +115,7 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
                     syms[5] = "󰎯";
                     break;
                 }
-#endif
+
             }
         break;
     }
