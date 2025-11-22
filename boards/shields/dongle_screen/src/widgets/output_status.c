@@ -52,7 +52,7 @@ static struct output_status_state get_state(const zmk_event_t *_eh)
 static void set_status_symbol(struct zmk_widget_output_status *widget, struct output_status_state state)
 {
 
-    char text[32] = {NULL};
+    char text[32] = "";
     int idx = 0;
     char *syms[6];
     int n = 0;

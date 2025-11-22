@@ -13,8 +13,7 @@
 struct zmk_widget_output_status
 {
     lv_obj_t *obj;
-    lv_obj_t *transport_label;
-    lv_obj_t *ble_label;
+    lv_obj_t *label;
     sys_snode_t node;
 };
 
