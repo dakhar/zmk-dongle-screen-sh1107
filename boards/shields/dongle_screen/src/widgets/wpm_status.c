@@ -34,23 +34,21 @@ static struct wpm_status_state get_state(const zmk_event_t *_eh)
 static void set_wpm(struct zmk_widget_wpm_status *widget, struct wpm_status_state state)
 {
     int idx = 0;
-    int const syms_length = 1;
-    char text[syms_length * 5 + 5] = "";
-    char *syms[syms_length];
+    char text[10] = "";
     if (state.wpm > 150 && state.wpm < 9999)
     {
         idx += snprintf(&text[idx], sizeof(text) - idx, "󰓅");
-        snprintf(&text[idx], sizeof(text), "%i", state.wpm);
+        snprintf(&text[idx], sizeof(text) - idx, "%i", state.wpm);
     }
     else if (state.wpm > 100 && state.wpm < 9999)
     {
         idx += snprintf(&text[idx], sizeof(text) - idx, "󰾅");
-        snprintf(&text[idx], sizeof(text), "%i", state.wpm);
+        snprintf(&text[idx], sizeof(text) - idx, "%i", state.wpm);
     }
     else if (state.wpm > 0 && state.wpm < 9999)
     {
         idx += snprintf(&text[idx], sizeof(text) - idx, "󰾆");
-        snprintf(&text[idx], sizeof(text), "%i", state.wpm);
+        snprintf(&text[idx], sizeof(text) - idx, "%i", state.wpm);
     }
     else {
         text = ""
