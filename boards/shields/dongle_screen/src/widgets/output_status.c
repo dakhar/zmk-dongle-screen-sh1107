@@ -79,6 +79,7 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
         break;
     }
     for (int i = 0; i < SYMBOLS_COUNT; ++i) {
+        if (syms[i] == NULL) continue;
         idx += snprintf(&text[idx], sizeof(text) - idx, "%s", syms[i]);
     }
 
