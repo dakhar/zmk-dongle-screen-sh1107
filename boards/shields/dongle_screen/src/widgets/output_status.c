@@ -54,8 +54,8 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
 
     char text[32] = "";
     int idx = 0;
+    int syms_length = 1;
     char *syms[6];
-    int n = 0;
     switch (state.selected_endpoint.transport) {
         case ZMK_TRANSPORT_USB:
             syms[0] = "";
@@ -63,6 +63,7 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
         case ZMK_TRANSPORT_BLE:
             syms[0] = "󰂲";
 #ifdef ZMK_SPLIT_ROLE_CENTRAL
+            syms_length = 6;
             syms[1] = "󰎦";
             syms[2] = "󰎩";
             syms[3] = "󰎬";
@@ -73,6 +74,7 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
                 if (state.active_profile_connected) {
                     syms[0] = "󰂱";
 #ifdef ZMK_SPLIT_ROLE_CENTRAL
+                    syms_length = 6;
                     switch (state.selected_endpoint.ble.profile_index) {
                     case 0:
                         syms[1] = "󰎤";
@@ -95,6 +97,7 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
             } else {
                 syms[0] = "󰂳";
 #ifdef ZMK_SPLIT_ROLE_CENTRAL
+                syms_length = 6;
                 switch (state.selected_endpoint.ble.profile_index) {
                 case 0:
                     syms[1] = "󰎥";
@@ -114,9 +117,9 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
                 }
 #endif
             }
-            break;
+        break;
     }
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < syms_length; ++i) {
         idx += snprintf(&text[idx], sizeof(text) - idx, "%s", syms[i]);
     }
 
