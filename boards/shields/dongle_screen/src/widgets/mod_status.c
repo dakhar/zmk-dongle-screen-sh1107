@@ -16,7 +16,7 @@ static void update_mod_status(struct zmk_widget_mod_status *widget)
     uint8_t mods = zmk_hid_get_keyboard_report()->body.modifiers;
     char text[SYMBOLS_COUNT * 4 * 2 + 1] = "";
     int idx = 0;
-    char *syms[4];
+    char *syms[SYMBOLS_COUNT] = {NULL};
     int n = 0;
 
     if (mods & (MOD_LCTL | MOD_RCTL))
