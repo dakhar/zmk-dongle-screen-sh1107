@@ -51,7 +51,7 @@ static void set_wpm(struct zmk_widget_wpm_status *widget, struct wpm_status_stat
         snprintf(&text[idx], sizeof(text) - idx, "%i", state.wpm);
     }
     else {
-        text = ""
+        snprintf(text, sizeof(text), "-");
     }
     lv_label_set_text(widget->wpm_label, text);
 }
