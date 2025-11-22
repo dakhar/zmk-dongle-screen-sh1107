@@ -106,36 +106,11 @@ int zmk_widget_output_status_init(struct zmk_widget_output_status *widget, lv_ob
 {
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, size.x, size.y);
-    lv_obj_set_layout(widget->obj, LV_LAYOUT_GRID);
-
-    widget_row_dsc = lv_mem_alloc(3 * sizeof(lv_coord_t));
-    if (!widget_row_dsc) {
-        LV_LOG_ERROR("Memory allocation failed!");
-        return -1;
-    }
-    for (uint8_t i = 0; i < 2; i++) {
-        widget_row_dsc[i] = size.y / 2; 
-    }
-    widget_row_dsc[2] = LV_GRID_TEMPLATE_LAST;
-
-    widget_col_dsc = lv_mem_alloc(3 * sizeof(lv_coord_t));
-    if (!widget_col_dsc) {
-        LV_LOG_ERROR("Memory allocation failed!");
-        return -1;
-    }
-    for (uint8_t i = 0; i < 2; i++) {
-        widget_col_dsc[i] = size.x / 2; 
-    }
-    widget_col_dsc[2] = LV_GRID_TEMPLATE_LAST;  // Terminator
-    lv_obj_set_style_grid_column_dsc_array(widget->obj, widget_col_dsc, 0);
-    lv_obj_set_style_grid_row_dsc_array(widget->obj, widget_row_dsc, 0);
 
     widget->label = lv_label_create(widget->obj);
-    lv_obj_set_style_text_font(widget->label, &nerd_24, 0);
+    lv_obj_align(widget->label, LV_ALIGN_TOP_RIGHT, 0, 0);
     lv_obj_set_style_text_align(widget->label, LV_TEXT_ALIGN_RIGHT, 0);
-    lv_obj_set_grid_cell(widget->label, 
-                            LV_GRID_ALIGN_CENTER, 0, 2,
-                            LV_GRID_ALIGN_CENTER, 0, 1);
+    lv_obj_set_style_text_font(widget->label, &nerd_20, 0);
 
     sys_slist_append(&widgets, &widget->node);
 

@@ -45,8 +45,8 @@ static void init_status_widget(
     );
 }
 
-struct widget_layout wpm_layout     = {0, 0, 3, 1};
-struct widget_layout output_layout  = {3, 0, COL_COUNT-3, 2};
+struct widget_layout wpm_layout     = {0, 0, 4, 1};
+struct widget_layout output_layout  = {3, 0, 4, 2};
 struct widget_layout layer_layout   = {0, 2, COL_COUNT, 2};
 struct widget_layout mod_layout     = {0, 4, COL_COUNT, 1};
 struct widget_layout battery_layout = {0, 5, COL_COUNT, 1};

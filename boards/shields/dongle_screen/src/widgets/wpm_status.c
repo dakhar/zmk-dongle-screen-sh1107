@@ -47,7 +47,7 @@ static void set_wpm(struct zmk_widget_wpm_status *widget, struct wpm_status_stat
     }
     else if (state.wpm > 0 && state.wpm < 9999)
     {
-        idx += snprintf(&text[idx], sizeof(text) - idx, "󰾆");
+        idx += snprintf(text[idx], sizeof(text) - idx, "󰾆");
     }
     snprintf(&text[idx], sizeof(text) - idx, "%03i", state.wpm);
     lv_label_set_text(widget->wpm_label, text);
