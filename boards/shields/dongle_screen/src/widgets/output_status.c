@@ -54,7 +54,7 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
 
     int idx = 0;
     int const syms_length = 2;
-    char text[syms_length * 5] = "";
+    char text[10] = "";
     char *syms[syms_length];
     switch (state.selected_endpoint.transport) {
         case ZMK_TRANSPORT_USB:
