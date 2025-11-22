@@ -9,10 +9,12 @@
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
+#define SYMBOLS_COUNT 4
+
 static void update_mod_status(struct zmk_widget_mod_status *widget)
 {
     uint8_t mods = zmk_hid_get_keyboard_report()->body.modifiers;
-    char text[32] = "";
+    char text[SYMBOLS_COUNT * 4 * 2 + 1] = "";
     int idx = 0;
     char *syms[4];
     int n = 0;

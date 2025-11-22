@@ -4,6 +4,7 @@
         "layer_status.h": "c",
         "battery_status.h": "c",
         "locale": "c",
-        "mod_status.h": "c"
+        "mod_status.h": "c",
+        "output_status.h": "c"
     }
 }

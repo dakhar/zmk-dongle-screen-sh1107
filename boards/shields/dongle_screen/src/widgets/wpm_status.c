@@ -17,6 +17,8 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <fonts.h>
 #include <util.h>
 
+#define SYMBOLS_COUNT 2
+
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 struct wpm_status_state
 {
@@ -34,25 +36,23 @@ static struct wpm_status_state get_state(const zmk_event_t *_eh)
 static void set_wpm(struct zmk_widget_wpm_status *widget, struct wpm_status_state state)
 {
     int idx = 0;
-    char text[10] = "";
+    char text[SYMBOLS_COUNT * 4 + 1] = "";
     if (state.wpm > 150 && state.wpm < 9999)
     {
         idx += snprintf(&text[idx], sizeof(text) - idx, "󰓅");
-        snprintf(&text[idx], sizeof(text) - idx, "%i", state.wpm);
     }
     else if (state.wpm > 100 && state.wpm < 9999)
     {
         idx += snprintf(&text[idx], sizeof(text) - idx, "󰾅");
-        snprintf(&text[idx], sizeof(text) - idx, "%i", state.wpm);
     }
     else if (state.wpm > 0 && state.wpm < 9999)
     {
         idx += snprintf(&text[idx], sizeof(text) - idx, "󰾆");
-        snprintf(&text[idx], sizeof(text) - idx, "%i", state.wpm);
     }
     else {
-        snprintf(text, sizeof(text), "-");
+        idx += snprintf(&text[idx], sizeof(text) - idx, "W");
     }
+    snprintf(&text[idx], sizeof(text) - idx, "%03i", state.wpm);
     lv_label_set_text(widget->wpm_label, text);
 }
 

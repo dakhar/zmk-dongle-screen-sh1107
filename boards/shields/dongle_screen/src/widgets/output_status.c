@@ -23,6 +23,8 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <fonts.h>
 #include <util.h>
 
+#define SYMBOLS_COUNT 2
+
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 
 static lv_coord_t *widget_row_dsc;
@@ -52,12 +54,11 @@ static struct output_status_state get_state(const zmk_event_t *_eh)
 static void set_status_symbol(struct zmk_widget_output_status *widget, struct output_status_state state)
 {
     int idx = 0;
-    int const syms_length = 2;
-    char text[10] = "";
+    char text[SYMBOLS_COUNT * 4 + 1] = "";
     static const char *sym_unbonded[] = {"󰎦","󰎩","󰎬","󰎮","󰎰"} ;
     static const char *sym_bonded[] = {"󰎥","󰎨","󰎫","󰎲","󰎯"} ;
     static const char *sym_connected[] = {"󰎤","󰎧","󰎪","󰎭","󰎱"} ;
-    char *syms[syms_length] = {NULL};
+    char *syms[SYMBOLS_COUNT] = {NULL};
     switch (state.selected_endpoint.transport) {
         case ZMK_TRANSPORT_USB:
             syms[0] = "󰕓";
