@@ -34,7 +34,7 @@ static struct wpm_status_state get_state(const zmk_event_t *_eh)
 static void set_wpm(struct zmk_widget_wpm_status *widget, struct wpm_status_state state)
 {
     int idx = 0;
-    int syms_length = 1;
+    int const syms_length = 1;
     char text[syms_length * 5 + 5] = "";
     char *syms[syms_length];
     if (state.wpm > 150 && state.wpm < 9999)
