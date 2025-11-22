@@ -37,6 +37,7 @@ static void set_wpm(struct zmk_widget_wpm_status *widget, struct wpm_status_stat
 {
     int idx = 0;
     char text[SYMBOLS_COUNT * 4 + 1] = "";
+    
     if (state.wpm > 150 && state.wpm < 9999)
     {
         idx += snprintf(&text[idx], sizeof(text) - idx, "󰓅");
@@ -45,9 +46,9 @@ static void set_wpm(struct zmk_widget_wpm_status *widget, struct wpm_status_stat
     {
         idx += snprintf(&text[idx], sizeof(text) - idx, "󰾅");
     }
-    else if (state.wpm > 0 && state.wpm < 9999)
+    else
     {
-        idx += snprintf(text[idx], sizeof(text) - idx, "󰾆");
+        idx += snprintf(&text[idx], sizeof(text) - idx, "󰾆");
     }
     snprintf(&text[idx], sizeof(text) - idx, "%03i", state.wpm);
     lv_label_set_text(widget->wpm_label, text);
