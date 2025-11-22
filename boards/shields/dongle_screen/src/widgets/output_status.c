@@ -25,7 +25,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 
-static lv_coord_t *widget_row_dsc;z
+static lv_coord_t *widget_row_dsc;
 static lv_coord_t *widget_col_dsc;
 
 lv_point_t selection_line_points[] = {{0, 0}, {13, 0}}; // will be replaced with lv_point_precise_t
