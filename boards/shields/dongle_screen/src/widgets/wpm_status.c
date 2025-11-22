@@ -33,10 +33,29 @@ static struct wpm_status_state get_state(const zmk_event_t *_eh)
 
 static void set_wpm(struct zmk_widget_wpm_status *widget, struct wpm_status_state state)
 {
-
-    char wpm_text[12];
-    snprintf(wpm_text, sizeof(wpm_text), "%i", state.wpm);
-    lv_label_set_text(widget->wpm_label, wpm_text);
+    int idx = 0;
+    int syms_length = 1;
+    char text[syms_length * 5 + 5] = "";
+    char *syms[syms_length];
+    if (state.wpm > 150 && state.wpm < 9999)
+    {
+        idx += snprintf(&text[idx], sizeof(text) - idx, "󰓅");
+        snprintf(&text[idx], sizeof(text), "%i", state.wpm);
+    }
+    else if (state.wpm > 100 && state.wpm < 9999)
+    {
+        idx += snprintf(&text[idx], sizeof(text) - idx, "󰾅");
+        snprintf(&text[idx], sizeof(text), "%i", state.wpm);
+    }
+    else if (state.wpm > 0 && state.wpm < 9999)
+    {
+        idx += snprintf(&text[idx], sizeof(text) - idx, "󰾆");
+        snprintf(&text[idx], sizeof(text), "%i", state.wpm);
+    }
+    else {
+        text = ""
+    }
+    lv_label_set_text(widget->wpm_label, text);
 }
 
 static void wpm_status_update_cb(struct wpm_status_state state)
@@ -59,6 +78,7 @@ int zmk_widget_wpm_status_init(struct zmk_widget_wpm_status *widget, lv_obj_t *p
     lv_obj_set_size(widget->obj, size.x, size.y);
 
     widget->wpm_label = lv_label_create(widget->obj);
+    lv_obj_set_style_text_font(widget->wpm_label, &nerd_24, 0);
     lv_obj_align(widget->wpm_label, LV_ALIGN_TOP_LEFT, 0, 0);
 
     sys_slist_append(&widgets, &widget->node);

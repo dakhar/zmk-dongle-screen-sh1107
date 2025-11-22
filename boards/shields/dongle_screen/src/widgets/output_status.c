@@ -52,67 +52,55 @@ static struct output_status_state get_state(const zmk_event_t *_eh)
 static void set_status_symbol(struct zmk_widget_output_status *widget, struct output_status_state state)
 {
 
-    char text[32] = "";
     int idx = 0;
-    int syms_length = 1;
-    char *syms[6];
+    int syms_length = 2;
+    char text[syms_length * 5] = "";
+    char *syms[syms_length];
     switch (state.selected_endpoint.transport) {
         case ZMK_TRANSPORT_USB:
-            syms[0] = "";
+            syms[0] = "󰕓";
             break;
         case ZMK_TRANSPORT_BLE:
             syms[0] = "󰂲";
-
-            syms_length = 6;
-            syms[1] = "󰎦";
-            syms[2] = "󰎩";
-            syms[3] = "󰎬";
-            syms[4] = "󰎮";
-            syms[5] = "󰎰";
-
             if (state.active_profile_bonded) {
                 if (state.active_profile_connected) {
                     syms[0] = "󰂱";
-
-                    syms_length = 6;
                     switch (state.selected_endpoint.ble.profile_index) {
                     case 0:
                         syms[1] = "󰎤";
                         break;
                     case 1:
-                        syms[2] = "󰎧";
+                        syms[1] = "󰎧";
                         break;
                     case 2:
-                        syms[3] = "󰎪";
+                        syms[1] = "󰎪";
                         break;
                     case 3:
-                        syms[4] = "󰎭";
+                        syms[1] = "󰎭";
                         break;
                     case 4:
-                        syms[5] = "󰎱";
+                        syms[1] = "󰎱";
                         break;
                     }
 
                 }
             } else {
                 syms[0] = "󰂳";
-
-                syms_length = 6;
                 switch (state.selected_endpoint.ble.profile_index) {
                 case 0:
                     syms[1] = "󰎥";
                     break;
                 case 1:
-                    syms[2] = "󰎨";
+                    syms[1] = "󰎨";
                     break;
                 case 2:
-                    syms[3] = "󰎫";
+                    syms[1] = "󰎫";
                     break;
                 case 3:
-                    syms[4] = "󰎲";
+                    syms[1] = "󰎲";
                     break;
                 case 4:
-                    syms[5] = "󰎯";
+                    syms[1] = "󰎯";
                     break;
                 }
 
