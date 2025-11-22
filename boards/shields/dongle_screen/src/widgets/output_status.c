@@ -25,7 +25,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 
-static lv_coord_t *widget_row_dsc;
+static lv_coord_t *widget_row_dsc;z
 static lv_coord_t *widget_col_dsc;
 
 lv_point_t selection_line_points[] = {{0, 0}, {13, 0}}; // will be replaced with lv_point_precise_t
@@ -51,59 +51,29 @@ static struct output_status_state get_state(const zmk_event_t *_eh)
 
 static void set_status_symbol(struct zmk_widget_output_status *widget, struct output_status_state state)
 {
-
     int idx = 0;
     int const syms_length = 2;
     char text[10] = "";
-    char *syms[syms_length];
+    static const char *sym_unbonded[] = {"󰎦","󰎩","󰎬","󰎮","󰎰"} ;
+    static const char *sym_bonded[] = {"󰎥","󰎨","󰎫","󰎲","󰎯"} ;
+    static const char *sym_connected[] = {"󰎤","󰎧","󰎪","󰎭","󰎱"} ;
+    char *syms[syms_length] = {NULL};
     switch (state.selected_endpoint.transport) {
         case ZMK_TRANSPORT_USB:
             syms[0] = "󰕓";
             break;
         case ZMK_TRANSPORT_BLE:
-            syms[0] = "󰂲";
             if (state.active_profile_bonded) {
                 if (state.active_profile_connected) {
                     syms[0] = "󰂱";
-                    switch (state.selected_endpoint.ble.profile_index) {
-                    case 0:
-                        syms[1] = "󰎤";
-                        break;
-                    case 1:
-                        syms[1] = "󰎧";
-                        break;
-                    case 2:
-                        syms[1] = "󰎪";
-                        break;
-                    case 3:
-                        syms[1] = "󰎭";
-                        break;
-                    case 4:
-                        syms[1] = "󰎱";
-                        break;
-                    }
-
+                    syms[1] = sym_connected[state.selected_endpoint.ble.profile_index];
+                } else {
+                    syms[0] = "󰂲";
+                    syms[1] = sym_bonded[state.selected_endpoint.ble.profile_index];
                 }
             } else {
                 syms[0] = "󰂳";
-                switch (state.selected_endpoint.ble.profile_index) {
-                case 0:
-                    syms[1] = "󰎥";
-                    break;
-                case 1:
-                    syms[1] = "󰎨";
-                    break;
-                case 2:
-                    syms[1] = "󰎫";
-                    break;
-                case 3:
-                    syms[1] = "󰎲";
-                    break;
-                case 4:
-                    syms[1] = "󰎯";
-                    break;
-                }
-
+                syms[1] = sym_unbonded[state.selected_endpoint.ble.profile_index];
             }
         break;
     }
