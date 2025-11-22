@@ -15,18 +15,17 @@ static void update_mod_status(struct zmk_widget_mod_status *widget)
     char text[32] = "";
     int idx = 0;
 
-    // Temporäre Puffer für Symbole
     char *syms[4];
     int n = 0;
 
     if (mods & (MOD_LCTL | MOD_RCTL))
-        syms[n++] = "⌃";
+        syms[n++] = "󰘴";
     if (mods & (MOD_LSFT | MOD_RSFT))
         syms[n++] = "󰘶"; 
     if (mods & (MOD_LALT | MOD_RALT))
-        syms[n++] = "⌥"; 
+        syms[n++] = "󰘵"; 
     if (mods & (MOD_LGUI | MOD_RGUI))
-        syms[n++] = ""; 
+        syms[n++] = ""; 
 
     for (int i = 0; i < n; ++i)
     {
