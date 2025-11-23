@@ -52,15 +52,15 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
     int idx = 0;
     char text[SYMBOLS_COUNT * 4 + 1] = "";
 #if (GRID_CELL_HEIGHT * L_OUT_ROW_CNT) < 20
-    static const char *sym_usb = "󰕓";
-    static const char *sym_unbonded[] = {"󰎦","󰎩","󰎬","󰎮","󰎰"} ;
-    static const char *sym_bonded[] = {"󰎥","󰎨","󰎫","󰎲","󰎯"} ;
-    static const char *sym_connected[] = {"󰎤","󰎧","󰎪","󰎭","󰎱"} ;
-#else (GRID_CELL_HEIGHT * L_OUT_ROW_CNT) < 20
     static const char *sym_usb = "USB";
     static const char *sym_unbonded[] = {"1[F]","2[F]","3[F]","4[F]","5[F]"} ;
     static const char *sym_bonded[] = {"1[D]","2[D]","3[D]","4[D]","5[D]"} ;
     static const char *sym_connected[] = {"1[C]","2[C]","3[C]","4[C]","5[C]"} ;
+#else
+    static const char *sym_usb = "󰕓";
+    static const char *sym_unbonded[] = {"󰎦","󰎩","󰎬","󰎮","󰎰"} ;
+    static const char *sym_bonded[] = {"󰎥","󰎨","󰎫","󰎲","󰎯"} ;
+    static const char *sym_connected[] = {"󰎤","󰎧","󰎪","󰎭","󰎱"} ;
 #endif
     char *syms[SYMBOLS_COUNT] = {NULL};
     int n = 0;
