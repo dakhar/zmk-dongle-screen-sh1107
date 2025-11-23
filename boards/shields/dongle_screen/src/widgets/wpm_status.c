@@ -51,7 +51,7 @@ static void set_wpm(struct zmk_widget_wpm_status *widget, struct wpm_status_stat
         idx += snprintf(&text[idx], sizeof(text) - idx, "󰾆");
     }
     snprintf(&text[idx], sizeof(text) - idx, "%03i", state.wpm);
-    lv_label_set_text(widget->wpm_label, text);
+    lv_label_set_text(widget->label, text);
 }
 
 static void wpm_status_update_cb(struct wpm_status_state state)
@@ -73,9 +73,10 @@ int zmk_widget_wpm_status_init(struct zmk_widget_wpm_status *widget, lv_obj_t *p
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, size.x, size.y);
 
-    widget->wpm_label = lv_label_create(widget->obj);
-    lv_obj_set_style_text_font(widget->wpm_label, &nerd_20, 0);
-    lv_obj_align(widget->wpm_label, LV_ALIGN_TOP_LEFT, 0, 0);
+    widget->label = lv_label_create(widget->obj);
+    lv_obj_align(widget->label, LV_ALIGN_TOP_LEFT, 0, 0);
+    lv_obj_set_style_text_align(widget->label, LV_TEXT_ALIGN_LEFT, 0);
+    lv_obj_set_style_text_font(widget->label, &nerd_20, 0);
 
     sys_slist_append(&widgets, &widget->node);
 

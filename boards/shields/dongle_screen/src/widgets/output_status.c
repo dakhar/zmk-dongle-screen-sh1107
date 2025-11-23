@@ -23,14 +23,9 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <fonts.h>
 #include <util.h>
 
-#define SYMBOLS_COUNT 2
+#define SYMBOLS_COUNT 3
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
-
-static lv_coord_t *widget_row_dsc;
-static lv_coord_t *widget_col_dsc;
-
-lv_point_t selection_line_points[] = {{0, 0}, {13, 0}}; // will be replaced with lv_point_precise_t
 
 struct output_status_state
 {
@@ -59,30 +54,36 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
     static const char *sym_bonded[] = {"󰎥","󰎨","󰎫","󰎲","󰎯"} ;
     static const char *sym_connected[] = {"󰎤","󰎧","󰎪","󰎭","󰎱"} ;
     char *syms[SYMBOLS_COUNT] = {NULL};
+    int n = 0;
     switch (state.selected_endpoint.transport) {
         case ZMK_TRANSPORT_USB:
-            syms[0] = "󰕓";
+            syms[n++] = "󰕓";
             break;
         case ZMK_TRANSPORT_BLE:
+            if (! state.usb_is_hid_ready) {
+                syms[n++] = "󱇰";
+            }
             if (state.active_profile_bonded) {
                 if (state.active_profile_connected) {
-                    syms[0] = "󰂱";
-                    syms[1] = sym_connected[state.selected_endpoint.ble.profile_index];
+                    syms[n++] = "󰂱";
+                    syms[n++] = sym_connected[state.selected_endpoint.ble.profile_index];
                 } else {
-                    syms[0] = "󰂲";
-                    syms[1] = sym_bonded[state.selected_endpoint.ble.profile_index];
+                    syms[n++] = "󰂲";
+                    syms[n++] = sym_bonded[state.selected_endpoint.ble.profile_index];
                 }
             } else {
-                syms[0] = "󰂳";
-                syms[1] = sym_unbonded[state.selected_endpoint.ble.profile_index];
+                syms[n++] = "󰂳";
+                syms[n++] = sym_unbonded[state.selected_endpoint.ble.profile_index];
             }
         break;
     }
-    for (int i = 0; i < SYMBOLS_COUNT; ++i) {
-        if (syms[i] == NULL) continue;
-        idx += snprintf(&text[idx], sizeof(text) - idx, "%s", syms[i]);
+    
+    if (n <= SYMBOLS_COUNT) {
+        for (int i = 0; i < n; ++i) {
+            if (syms[i] == NULL) continue;
+            idx += snprintf(&text[idx], sizeof(text) - idx, "%s", syms[i]);
+        }
     }
-
     lv_label_set_text(widget->label, idx ? text : "");
 }
 

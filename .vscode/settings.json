@@ -5,6 +5,8 @@
         "battery_status.h": "c",
         "locale": "c",
         "mod_status.h": "c",
-        "output_status.h": "c"
+        "output_status.h": "c",
+        "util.h": "c",
+        "wpm_status.h": "c"
     }
 }
