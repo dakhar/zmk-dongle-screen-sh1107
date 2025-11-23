@@ -69,7 +69,7 @@ ZMK_SUBSCRIPTION(widget_layer_status, zmk_layer_state_changed);
 int zmk_widget_layer_status_init(struct zmk_widget_layer_status *widget, lv_obj_t *parent, lv_point_t size)
 {    
     widget->obj = lv_label_create(parent);
-    lv_obj_set_size(widget->obj, size.x, font->line_height);
+    lv_obj_set_size(widget->obj, size.x, size.y);
     lv_obj_center(widget->obj);
 #if GRID_CELL_HEIGHT < 20
     lv_obj_set_style_text_font(widget->label, &nerd_12, 0);
