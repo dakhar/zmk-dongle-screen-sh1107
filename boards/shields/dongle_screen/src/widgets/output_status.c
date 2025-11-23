@@ -84,7 +84,7 @@ static void set_status_symbol(struct zmk_widget_output_status *widget, struct ou
             idx += snprintf(&text[idx], sizeof(text) - idx, "%s", syms[i]);
         }
     }
-    lv_label_set_text(widget->label, idx ? text : "");
+    lv_label_set_text(widget->obj, idx ? text : "");
 }
 
 static void output_status_update_cb(struct output_status_state state)
@@ -105,16 +105,14 @@ ZMK_SUBSCRIPTION(widget_output_status, zmk_usb_conn_state_changed);
 // output_status.c
 int zmk_widget_output_status_init(struct zmk_widget_output_status *widget, lv_obj_t *parent, lv_point_t size)
 {
-    widget->obj = lv_obj_create(parent);
+    widget->obj = lv_label_create(parent);
     lv_obj_set_size(widget->obj, size.x, size.y);
-
-    widget->label = lv_label_create(widget->obj);
-    lv_obj_align(widget->label, LV_ALIGN_TOP_RIGHT, 0, 0);
-    lv_obj_set_style_text_align(widget->label, LV_TEXT_ALIGN_RIGHT, 0);
+    lv_obj_align(widget->obj, LV_ALIGN_TOP_RIGHT, 0, 0);
+    lv_obj_set_style_text_align(widget->obj, LV_TEXT_ALIGN_RIGHT, 0);
 #if GRID_CELL_HEIGHT < 20
-    lv_obj_set_style_text_font(widget->label, &nerd_12, 0);
+    lv_obj_set_style_text_font(widget->obj, &nerd_12, 0);
 #else
-    lv_obj_set_style_text_font(widget->label, &nerd_20, 0);
+    lv_obj_set_style_text_font(widget->obj, &nerd_20, 0);
 #endif
 
     sys_slist_append(&widgets, &widget->node);

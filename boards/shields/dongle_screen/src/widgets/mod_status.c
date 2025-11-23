@@ -35,7 +35,7 @@ static void update_mod_status(struct zmk_widget_mod_status *widget)
         idx += snprintf(&text[idx], sizeof(text) - idx, "%s", syms[i]);
     }
 
-    lv_label_set_text(widget->label, idx ? text : "");
+    lv_label_set_text(widget->obj, idx ? text : "");
 }
 
 static void mod_status_timer_cb(struct k_timer *timer)
@@ -48,18 +48,16 @@ static struct k_timer mod_status_timer;
 
 int zmk_widget_mod_status_init(struct zmk_widget_mod_status *widget, lv_obj_t *parent, lv_point_t size)
 {
-    widget->obj = lv_obj_create(parent);
+    widget->obj = lv_label_create(parent);
     lv_obj_set_size(widget->obj, size.x, size.y);
-
-    widget->label = lv_label_create(widget->obj);
-    lv_obj_align(widget->label, LV_TEXT_ALIGN_CENTER, 0, 0);
-    lv_label_set_text(widget->label, "-");
+    lv_obj_align(widget->obj, LV_TEXT_ALIGN_CENTER, 0, 0);
+    lv_label_set_text(widget->obj, "-");
 #if GRID_CELL_HEIGHT < 20
-    lv_obj_set_style_text_font(widget->label, &nerd_12, 0);
+    lv_obj_set_style_text_font(widget->obj, &nerd_12, 0);
 #elif GRID_CELL_HEIGHT < 24
-    lv_obj_set_style_text_font(widget->label, &nerd_20, 0);
+    lv_obj_set_style_text_font(widget->obj, &nerd_20, 0);
 #else
-    lv_obj_set_style_text_font(widget->label, &nerd_24, 0);
+    lv_obj_set_style_text_font(widget->obj, &nerd_24, 0);
 #endif
 
     k_timer_init(&mod_status_timer, mod_status_timer_cb, NULL);
