@@ -13,10 +13,6 @@ lv_obj_t *zmk_display_status_screen();
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
-#if DISPLAY_WIDTH <= 0 || DISPLAY_HEIGHT <= 0
-#error "DISPLAY_WIDTH and DISPLAY_HEIGHT cannot be zero"
-#endif
-
 #define START_ROW 0
 #define START_COL 0
 #define COL_COUNT 2
