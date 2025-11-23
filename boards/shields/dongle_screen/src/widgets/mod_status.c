@@ -51,8 +51,8 @@ int zmk_widget_mod_status_init(struct zmk_widget_mod_status *widget, lv_obj_t *p
 {
     widget->obj = lv_label_create(parent);
     lv_obj_set_size(widget->obj, size.x, size.y);
-    lv_obj_align(widget->obj, LV_TEXT_ALIGN_CENTER, 0, 0);
-    lv_label_set_text(widget->obj, "-");
+    lv_obj_align(widget->obj, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_style_text_align(widget->obj, LV_TEXT_ALIGN_CENTER, 0);
 #if (GRID_CELL_HEIGHT * L_MOD_ROW_CNT) < 20
     lv_obj_set_style_text_font(widget->obj, &nerd_12, 0);
 #elif (GRID_CELL_HEIGHT * L_MOD_ROW_CNT) < 24
@@ -60,6 +60,7 @@ int zmk_widget_mod_status_init(struct zmk_widget_mod_status *widget, lv_obj_t *p
 #else
     lv_obj_set_style_text_font(widget->obj, &nerd_24, 0);
 #endif
+    lv_label_set_text(widget->obj, "HELLO!");
 
     k_timer_init(&mod_status_timer, mod_status_timer_cb, NULL);
     k_timer_user_data_set(&mod_status_timer, widget);
