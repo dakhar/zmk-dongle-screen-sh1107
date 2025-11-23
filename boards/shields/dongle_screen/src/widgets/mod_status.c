@@ -6,6 +6,7 @@
 
 #include <fonts.h>
 #include <util.h>
+#include <dimensions.h>
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 

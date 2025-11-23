@@ -16,6 +16,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include "wpm_status.h"
 #include <fonts.h>
 #include <util.h>
+#include <dimensions.h>
 
 #define SYMBOLS_COUNT 2
 

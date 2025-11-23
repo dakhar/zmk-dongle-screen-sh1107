@@ -16,6 +16,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include <fonts.h>
 #include <util.h>
+#include <dimensions.h>
 
 #include "layer_status.h"
 

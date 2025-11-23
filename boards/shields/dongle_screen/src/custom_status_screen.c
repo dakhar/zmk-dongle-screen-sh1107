@@ -6,6 +6,7 @@
 
 #include "custom_status_screen.h"
 #include <util.h>
+#include <dimensions.h>
 
 struct widget_layout
 {

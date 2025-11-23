@@ -7,6 +7,7 @@
         "mod_status.h": "c",
         "output_status.h": "c",
         "util.h": "c",
-        "wpm_status.h": "c"
+        "wpm_status.h": "c",
+        "dimensions.h": "c"
     }
 }
