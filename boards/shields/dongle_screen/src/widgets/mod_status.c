@@ -54,7 +54,13 @@ int zmk_widget_mod_status_init(struct zmk_widget_mod_status *widget, lv_obj_t *p
     widget->label = lv_label_create(widget->obj);
     lv_obj_align(widget->label, LV_TEXT_ALIGN_CENTER, 0, 0);
     lv_label_set_text(widget->label, "-");
+#if GRID_CELL_HEIGHT < 20
+    lv_obj_set_style_text_font(widget->label, &nerd_12, 0);
+#elif GRID_CELL_HEIGHT < 24
+    lv_obj_set_style_text_font(widget->label, &nerd_20, 0);
+#else
     lv_obj_set_style_text_font(widget->label, &nerd_24, 0);
+#endif
 
     k_timer_init(&mod_status_timer, mod_status_timer_cb, NULL);
     k_timer_user_data_set(&mod_status_timer, widget);

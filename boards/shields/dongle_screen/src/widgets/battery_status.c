@@ -175,6 +175,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
 #else
     lv_canvas_draw_text (battery.canvas, 0, 0, lable_max_w, &label_dsc, level_str); 
     if (state.level < 1 || state.level > 100) return;
+    if (battery_h < 3) return;
     lv_canvas_draw_rect(battery.canvas, 0, label_h, CONTACT_L, battery_h, &rect_contact);
     lv_canvas_draw_rect(battery.canvas, CONTACT_L, label_h, battery_w, battery_h, &rect_shell);
     lv_canvas_draw_rect(battery.canvas, CONTACT_L + battery_w - BORDER_SZ - meter_width, 

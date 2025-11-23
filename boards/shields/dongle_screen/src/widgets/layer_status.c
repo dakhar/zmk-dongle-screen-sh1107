@@ -66,12 +66,18 @@ ZMK_SUBSCRIPTION(widget_layer_status, zmk_layer_state_changed);
 
 int zmk_widget_layer_status_init(struct zmk_widget_layer_status *widget, lv_obj_t *parent, lv_point_t size)
 {    
-    const lv_font_t *font = &lv_font_montserrat_32;
     widget->obj = lv_label_create(parent);
     lv_obj_set_size(widget->obj, size.x, font->line_height);
     lv_obj_center(widget->obj);
-    lv_obj_set_style_text_font(widget->obj, font, 0);
-
+#if GRID_CELL_HEIGHT < 20
+    lv_obj_set_style_text_font(widget->label, &nerd_12, 0);
+#elif GRID_CELL_HEIGHT < 24
+    lv_obj_set_style_text_font(widget->label, &nerd_20, 0);
+#elif GRID_CELL_HEIGHT < 32
+    lv_obj_set_style_text_font(widget->label, &nerd_24, 0);
+#else
+    lv_obj_set_style_text_font(widget->label, &nerd_32, 0);
+#endif
     sys_slist_append(&widgets, &widget->node);
 
     widget_layer_status_init();

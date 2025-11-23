@@ -76,7 +76,11 @@ int zmk_widget_wpm_status_init(struct zmk_widget_wpm_status *widget, lv_obj_t *p
     widget->label = lv_label_create(widget->obj);
     lv_obj_align(widget->label, LV_ALIGN_TOP_LEFT, 0, 0);
     lv_obj_set_style_text_align(widget->label, LV_TEXT_ALIGN_LEFT, 0);
+#if GRID_CELL_HEIGHT < 20
+    lv_obj_set_style_text_font(widget->label, &nerd_12, 0);
+#else
     lv_obj_set_style_text_font(widget->label, &nerd_20, 0);
+#endif
 
     sys_slist_append(&widgets, &widget->node);
 
