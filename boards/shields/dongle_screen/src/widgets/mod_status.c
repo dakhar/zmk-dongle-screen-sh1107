@@ -52,9 +52,9 @@ int zmk_widget_mod_status_init(struct zmk_widget_mod_status *widget, lv_obj_t *p
     lv_obj_set_size(widget->obj, size.x, size.y);
     lv_obj_align(widget->obj, LV_TEXT_ALIGN_CENTER, 0, 0);
     lv_label_set_text(widget->obj, "-");
-#if GRID_CELL_HEIGHT < 20
+#if (GRID_CELL_HEIGHT * L_MOD_ROW_CNT) < 20
     lv_obj_set_style_text_font(widget->obj, &nerd_12, 0);
-#elif GRID_CELL_HEIGHT < 24
+#elif (GRID_CELL_HEIGHT * L_MOD_ROW_CNT) < 24
     lv_obj_set_style_text_font(widget->obj, &nerd_20, 0);
 #else
     lv_obj_set_style_text_font(widget->obj, &nerd_24, 0);

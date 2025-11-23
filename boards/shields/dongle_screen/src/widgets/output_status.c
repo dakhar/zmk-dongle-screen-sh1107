@@ -109,7 +109,8 @@ int zmk_widget_output_status_init(struct zmk_widget_output_status *widget, lv_ob
     lv_obj_set_size(widget->obj, size.x, size.y);
     lv_obj_align(widget->obj, LV_ALIGN_TOP_RIGHT, 0, 0);
     lv_obj_set_style_text_align(widget->obj, LV_TEXT_ALIGN_RIGHT, 0);
-#if GRID_CELL_HEIGHT < 20
+
+#if (GRID_CELL_HEIGHT * L_OUT_ROW_CNT) < 20
     lv_obj_set_style_text_font(widget->obj, &nerd_12, 0);
 #else
     lv_obj_set_style_text_font(widget->obj, &nerd_20, 0);

@@ -71,11 +71,11 @@ int zmk_widget_layer_status_init(struct zmk_widget_layer_status *widget, lv_obj_
     widget->obj = lv_label_create(parent);
     lv_obj_set_size(widget->obj, size.x, size.y);
     lv_obj_center(widget->obj);
-#if GRID_CELL_HEIGHT < 20
+#if (GRID_CELL_HEIGHT * L_LAYER_ROW_CNT) < 20
     lv_obj_set_style_text_font(widget->obj, &nerd_12, 0);
-#elif GRID_CELL_HEIGHT < 24
+#elif (GRID_CELL_HEIGHT * L_LAYER_ROW_CNT) < 24
     lv_obj_set_style_text_font(widget->obj, &nerd_20, 0);
-#elif GRID_CELL_HEIGHT < 32
+#elif (GRID_CELL_HEIGHT * L_LAYER_ROW_CNT) < 32
     lv_obj_set_style_text_font(widget->obj, &nerd_24, 0);
 #else
     lv_obj_set_style_text_font(widget->obj, &nerd_32, 0);
