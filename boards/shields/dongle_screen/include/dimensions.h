@@ -1,7 +1,5 @@
 #pragma once
 
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-
 #define START_ROW 0
 #define START_COL 0
 #define COL_COUNT 2

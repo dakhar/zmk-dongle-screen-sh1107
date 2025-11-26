@@ -13,7 +13,9 @@
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #define SYMBOLS_COUNT 7
-
+#define ZMK_LED_NUMLOCK_BIT BIT(0)
+#define ZMK_LED_CAPSLOCK_BIT BIT(1)
+#define ZMK_LED_SCROLLLOCK_BIT BIT(2)
 struct hid_indicators_status_state {
     zmk_hid_indicators_t flags;  // HID Indicator Status Bit Mask
 } hid_state;
