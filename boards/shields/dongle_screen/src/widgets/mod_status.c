@@ -2,10 +2,8 @@
 #include <zephyr/logging/log.h>
 #include <zmk/hid.h>
 #include <lvgl.h>
-#include <zmk/display/widgets/hid_indicators_status.h>
 #include <zmk/hid_indicators.h>
 #include <zmk/events/hid_indicators_changed.h>
-#include <zmk/hid_indicators_types.h>
 #include "mod_status.h"
 
 #include <fonts.h>
