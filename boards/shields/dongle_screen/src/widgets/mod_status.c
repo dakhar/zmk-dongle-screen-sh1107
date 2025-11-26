@@ -58,7 +58,7 @@ static void update_mod_status(struct zmk_widget_mod_status *widget)
 static void mod_status_timer_cb(struct k_timer *timer)
 {
     struct zmk_widget_mod_status *widget = k_timer_user_data_get(timer);
-    hid_state.flags = zmk_hid_indicators_get_current_profile()
+    hid_state.flags = zmk_hid_indicators_get_current_profile();
     update_mod_status(widget);
 }
 
