@@ -73,7 +73,6 @@ int zmk_widget_wpm_status_init(struct zmk_widget_wpm_status *widget, lv_obj_t *p
 {
     widget->obj = lv_label_create(parent);
     lv_obj_set_size(widget->obj, size.x, size.y);
-    lv_obj_align(widget->obj, LV_ALIGN_TOP_LEFT, 0, 0);
     lv_obj_set_style_text_align(widget->obj, LV_TEXT_ALIGN_LEFT, 0);
     lv_obj_set_style_border_side(widget->obj, LV_BORDER_SIDE_FULL, 0);
     lv_obj_set_style_border_width(widget->obj, 1, 0);

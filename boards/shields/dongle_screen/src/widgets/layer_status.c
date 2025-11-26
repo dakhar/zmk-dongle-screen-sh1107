@@ -71,8 +71,6 @@ int zmk_widget_layer_status_init(struct zmk_widget_layer_status *widget, lv_obj_
 {    
     widget->obj = lv_label_create(parent);
     lv_obj_set_size(widget->obj, size.x, size.y);
-    lv_obj_center(widget->obj);
-    lv_obj_align(widget->obj, LV_ALIGN_CENTER, 0, 0);
     lv_obj_set_style_text_align(widget->obj, LV_TEXT_ALIGN_CENTER, 0);
 #if (GRID_CELL_HEIGHT * L_LAYER_ROW_CNT) < 20
     lv_obj_set_style_text_font(widget->obj, &nerd_12, 0);
@@ -84,6 +82,9 @@ int zmk_widget_layer_status_init(struct zmk_widget_layer_status *widget, lv_obj_
     lv_obj_set_style_text_font(widget->obj, &nerd_32, 0);
 #endif
     lv_label_set_text(widget->obj, "󰼭");
+    lv_obj_set_style_border_side(widget->obj, LV_BORDER_SIDE_FULL, 0);
+    lv_obj_set_style_border_width(widget->obj, 1, 0);
+    lv_obj_set_style_border_color(widget->obj, LVGL_FOREGROUND, 0);
     sys_slist_append(&widgets, &widget->node);
 
     widget_layer_status_init();
