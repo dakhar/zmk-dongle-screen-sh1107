@@ -2,6 +2,10 @@
 #include <zephyr/logging/log.h>
 #include <zmk/hid.h>
 #include <lvgl.h>
+#include <zmk/display/widgets/hid_indicators_status.h>
+#include <zmk/hid_indicators.h>
+#include <zmk/events/hid_indicators_changed.h>
+#include <zmk/hid_indicators_types.h>
 #include "mod_status.h"
 
 #include <fonts.h>
@@ -10,9 +14,13 @@
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
-#define SYMBOLS_COUNT 4
+#define SYMBOLS_COUNT 7
 
-static void update_mod_status(struct zmk_widget_mod_status *widget)
+struct hid_indicators_status_state {
+    zmk_hid_indicators_t flags;  // HID Indicator Status Bit Mask
+} hid_state;
+
+static void update_mod_status(struct zmk_widget_mod_status *widget, struct hid_indicators_status_state state)
 {
     uint8_t mods = zmk_hid_get_keyboard_report()->body.modifiers;
     char text[SYMBOLS_COUNT * 4 * 2 + 1] = "";
@@ -20,6 +28,12 @@ static void update_mod_status(struct zmk_widget_mod_status *widget)
     char *syms[SYMBOLS_COUNT] = {NULL};
     int n = 0;
 
+    if (state.flags & ZMK_LED_CAPSLOCK_BIT)
+        syms[n++] = "󰘲"; 
+    if (state.flags & ZMK_LED_NUMLOCK_BIT)
+        syms[n++] = ""; 
+    if (state.flags & ZMK_LED_SCROLLLOCK_BIT)
+        syms[n++] = "S"; 
     if (mods & (MOD_LCTL | MOD_RCTL))
         syms[n++] = "󰘴";
     if (mods & (MOD_LSFT | MOD_RSFT))
@@ -28,7 +42,6 @@ static void update_mod_status(struct zmk_widget_mod_status *widget)
         syms[n++] = "󰘵"; 
     if (mods & (MOD_LGUI | MOD_RGUI))
         syms[n++] = ""; 
-
     for (int i = 0; i < n; ++i)
     {
         if (i > 0)
@@ -42,8 +55,23 @@ static void update_mod_status(struct zmk_widget_mod_status *widget)
 static void mod_status_timer_cb(struct k_timer *timer)
 {
     struct zmk_widget_mod_status *widget = k_timer_user_data_get(timer);
-    update_mod_status(widget);
+    update_mod_status(widget, hid_state);
 }
+
+static void hid_indicators_status_update_cb(struct hid_indicators_status_state state) {
+    struct zmk_widget_mod_status *widget;
+    update_mod_status(widget, hid_state);
+}
+
+static struct hid_indicators_status_state hid_indicators_status_get_state(const zmk_event_t *eh) {
+    hid_state.flags = zmk_hid_indicators_get_current_profile();
+    return hid_state;
+}
+
+ZMK_DISPLAY_WIDGET_LISTENER(zmk_widget_mod_status, struct hid_indicators_status_state,
+                            hid_indicators_status_update_cb, hid_indicators_status_get_state)
+
+ZMK_SUBSCRIPTION(zmk_widget_mod_status, zmk_hid_indicators_changed);
 
 static struct k_timer mod_status_timer;
 
