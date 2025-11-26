@@ -68,10 +68,10 @@ static struct hid_indicators_status_state hid_indicators_status_get_state(const 
     return hid_state;
 }
 
-ZMK_DISPLAY_WIDGET_LISTENER(zmk_widget_mod_status, struct hid_indicators_status_state,
+ZMK_DISPLAY_WIDGET_LISTENER(widget_mod_status, struct hid_indicators_status_state,
                             hid_indicators_status_update_cb, hid_indicators_status_get_state)
 
-ZMK_SUBSCRIPTION(zmk_widget_mod_status, zmk_hid_indicators_changed);
+ZMK_SUBSCRIPTION(widget_mod_status, zmk_hid_indicators_changed);
 
 static struct k_timer mod_status_timer;
 
