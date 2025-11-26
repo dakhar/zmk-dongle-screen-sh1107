@@ -123,9 +123,9 @@ int zmk_widget_output_status_init(struct zmk_widget_output_status *widget, lv_ob
 #else
     lv_obj_set_style_text_font(widget->obj, &nerd_20, 0);
 #endif
-    lv_obj_set_style_border_side(widget->obj, LV_BORDER_SIDE_FULL, 0);
-    lv_obj_set_style_border_width(widget->obj, 1, 0);
-    lv_obj_set_style_border_color(widget->obj, LVGL_FOREGROUND, 0);
+    // lv_obj_set_style_border_side(widget->obj, LV_BORDER_SIDE_FULL, 0);
+    // lv_obj_set_style_border_width(widget->obj, 1, 0);
+    // lv_obj_set_style_border_color(widget->obj, LVGL_FOREGROUND, 0);
 
     sys_slist_append(&widgets, &widget->node);
 

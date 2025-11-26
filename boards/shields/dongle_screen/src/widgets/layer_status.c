@@ -79,12 +79,12 @@ int zmk_widget_layer_status_init(struct zmk_widget_layer_status *widget, lv_obj_
 #elif (GRID_CELL_HEIGHT * L_LAYER_ROW_CNT) < 32
     lv_obj_set_style_text_font(widget->obj, &nerd_24, 0);
 #else
-    lv_obj_set_style_text_font(widget->obj, &nerd_32, 0);
+    lv_obj_set_style_text_font(widget->obj, &nerd_24, 0);
 #endif
     lv_label_set_text(widget->obj, "󰼭");
-    lv_obj_set_style_border_side(widget->obj, LV_BORDER_SIDE_FULL, 0);
-    lv_obj_set_style_border_width(widget->obj, 1, 0);
-    lv_obj_set_style_border_color(widget->obj, LVGL_FOREGROUND, 0);
+    // lv_obj_set_style_border_side(widget->obj, LV_BORDER_SIDE_FULL, 0);
+    // lv_obj_set_style_border_width(widget->obj, 1, 0);
+    // lv_obj_set_style_border_color(widget->obj, LVGL_FOREGROUND, 0);
     sys_slist_append(&widgets, &widget->node);
 
     widget_layer_status_init();

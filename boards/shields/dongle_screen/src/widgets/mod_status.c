@@ -79,9 +79,9 @@ int zmk_widget_mod_status_init(struct zmk_widget_mod_status *widget, lv_obj_t *p
 #endif
     lv_label_set_text(widget->obj, "HELLO!");
 
-    k_timer_init(&mod_status_timer, mod_status_timer_cb, NULL);
-    k_timer_user_data_set(&mod_status_timer, widget);
-    k_timer_start(&mod_status_timer, K_MSEC(100), K_MSEC(100));
+    // k_timer_init(&mod_status_timer, mod_status_timer_cb, NULL);
+    // k_timer_user_data_set(&mod_status_timer, widget);
+    // k_timer_start(&mod_status_timer, K_MSEC(100), K_MSEC(100));
 
     return 0;
 }
