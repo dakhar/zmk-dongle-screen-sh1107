@@ -19,7 +19,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #define SYMBOLS_COUNT 7
 
 struct hid_indicators_status_state {
-    zmk_hid_indicators_t flags = 0;  // HID Indicator Status Bit Mask
+    zmk_hid_indicators_t flags;  // HID Indicator Status Bit Mask
 } hid_state;
 
 static void update_mod_status(struct zmk_widget_mod_status *widget)
