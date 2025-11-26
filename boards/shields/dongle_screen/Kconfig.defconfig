@@ -21,7 +21,7 @@ config ZMK_DISPLAY_STATUS_SCREEN_CUSTOM
     select LV_FONT_MONTSERRAT_32
     select LV_FONT_MONTSERRAT_40
     select ZMK_WPM
-    imply ZMK_HID_INDICATORS
+    select ZMK_HID_INDICATORS
 
 config ZMK_DONGLE_DISPLAY_DONGLE_BATTERY
     bool "Show also the battery level of the dongle"
