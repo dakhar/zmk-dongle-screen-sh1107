@@ -74,9 +74,9 @@ int zmk_widget_wpm_status_init(struct zmk_widget_wpm_status *widget, lv_obj_t *p
     widget->obj = lv_label_create(parent);
     lv_obj_set_size(widget->obj, size.x, size.y);
     lv_obj_set_style_text_align(widget->obj, LV_TEXT_ALIGN_LEFT, 0);
-    lv_obj_set_style_border_side(widget->obj, LV_BORDER_SIDE_FULL, 0);
-    lv_obj_set_style_border_width(widget->obj, 1, 0);
-    lv_obj_set_style_border_color(widget->obj, LVGL_FOREGROUND, 0);
+    // lv_obj_set_style_border_side(widget->obj, LV_BORDER_SIDE_FULL, 0);
+    // lv_obj_set_style_border_width(widget->obj, 1, 0);
+    // lv_obj_set_style_border_color(widget->obj, LVGL_FOREGROUND, 0);
 #if GRID_CELL_HEIGHT < 20
     lv_obj_set_style_text_font(widget->obj, &nerd_12, 0);
 #else
