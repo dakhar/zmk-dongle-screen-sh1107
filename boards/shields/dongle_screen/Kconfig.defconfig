@@ -51,6 +51,7 @@ choice LV_COLOR_DEPTH
 endchoice
 
 config LV_DISP_DEF_REFR_PERIOD
+    int "No "
     default 20
 
 choice LV_FONT_DEFAULT
