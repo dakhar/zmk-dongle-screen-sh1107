@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include <stdlib.h>
 #include <zephyr/kernel.h>
 #include <zephyr/bluetooth/services/bas.h>
 
@@ -274,17 +275,19 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
     calc_battery_dimensions(parent,size);
     init_descriptors();
     
-    widget_row_dsc = lv_mem_alloc(2 * sizeof(lv_coord_t));
+    widget_row_dsc = malloc(2 * sizeof(lv_coord_t));
     if (!widget_row_dsc) {
         LV_LOG_ERROR("Memory allocation failed!");
+        free(widget_row_dsc);
         return -1;
     }
     widget_row_dsc[0] = size.y;
     widget_row_dsc[1] = LV_GRID_TEMPLATE_LAST;
 
-    widget_col_dsc = lv_mem_alloc((BAT_COUNT + 1) * sizeof(lv_coord_t));
+    widget_col_dsc = malloc((BAT_COUNT + 1) * sizeof(lv_coord_t));
     if (!widget_col_dsc) {
         LV_LOG_ERROR("Memory allocation failed!");
+        free(widget_col_dsc);
         return -1;
     }
     for (uint8_t i = 0; i < BAT_COUNT; i++) {
@@ -302,9 +305,10 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
         struct battery_object *battery = &battery_objects[i];
         
         const int buf_size = (size.x / BAT_COUNT * size.y * BYTES_PER_PIXEL);  // bytes
-        battery->buffer = lv_mem_alloc(buf_size); 
+        battery->buffer = malloc(buf_size); 
         if (!battery->buffer) {
             LV_LOG_ERROR("Canvas buffer allocation failed!");
+            free(battery->buffer);
             return -1;
         }
         battery->canvas = lv_canvas_create(widget->obj);

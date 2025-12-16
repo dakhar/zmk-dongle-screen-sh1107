@@ -5,6 +5,7 @@
  */
 
 #include "custom_status_screen.h"
+#include <stdlib.h>
 #include <util.h>
 #include <dimensions.h>
 
@@ -96,10 +97,11 @@ lv_obj_t *zmk_display_status_screen()
     lv_style_set_text_line_space(&global_style, 1);
     lv_obj_add_style(screen, &global_style, LV_PART_MAIN);
 
-    screen_row_dsc = lv_mem_alloc(ROW_COUNT * sizeof(lv_coord_t));
+    screen_row_dsc = malloc(ROW_COUNT * sizeof(lv_coord_t));
     if (!screen_row_dsc)
     {
         LV_LOG_ERROR("Memory allocation failed!");
+        free(screen_row_dsc);
         return NULL;
     }
     for (uint8_t i = 0; i < ROW_COUNT; i++)
@@ -108,10 +110,11 @@ lv_obj_t *zmk_display_status_screen()
     }
     screen_row_dsc[ROW_COUNT] = LV_GRID_TEMPLATE_LAST; // Terminator
 
-    screen_col_dsc = lv_mem_alloc(COL_COUNT * sizeof(lv_coord_t));
+    screen_col_dsc = malloc(COL_COUNT * sizeof(lv_coord_t));
     if (!screen_col_dsc)
     {
         LV_LOG_ERROR("Memory allocation failed!");
+        free(screen_col_dsc);
         return NULL;
     }
     for (uint8_t i = 0; i < COL_COUNT; i++)
