@@ -170,10 +170,10 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     const int meter_width = LV_CLAMP(0, (nrg_meter_w * state.level + 50) / 100, nrg_meter_w);
     const int meter_height = LV_CLAMP(0, (nrg_meter_h * state.level + 50) / 100, nrg_meter_h);
 #ifdef CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL
-    lv_label_set_text(label, level_str);
-    lv_obj_set_style_text_color(label, text_color, 0);
-    lv_obj_set_pos(label, battery_w - lable_max_w, text_y);  // Прижимаем вправо
-    lv_obj_set_size(label, lable_max_w, label_h);
+    lv_label_set_text(battery.label, level_str);
+    lv_obj_set_style_text_color(battery.label, text_color, 0);
+    lv_obj_set_pos(battery.label, battery_w - lable_max_w, text_y);  // Прижимаем вправо
+    lv_obj_set_size(battery.label, lable_max_w, label_h);
 
     if (state.level < 1 || state.level > 100) return;
     lv_canvas_draw_rect(battery.canvas, 0, 0, battery_w, CONTACT_L, &rect_contact);
@@ -182,10 +182,10 @@ static void draw_battery(struct battery_state state, struct battery_object batte
                         nrg_meter_w, meter_height, &rect_meter);
 #else
     
-    lv_label_set_text(label, level_str);
+    lv_label_set_text(battery.label, level_str);
     lv_obj_set_style_text_color(label, text_color, 0);
-    lv_obj_set_pos(label, 0, 0);
-    lv_obj_set_size(label, lable_max_w, label_h);
+    lv_obj_set_pos(battery.label, 0, 0);
+    lv_obj_set_size(battery.label, lable_max_w, label_h);
 
     if (state.level < 1 || state.level > 100) return;
     if (battery_h < 3) return;
