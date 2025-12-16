@@ -310,7 +310,7 @@ int zmk_widget_dongle_battery_status_init(struct zmk_widget_dongle_battery_statu
         battery->canvas = lv_canvas_create(widget->obj);
         lv_obj_set_grid_cell(battery->canvas, LV_GRID_ALIGN_CENTER, i, 1,
                             LV_GRID_ALIGN_CENTER, 0, 1);
-        lv_canvas_set_buffer(battery->canvas, battery->buffer, size.x / BAT_COUNT, size.y, LV_IMG_CF_TRUE_COLOR);
+        lv_canvas_set_buffer(battery->canvas, battery->buffer, size.x / BAT_COUNT, size.y, LV_COLOR_FORMAT_NATIVE);
         lv_obj_add_flag(battery->canvas, LV_OBJ_FLAG_HIDDEN);
     }
 
