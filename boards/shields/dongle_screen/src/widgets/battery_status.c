@@ -138,6 +138,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     lv_color_t meter_color;
     lv_color_t text_color;
     char level_str[4];
+    if (!battery.label) battery.label = lv_label_create(battery.canvas);
 
     int text_y = (lv_obj_get_height(battery.canvas) - label_h) / 2;
 #ifdef MONOCHROME
@@ -169,7 +170,6 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     const int meter_width = LV_CLAMP(0, (nrg_meter_w * state.level + 50) / 100, nrg_meter_w);
     const int meter_height = LV_CLAMP(0, (nrg_meter_h * state.level + 50) / 100, nrg_meter_h);
 #ifdef CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL
-    battery.label = lv_label_create(battery.canvas);
     lv_label_set_text(label, level_str);
     lv_obj_set_style_text_color(label, text_color, 0);
     lv_obj_set_pos(label, battery_w - lable_max_w, text_y);  // Прижимаем вправо
@@ -181,7 +181,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     lv_canvas_draw_rect(battery.canvas, BORDER_SZ, CONTACT_L + battery_h - BORDER_SZ - meter_height, 
                         nrg_meter_w, meter_height, &rect_meter);
 #else
-    battery.label = lv_label_create(battery.canvas);
+    
     lv_label_set_text(label, level_str);
     lv_obj_set_style_text_color(label, text_color, 0);
     lv_obj_set_pos(label, 0, 0);
