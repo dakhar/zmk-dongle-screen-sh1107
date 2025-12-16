@@ -99,6 +99,7 @@ struct battery_object {
     bool *initialized;
     uint8_t *buffer;
     lv_obj_t *canvas;
+    lv_obj_t *label;
 } battery_objects[BAT_COUNT];
 
 // Peripheral reconnection tracking
@@ -168,7 +169,7 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     const int meter_width = LV_CLAMP(0, (nrg_meter_w * state.level + 50) / 100, nrg_meter_w);
     const int meter_height = LV_CLAMP(0, (nrg_meter_h * state.level + 50) / 100, nrg_meter_h);
 #ifdef CONFIG_DONGLE_SCREEN_BATTERY_VERTICAL
-    lv_obj_t *label = lv_label_create(battery.canvas);
+    battery.label = lv_label_create(battery.canvas);
     lv_label_set_text(label, level_str);
     lv_obj_set_style_text_color(label, text_color, 0);
     lv_obj_set_pos(label, battery_w - lable_max_w, text_y);  // Прижимаем вправо
@@ -180,12 +181,12 @@ static void draw_battery(struct battery_state state, struct battery_object batte
     lv_canvas_draw_rect(battery.canvas, BORDER_SZ, CONTACT_L + battery_h - BORDER_SZ - meter_height, 
                         nrg_meter_w, meter_height, &rect_meter);
 #else
-    lv_obj_t *label = lv_label_create(battery.canvas);
+    battery.label = lv_label_create(battery.canvas);
     lv_label_set_text(label, level_str);
     lv_obj_set_style_text_color(label, text_color, 0);
     lv_obj_set_pos(label, 0, 0);
     lv_obj_set_size(label, lable_max_w, label_h);
-    
+
     if (state.level < 1 || state.level > 100) return;
     if (battery_h < 3) return;
     lv_canvas_draw_rect(battery.canvas, 0, label_h, CONTACT_L, battery_h, &rect_contact);
